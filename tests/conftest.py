@@ -2,7 +2,6 @@
 Fixtures compartidas para tests
 """
 
-import os
 import tempfile
 
 import pytest

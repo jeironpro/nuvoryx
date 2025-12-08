@@ -4,8 +4,6 @@ Tests para autenticación
 
 import json
 
-import pytest
-
 
 def test_registro_exitoso(client):
     """Test registro de usuario exitoso"""

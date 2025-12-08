@@ -2,8 +2,6 @@
 Tests para rutas de la aplicación
 """
 
-import pytest
-
 from models import Carpeta, Usuario, db
 
 
