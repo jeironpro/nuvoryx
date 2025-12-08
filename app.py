@@ -32,11 +32,6 @@ def load_user(user_id):
     return Usuario.query.get(int(user_id))
 
 
-# Crear tablas al inicio
-with app.app_context():
-    db.create_all()
-
-
 # --- HELPERS ---
 def parse_size(size_str):
     """Parsea '1.5 MB' a bytes (float)"""
@@ -678,4 +673,7 @@ def logout():
 
 
 if __name__ == "__main__":
+    # Crear tablas solo cuando se ejecuta directamente
+    with app.app_context():
+        db.create_all()
     app.run(debug=True, port=5005)
