@@ -32,33 +32,33 @@ export function obtenerConfiguracionIcono(file) {
 export function detectarTipo(nombre) {
     if (!nombre) return 'otro';
     const n = nombre.toLowerCase();
-    
+
     // PDF
     if (n.endsWith('.pdf')) return 'pdf';
-    
+
     // Imágenes
     if (/\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)$/.test(n)) return 'imagen';
-    
+
     // Videos
     if (/\.(mp4|mov|avi|webm|mkv|flv|wmv)$/.test(n)) return 'video';
-    
+
     // Audio
     if (/\.(mp3|wav|ogg|m4a|flac|aac)$/.test(n)) return 'audio';
-    
+
     // Documentos
     if (/\.(doc|docx|txt|rtf|odt)$/.test(n)) return 'documento';
-    
+
     // Hojas de cálculo
     if (/\.(xls|xlsx|csv|ods)$/.test(n)) return 'hoja_calculo';
-    
+
     // Presentaciones
     if (/\.(ppt|pptx|odp)$/.test(n)) return 'presentacion';
-    
+
     // Archivos comprimidos
     if (/\.(zip|rar|7z|tar|gz|bz2)$/.test(n)) return 'archivo';
-    
+
     // Código
     if (/\.(html|css|js|jsx|ts|tsx|py|java|c|cpp|php|rb|go|rs)$/.test(n)) return 'codigo';
-    
+
     return 'otro';
 }

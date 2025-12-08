@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initFiles();
     initAuth();
     initFilters();
-    
+
     // Calcular estadísticas iniciales
     actualizarEstadisticas();
 });

@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "Sistema de gestión de archivos en la nube con autenticación de usuarios"
 authors = [{name = "jeironpro"}]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.14"
 license = {text = "MIT"}
 
 dependencies = [
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = [
+dev = [
     "black>=23.0.0",
     "flake8>=6.0.0",
     "isort>=5.12.0",
@@ -24,12 +24,27 @@ test = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
     "pytest-flask>=1.2.0",
+    "pre-commit>=3.0.0",
 ]
 
 [tool.black]
 line-length = 100
 target-version = ['py39', 'py310', 'py311']
 include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+  | migrations
+)/
+'''
 
 [tool.isort]
 profile = "black"
@@ -50,3 +65,11 @@ ignore_missing_imports = true
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = []
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*.py"]
+exclude = ["tests*", "static*", "templates*", "uploads*", "scripts*"]

@@ -1,11 +1,12 @@
 # Nuvoryx 🌥️
 
+[![Pre-commit](https://github.com/jeironpro/nuvoryx/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/jeironpro/nuvoryx/actions/workflows/pre-commit.yml)
 [![Lint](https://github.com/jeironpro/nuvoryx/actions/workflows/lint.yml/badge.svg)](https://github.com/jeironpro/nuvoryx/actions/workflows/lint.yml)
 [![Tests](https://github.com/jeironpro/nuvoryx/actions/workflows/test.yml/badge.svg)](https://github.com/jeironpro/nuvoryx/actions/workflows/test.yml)
 
 ## 📌 Descripción
 
-Este proyecto forma parte de mi portafolio personal.  
+Este proyecto forma parte de mi portafolio personal.
 El objetivo es demostrar buenas prácticas de programación, organización y documentación en GitHub.
 
 **Nuvoryx** es un sistema de gestión de archivos en la nube con las siguientes características:
@@ -105,6 +106,24 @@ flake8 .
 isort --check-only .
 ```
 
+### Pre-commit Hooks
+
+Instalar hooks de pre-commit para verificación automática antes de cada commit:
+
+```bash
+pre-commit install
+
+# Ejecutar manualmente en todos los archivos
+pre-commit run --all-files
+```
+
+Los hooks ejecutarán automáticamente:
+
+- Formateo con black
+- Ordenamiento de imports con isort
+- Linting con flake8
+- Verificaciones de archivos (trailing whitespace, EOF, etc.)
+
 ### Estructura del Proyecto
 
 ```
@@ -171,7 +190,7 @@ pytest tests/test_auth.py::test_login_exitoso
 
 ## 📜 Licencia
 
-Este proyecto está bajo la licencia **MIT**.  
+Este proyecto está bajo la licencia **MIT**.
 Consulta el archivo [LICENSE](LICENSE) para más detalles.
 
 ## 👤 Autor

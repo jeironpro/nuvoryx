@@ -27,7 +27,7 @@ export function guardarNotificacion(msg, tipo='info') {
     notificaciones.unshift({ mensaje: msg, fecha: new Date().toLocaleTimeString() });
     if (notificaciones.length > 50) notificaciones.pop(); // limit
     localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-    
+
     badgeActive = true;
     localStorage.setItem('badgeNotificacion', 'true');
     renderBadge();
@@ -100,7 +100,7 @@ function setupGlobalModalClosers() {
             if (modal) modal.style.display = 'none';
         }
     });
-    
+
     // Backup especifico ids
     ['btn-cancelar-modal', 'btn-cerrar-notificaciones'].forEach(id => {
         const btn = document.getElementById(id);
@@ -117,7 +117,7 @@ function setupNotificationUI() {
     const btn = document.getElementById('btn-notificaciones');
     const modal = document.getElementById('modal-notificaciones');
     const lista = document.getElementById('lista-notificaciones');
-    
+
     if (btn && modal) {
         btn.addEventListener('click', () => {
             lista.innerHTML = '';
@@ -133,14 +133,14 @@ function setupNotificationUI() {
                 });
             }
             modal.style.display = 'flex';
-            
+
             // Mark read
             badgeActive = false;
             localStorage.setItem('badgeNotificacion', 'false');
             renderBadge();
         });
     }
-    
+
     const btnClean = document.getElementById('btn-limpiar-notificaciones');
     if (btnClean) {
         btnClean.addEventListener('click', () => {

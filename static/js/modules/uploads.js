@@ -15,11 +15,11 @@ export function initUploads() {
         // Click to open
         zonaArrastre.addEventListener('click', () => inputArchivo.click());
         inputArchivo.addEventListener('click', (e) => e.stopPropagation());
-        
+
         // Change event
         inputArchivo.addEventListener('change', (e) => {
             manejarArchivos(e.target.files);
-            inputArchivo.value = ''; 
+            inputArchivo.value = '';
         });
 
         // DnD Events
@@ -56,12 +56,12 @@ export function initUploads() {
         btnSubirTodo.addEventListener('click', async () => {
             btnSubirTodo.disabled = true;
             btnSubirTodo.textContent = 'Subiendo...';
-            
+
             const copy = [...filesQueue];
             for (const item of copy) {
                 await subirArchivoBackend(item);
             }
-            
+
             filesQueue = [];
             actualizarVisibilidad();
             btnSubirTodo.textContent = 'Completado';
@@ -86,17 +86,17 @@ function agregarACola(file) {
     const clone = template.content.cloneNode(true);
     const item = clone.querySelector('.item-progreso-subida');
     item.dataset.colaId = id;
-    
+
     // Content
     clone.querySelector('.nombre-archivo').textContent = file.name;
     clone.querySelector('.tamano-archivo').textContent = formatearTamano(file.size);
-    
+
     // Icon
     const iconoContainer = clone.querySelector('.icono-progreso');
     const conf = obtenerConfiguracionIcono(file);
     iconoContainer.innerHTML = conf.svg;
     iconoContainer.className = `icono-progreso ${conf.clase}`;
-    
+
     // Remove btn
     item.querySelector('.btn-cerrar').addEventListener('click', () => {
         filesQueue = filesQueue.filter(f => f.id !== id);
@@ -125,10 +125,10 @@ function subirArchivoBackend(itemCola) {
         if (btnCerrar) btnCerrar.style.display = 'none';
 
         estado.textContent = 'Subiendo...';
-        
+
         const formData = new FormData();
         formData.append('archivos', itemCola.file);
-        
+
         const zona = document.getElementById('zona-arrastre');
         const cid = zona ? zona.getAttribute('data-carpeta-actual') : null;
         if (cid) formData.append('carpeta_id', cid);

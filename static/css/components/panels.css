@@ -63,8 +63,8 @@
 .barra-filtros {
   display: none; /* Merged into header or removed for simpler UI? User code had filters below. */
 }
-/* Re-integrating filters if needed, but for now user structure had it separate. 
-   If I want a cohesive toolbar, I should probably put the filter button NEXT to the search bar in the HTML. 
+/* Re-integrating filters if needed, but for now user structure had it separate.
+   If I want a cohesive toolbar, I should probably put the filter button NEXT to the search bar in the HTML.
    For now, I will keep styles generic enough or adjust HTML next. */
 
 .anadir-filtro {
@@ -227,4 +227,3 @@ select.anadir-filtro {
   background-repeat: no-repeat;
   background-position: right 8px center;
 }
-

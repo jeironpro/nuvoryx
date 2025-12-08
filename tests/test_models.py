@@ -2,7 +2,8 @@
 Tests para modelos de base de datos
 """
 import pytest
-from models import Usuario, Carpeta, Archivo, db
+
+from models import Archivo, Carpeta, Usuario, db
 
 
 def test_crear_usuario(app):
@@ -12,7 +13,7 @@ def test_crear_usuario(app):
         user.set_password("password123")
         db.session.add(user)
         db.session.commit()
-        
+
         assert user.id is not None
         assert user.nombre == "John Doe"
         assert user.email == "john@example.com"
@@ -30,13 +31,10 @@ def test_verificar_password(app, usuario):
 def test_crear_carpeta(app, usuario):
     """Test crear carpeta"""
     with app.app_context():
-        folder = Carpeta(
-            nombre="My Folder",
-            usuario_id=usuario.id
-        )
+        folder = Carpeta(nombre="My Folder", usuario_id=usuario.id)
         db.session.add(folder)
         db.session.commit()
-        
+
         assert folder.id is not None
         assert folder.nombre == "My Folder"
         assert folder.usuario_id == usuario.id
@@ -50,11 +48,11 @@ def test_crear_archivo(app, usuario):
             nombre_hash="hash123.pdf",
             tipo="pdf",
             tamano="2.5 MB",
-            usuario_id=usuario.id
+            usuario_id=usuario.id,
         )
         db.session.add(file)
         db.session.commit()
-        
+
         assert file.id is not None
         assert file.nombre_original == "document.pdf"
         assert file.tipo == "pdf"
@@ -81,13 +79,9 @@ def test_carpeta_subcarpetas(app, usuario, carpeta):
     """Test subcarpetas"""
     with app.app_context():
         parent = Carpeta.query.get(carpeta.id)
-        subfolder = Carpeta(
-            nombre="Subfolder",
-            carpeta_padre_id=parent.id,
-            usuario_id=usuario.id
-        )
+        subfolder = Carpeta(nombre="Subfolder", carpeta_padre_id=parent.id, usuario_id=usuario.id)
         db.session.add(subfolder)
         db.session.commit()
-        
+
         assert len(parent.subcarpetas) == 1
         assert parent.subcarpetas[0].nombre == "Subfolder"

@@ -41,9 +41,9 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     z-index: 5;
     position: relative;
-    border-radius: 12px; 
+    border-radius: 12px;
 }
-/* Note: border-radius on tr might not work without border-collapse: separate (which we added). 
+/* Note: border-radius on tr might not work without border-collapse: separate (which we added).
    But td needs radius. */
 .tabla-archivos tr:hover td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
 .tabla-archivos tr:hover td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }

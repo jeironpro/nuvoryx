@@ -12,7 +12,7 @@ export function actualizarEstadisticas() {
     const todasFilas = document.querySelectorAll('.fila-archivo');
     const filasArchivos = document.querySelectorAll('.fila-archivo:not(.fila-carpeta)');
     const filasCarpetas = document.querySelectorAll('.fila-carpeta');
-    
+
     const statTotal = document.getElementById('stats-total-archivos');
     const statEspacio = document.getElementById('stats-espacio-usado');
     const statTipo = document.getElementById('stats-tipo-comun');
@@ -29,7 +29,7 @@ export function actualizarEstadisticas() {
     filasArchivos.forEach(fila => {
         // Solo contar archivos visibles
         if (fila.style.display === 'none') return;
-        
+
         const nomElem = fila.querySelector('.nombre');
         if (nomElem) {
             const tipo = detectarTipo(nomElem.textContent);
@@ -38,7 +38,7 @@ export function actualizarEstadisticas() {
     });
 
     if (statTipo) {
-        let max = 0; 
+        let max = 0;
         let winner = '-';
         Object.entries(tiposConteo).forEach(([k, v]) => {
             if (v > max) { max = v; winner = k; }
