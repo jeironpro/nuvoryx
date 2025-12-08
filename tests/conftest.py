@@ -50,13 +50,24 @@ def runner(app):
 
 @pytest.fixture
 def usuario(app):
-    """Fixture de usuario de prueba"""
+    """Fixture de usuario de prueba - retorna el objeto dentro del contexto"""
     with app.app_context():
         user = Usuario(nombre="Test User", email="test@example.com")
         user.set_password("testpass123")
         db.session.add(user)
         db.session.commit()
-        return user
+        # Refrescar para asegurar que los datos están cargados
+        db.session.refresh(user)
+        user_id = user.id
+        user_email = user.email
+
+    # Crear un objeto simple con los datos necesarios
+    class UserData:
+        def __init__(self, id, email):
+            self.id = id
+            self.email = email
+
+    return UserData(user_id, user_email)
 
 
 @pytest.fixture
@@ -66,7 +77,13 @@ def carpeta(app, usuario):
         folder = Carpeta(nombre="Test Folder", usuario_id=usuario.id)
         db.session.add(folder)
         db.session.commit()
-        return folder
+        folder_id = folder.id
+
+    class FolderData:
+        def __init__(self, id):
+            self.id = id
+
+    return FolderData(folder_id)
 
 
 @pytest.fixture
@@ -82,7 +99,13 @@ def archivo(app, usuario):
         )
         db.session.add(file)
         db.session.commit()
-        return file
+        file_id = file.id
+
+    class FileData:
+        def __init__(self, id):
+            self.id = id
+
+    return FileData(file_id)
 
 
 @pytest.fixture

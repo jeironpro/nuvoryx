@@ -1,6 +1,7 @@
 """
 Tests para autenticación
 """
+
 import json
 
 import pytest
