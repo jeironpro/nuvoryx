@@ -1,0 +1,33 @@
+:root {
+  /* Typography */
+  --font-body: "Outfit", sans-serif;
+
+  /* Colors - Vibrant Purple Theme */
+  --bg-color: #f4f3f6;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+
+  --primary-color: #7c3aed; /* Violet 600 */
+  --primary-hover: #6d28d9; /* Violet 700 */
+  --primary-light: #ddd6fe; /* Violet 200 */
+
+  --accent-color: #8b5cf6;
+  --accent-gradient: linear-gradient(
+    135deg,
+    #7c3aed 0%,
+    #c026d3 100%
+  ); /* Violet to Fuchsia */
+
+  --border-color: #e5e7eb;
+
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+
+  /* Buttons */
+  --btn-primary-bg: var(--primary-color);
+  --btn-primary-text: #ffffff;
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-text: #374151;
+  --btn-secondary-border: #d1d5db;
+}

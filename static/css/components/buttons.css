@@ -1,0 +1,63 @@
+/* Page Header */
+.encabezado-pagina {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.contenido-encabezado h1 {
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.contenido-encabezado p {
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.acciones-encabezado {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-secundario, .btn-primario {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+}
+
+.btn-secundario {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--btn-secondary-border);
+    color: var(--btn-secondary-text);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.btn-secundario:hover {
+    background-color: #FFFFFF;
+    border-color: var(--primary-light);
+    color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primario {
+    background: var(--accent-gradient);
+    color: white;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.btn-primario:hover {
+    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+    transform: translateY(-2px);
+}
+
