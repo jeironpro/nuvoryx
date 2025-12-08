@@ -117,6 +117,16 @@ pre-commit install
 pre-commit run --all-files
 ```
 
+**¡IMPORTANTE!** Después de ejecutar `pre-commit install`, **cada vez que hagas `git commit`**:
+
+- ✅ Black formateará automáticamente tu código
+- ✅ isort ordenará los imports
+- ✅ flake8 verificará errores de estilo
+- ✅ Se corregirán trailing whitespace y end of file
+- ✅ **Si algo falla, el commit se cancela** y te muestra qué arreglar
+
+**Ya no necesitas ejecutar manualmente** `black .`, `isort .` o `flake8 .` antes de cada commit. ¡Todo es automático!
+
 Los hooks ejecutarán automáticamente:
 
 - Formateo con black
