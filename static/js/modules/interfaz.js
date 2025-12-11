@@ -1,6 +1,3 @@
-
-// ui.js - Manejo de interfaz (Modales, Paneles, Notificaciones)
-
 // Estado interno de notificaciones
 let notificaciones = JSON.parse(localStorage.getItem('notificaciones')) || [];
 let badgeActive = localStorage.getItem('badgeNotificacion') === 'true';
@@ -16,6 +13,7 @@ export function abrirModalEspecifico(idModal) {
 // Exponer globalmente para onclick HTML
 window.abrirModalEspecifico = abrirModalEspecifico;
 
+
 export function initUI() {
     renderBadge();
     setupGlobalModalClosers();
@@ -23,7 +21,7 @@ export function initUI() {
     setupNotificationUI();
 }
 
-export function guardarNotificacion(msg, tipo='info') {
+export function guardarNotificacion(msg, tipo = 'info') {
     notificaciones.unshift({ mensaje: msg, fecha: new Date().toLocaleTimeString() });
     if (notificaciones.length > 50) notificaciones.pop(); // limit
     localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
@@ -72,14 +70,14 @@ function setupPanels() {
     // Close on click outside
     window.addEventListener('click', (e) => {
         if (panelAjustes && panelAjustes.style.display === 'block') {
-             if (!panelAjustes.contains(e.target) && e.target !== btnAjustes) {
-                 panelAjustes.style.display = 'none';
-             }
+            if (!panelAjustes.contains(e.target) && e.target !== btnAjustes) {
+                panelAjustes.style.display = 'none';
+            }
         }
         if (panelUsuario && panelUsuario.style.display === 'block') {
-             if (!panelUsuario.contains(e.target) && e.target !== btnUsuario) {
-                 panelUsuario.style.display = 'none';
-             }
+            if (!panelUsuario.contains(e.target) && e.target !== btnUsuario) {
+                panelUsuario.style.display = 'none';
+            }
         }
     });
 }

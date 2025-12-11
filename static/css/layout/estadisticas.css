@@ -1,9 +1,9 @@
 /* Dashboard Stats */
 .estadisticas-dashboard {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-bottom: 32px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
 }
 
 .tarjeta-estadistica {
@@ -24,7 +24,10 @@
 .tarjeta-estadistica::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; height: 4px;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
     background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
     opacity: 0;
     transition: opacity 0.3s;
@@ -40,46 +43,46 @@
 }
 
 .icono-estadistica {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .icono-archivos {
-  background-color: #f9f5ff;
-  color: #6941c6;
-  border: 6px solid #f4ebff;
+    background-color: #f9f5ff;
+    color: #6941c6;
+    border: 6px solid #f4ebff;
 }
 
 .icono-almacenamiento {
-  background-color: #ecfdf3;
-  color: #12b76a;
-  border: 6px solid #d1fadf;
+    background-color: #ecfdf3;
+    color: #12b76a;
+    border: 6px solid #d1fadf;
 }
 
 .icono-tipo {
-  background-color: #eef4ff;
-  color: #3538cd;
-  border: 6px solid #e0eaff;
+    background-color: #eef4ff;
+    color: #3538cd;
+    border: 6px solid #e0eaff;
 }
 
 .info-estadistica {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .titulo-estadistica {
-  font-size: 14px;
-  font-weight: 500;
-  color: #667085;
-  margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #667085;
+    margin-bottom: 4px;
 }
 
 .valor-estadistica {
-  font-size: 24px;
-  font-weight: 600;
-  color: #101828;
+    font-size: 24px;
+    font-weight: 600;
+    color: #101828;
 }

@@ -54,6 +54,7 @@ def app():
     with test_app.app_context():
         # Importar las rutas aquí para que usen esta app
         from app import (
+            cerrar_sesion,
             crear_carpeta,
             descargar_archivo,
             descargar_carpeta,
@@ -61,29 +62,24 @@ def app():
             eliminar_archivo,
             eliminar_carpeta_route,
             eliminar_multiples,
-            login,
-            logout,
-            register,
-            root,
+            index,
+            inicio_sesion,
+            registro,
             subir_archivo,
         )
 
         # Registrar rutas
-        test_app.add_url_rule("/", "root", root, methods=["GET"])
+        test_app.add_url_rule("/", "index", index, methods=["GET"])
         test_app.add_url_rule("/crear-carpeta", "crear_carpeta", crear_carpeta, methods=["POST"])
         test_app.add_url_rule("/subir", "subir_archivo", subir_archivo, methods=["POST"])
-        test_app.add_url_rule(
-            "/eliminar/<int:archivo_id>", "eliminar_archivo", eliminar_archivo, methods=["DELETE"]
-        )
+        test_app.add_url_rule("/eliminar/<int:archivo_id>", "eliminar_archivo", eliminar_archivo, methods=["DELETE"])
         test_app.add_url_rule(
             "/eliminar-carpeta/<int:carpeta_id>",
             "eliminar_carpeta",
             eliminar_carpeta_route,
             methods=["DELETE"],
         )
-        test_app.add_url_rule(
-            "/eliminar-multiples", "eliminar_multiples", eliminar_multiples, methods=["POST"]
-        )
+        test_app.add_url_rule("/eliminar-multiples", "eliminar_multiples", eliminar_multiples, methods=["POST"])
         test_app.add_url_rule("/descargar-zip", "descargar_zip", descargar_zip, methods=["POST"])
         test_app.add_url_rule(
             "/descargar-carpeta/<int:carpeta_id>",
@@ -91,12 +87,10 @@ def app():
             descargar_carpeta,
             methods=["GET"],
         )
-        test_app.add_url_rule(
-            "/descargar/<int:archivo_id>", "descargar_archivo", descargar_archivo, methods=["GET"]
-        )
-        test_app.add_url_rule("/register", "register", register, methods=["POST"])
-        test_app.add_url_rule("/login", "login", login, methods=["POST"])
-        test_app.add_url_rule("/logout", "logout", logout, methods=["POST"])
+        test_app.add_url_rule("/descargar/<int:archivo_id>", "descargar_archivo", descargar_archivo, methods=["GET"])
+        test_app.add_url_rule("/registro", "registro", registro, methods=["POST"])
+        test_app.add_url_rule("/inicio_sesion", "inicio_sesion", inicio_sesion, methods=["POST"])
+        test_app.add_url_rule("/cerrar_sesion", "cerrar_sesion", cerrar_sesion, methods=["POST"])
 
         # Crear tablas en SQLite en memoria
         db.create_all()
@@ -129,20 +123,20 @@ def runner(app):
 def usuario(app):
     """Fixture de usuario de prueba - retorna el objeto dentro del contexto"""
     with app.app_context():
-        user = Usuario(nombre="Test User", email="test@example.com")
-        user.set_password("testpass123")
+        user = Usuario(nombre="Test User", correo="test@example.com")
+        user.codificar_contrasena("testpass123")
         db.session.add(user)
         db.session.commit()
         # Refrescar para asegurar que los datos están cargados
         db.session.refresh(user)
         user_id = user.id
-        user_email = user.email
+        user_email = user.correo
 
     # Crear un objeto simple con los datos necesarios
     class UserData:
-        def __init__(self, id, email):
+        def __init__(self, id, correo):
             self.id = id
-            self.email = email
+            self.correo = correo
 
     return UserData(user_id, user_email)
 
@@ -189,5 +183,5 @@ def archivo(app, usuario):
 def auth_client(client, usuario):
     """Cliente autenticado"""
     with client:
-        client.post("/login", json={"email": usuario.email, "password": "testpass123"})
+        client.post("/inicio_sesion", json={"email": usuario.correo, "password": "testpass123"})
         yield client

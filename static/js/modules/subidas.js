@@ -1,8 +1,5 @@
-
-// uploads.js - Lógica de subida de archivos
-
-import { formatearTamano, obtenerConfiguracionIcono } from './utils.js';
-import { guardarNotificacion } from './ui.js';
+import { formatearTamano, obtenerConfiguracionIcono } from './utilidades.js';
+import { guardarNotificacion } from './interfaz.js';
 
 let filesQueue = [];
 
@@ -71,6 +68,14 @@ export function initUploads() {
 }
 
 function manejarArchivos(files) {
+    // Verificar si el usuario está autenticado
+    const isAuthenticated = document.body.getAttribute('data-authenticated') === 'true';
+
+    if (!isAuthenticated) {
+        guardarNotificacion('Debes iniciar sesión para subir archivos.', 'error');
+        return;
+    }
+
     ([...files]).forEach(file => agregarACola(file));
     actualizarVisibilidad();
 }

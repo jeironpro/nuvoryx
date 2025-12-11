@@ -1,0 +1,228 @@
+.seccion-contenido {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: var(--glass-border);
+    border-radius: 24px;
+    padding: 0;
+    box-shadow: var(--glass-shadow);
+    overflow: hidden;
+    margin-bottom: 40px;
+}
+
+.encabezado-seccion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    gap: 16px;
+    flex-wrap: wrap;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.titulo-seccion {
+    flex: 1;
+}
+
+.titulo-seccion h3 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.titulo-seccion p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.barra-busqueda {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--btn-secondary-border);
+    border-radius: 20px;
+    padding: 8px 16px;
+    background-color: #ffffff;
+    width: 320px;
+    gap: 8px;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+.barra-busqueda:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px #f4ebff;
+}
+
+.barra-busqueda input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+}
+
+.barra-filtros {
+    display: none;
+}
+
+.anadir-filtro {
+    background-color: #ffffff;
+    border: 1px dashed var(--border-color);
+    color: #344054;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.panel-desplegable {
+    position: absolute;
+    top: 56px;
+    right: 0;
+    width: 280px;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(234, 236, 240, 0.8);
+    border-radius: 16px;
+    box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+    padding: 8px;
+    z-index: 1000;
+    animation: slideDownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top right;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.opcion-panel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: 14px;
+    color: #344054;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.opcion-panel:hover {
+    background-color: #f2f4f7;
+    color: #101828;
+    transform: translateX(2px);
+}
+
+.separador-panel {
+    height: 1px;
+    background-color: #eaecf0;
+    margin: 8px 0;
+}
+
+.texto-peligro {
+    color: #d92d20;
+}
+
+.texto-peligro:hover {
+    background-color: #fef3f2;
+}
+
+.info-panel-usuario {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+}
+
+.nombre-usuario-panel {
+    font-weight: 600;
+    color: #101828;
+    font-size: 14px;
+}
+
+.email-usuario-panel {
+    color: #667085;
+    font-size: 12px;
+}
+
+.label-input {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #344054;
+    margin-bottom: 6px;
+    margin-top: 12px;
+}
+
+.input-modal {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.input-modal:focus {
+    border-color: var(--primary-color);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+}
+
+select.anadir-filtro {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='%23667085'%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+}

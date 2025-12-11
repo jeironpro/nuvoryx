@@ -1,7 +1,4 @@
-
-// files.js - Operaciones con archivos/carpetas (Crear, Eliminar, Masivo)
-
-import { guardarNotificacion } from './ui.js';
+import { guardarNotificacion } from './interfaz.js';
 
 let idParaEliminar = null;
 let esEliminacionCarpeta = false;
@@ -37,21 +34,21 @@ function setupCreateFolder() {
         newBtn.disabled = true;
 
         fetch('/crear-carpeta', { method: 'POST', body: formData })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                guardarNotificacion(`Carpeta "${data.nombre}" creada.`);
-                window.location.reload();
-            } else {
-                alert('Error: ' + data.error);
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    guardarNotificacion(`Carpeta "${data.nombre}" creada.`);
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                    newBtn.disabled = false;
+                    newBtn.textContent = "Crear";
+                }
+            })
+            .catch(err => {
+                console.error(err);
                 newBtn.disabled = false;
-                newBtn.textContent = "Crear";
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            newBtn.disabled = false;
-        });
+            });
     });
 }
 
@@ -111,15 +108,15 @@ function ejecutarEliminacion(btnElement) {
         : `/eliminar/${idParaEliminar}`;
 
     fetch(endpoint, { method: 'DELETE' })
-    .then(res => res.json())
-    .then(data => {
-        guardarNotificacion("Elemento eliminado.");
-        window.location.reload();
-    })
-    .catch(err => {
-        alert("Error al eliminar");
-        window.location.reload();
-    });
+        .then(res => res.json())
+        .then(data => {
+            guardarNotificacion("Elemento eliminado.");
+            window.location.reload();
+        })
+        .catch(err => {
+            alert("Error al eliminar");
+            window.location.reload();
+        });
 }
 
 
@@ -153,50 +150,50 @@ function setupBulkActions() {
     const btnDeleteMass = document.getElementById('btn-eliminar-multiples');
     if (btnDeleteMass) {
         btnDeleteMass.addEventListener('click', () => {
-             const checked = document.querySelectorAll('.checkbox-archivo:checked');
-             if (checked.length === 0) return;
+            const checked = document.querySelectorAll('.checkbox-archivo:checked');
+            if (checked.length === 0) return;
 
-             // Setup Modal for Mass Delete
-             const modal = document.getElementById('modal-eliminar');
-             if (!modal) return;
+            // Setup Modal for Mass Delete
+            const modal = document.getElementById('modal-eliminar');
+            if (!modal) return;
 
-             const fileIds = [];
-             const folderIds = [];
+            const fileIds = [];
+            const folderIds = [];
 
-             checked.forEach(cb => {
-                 const tr = cb.closest('tr');
-                 const id = tr.dataset.id;
-                 if (tr.classList.contains('fila-carpeta')) folderIds.push(id);
-                 else fileIds.push(id);
-             });
+            checked.forEach(cb => {
+                const tr = cb.closest('tr');
+                const id = tr.dataset.id;
+                if (tr.classList.contains('fila-carpeta')) folderIds.push(id);
+                else fileIds.push(id);
+            });
 
-             modal.querySelector('h3').textContent = `¿Eliminar ${checked.length} elementos?`;
-             modal.querySelector('p').textContent = "Se eliminará todo permanentemente.";
-             modal.style.display = 'flex';
+            modal.querySelector('h3').textContent = `¿Eliminar ${checked.length} elementos?`;
+            modal.querySelector('p').textContent = "Se eliminará todo permanentemente.";
+            modal.style.display = 'flex';
 
-             const btnConfirm = document.getElementById('btn-confirmar-modal');
-             const newBtn = btnConfirm.cloneNode(true);
-             btnConfirm.parentNode.replaceChild(newBtn, btnConfirm);
+            const btnConfirm = document.getElementById('btn-confirmar-modal');
+            const newBtn = btnConfirm.cloneNode(true);
+            btnConfirm.parentNode.replaceChild(newBtn, btnConfirm);
 
-             newBtn.textContent = "Eliminar Todo";
-             newBtn.disabled = false;
+            newBtn.textContent = "Eliminar Todo";
+            newBtn.disabled = false;
 
-             newBtn.addEventListener('click', () => {
-                 newBtn.textContent = "Procesando...";
-                 newBtn.disabled = true;
+            newBtn.addEventListener('click', () => {
+                newBtn.textContent = "Procesando...";
+                newBtn.disabled = true;
 
-                 fetch('/eliminar-multiples', {
-                     method: 'POST',
-                     headers: {'Content-Type': 'application/json'},
-                     body: JSON.stringify({ ids: fileIds, carpetas_ids: folderIds })
-                 })
-                 .then(res => res.json())
-                 .then(d => {
-                     guardarNotificacion(`${d.deleted} elementos eliminados.`);
-                     window.location.reload();
-                 })
-                 .catch(() => window.location.reload());
-             });
+                fetch('/eliminar-multiples', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: fileIds, carpetas_ids: folderIds })
+                })
+                    .then(res => res.json())
+                    .then(d => {
+                        guardarNotificacion(`${d.deleted} elementos eliminados.`);
+                        window.location.reload();
+                    })
+                    .catch(() => window.location.reload());
+            });
         });
     }
 
@@ -215,17 +212,17 @@ function setupBulkActions() {
 
             fetch('/descargar-zip', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ids})
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids })
             })
-            .then(res => res.ok ? res.blob() : Promise.reject())
-            .then(blob => {
-                 const u = window.URL.createObjectURL(blob);
-                 const a = document.createElement('a');
-                 a.href = u; a.download = 'archivos.zip';
-                 document.body.appendChild(a); a.click(); a.remove();
-            })
-            .catch(() => alert("Error descarga"));
+                .then(res => res.ok ? res.blob() : Promise.reject())
+                .then(blob => {
+                    const u = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = u; a.download = 'archivos.zip';
+                    document.body.appendChild(a); a.click(); a.remove();
+                })
+                .catch(() => alert("Error descarga"));
         });
     }
 }

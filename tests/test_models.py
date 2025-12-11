@@ -8,23 +8,23 @@ from models import Archivo, Carpeta, Usuario, db
 def test_crear_usuario(app):
     """Test crear usuario"""
     with app.app_context():
-        user = Usuario(nombre="John Doe", email="john@example.com")
-        user.set_password("password123")
+        user = Usuario(nombre="John Doe", correo="john@example.com")
+        user.codificar_contrasena("password123")
         db.session.add(user)
         db.session.commit()
 
         assert user.id is not None
         assert user.nombre == "John Doe"
-        assert user.email == "john@example.com"
-        assert user.password_hash is not None
+        assert user.correo == "john@example.com"
+        assert user.contrasena_hash is not None
 
 
-def test_verificar_password(app, usuario):
+def test_verificar_contrasena(app, usuario):
     """Test verificación de contraseña"""
     with app.app_context():
         user = Usuario.query.get(usuario.id)
-        assert user.check_password("testpass123") is True
-        assert user.check_password("wrongpass") is False
+        assert user.verificar_contrasena("testpass123") is True
+        assert user.verificar_contrasena("wrongpass") is False
 
 
 def test_crear_carpeta(app, usuario):

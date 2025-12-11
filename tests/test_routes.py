@@ -1,5 +1,5 @@
 """
-Tests para rutas de la aplicación
+    Tests para rutas de la aplicación
 """
 
 from models import Carpeta, Usuario, db
@@ -37,8 +37,8 @@ def test_acceso_carpeta_otro_usuario(auth_client, app):
     """Test acceso a carpeta de otro usuario (debe fallar)"""
     with app.app_context():
         # Crear otro usuario
-        other_user = Usuario(nombre="Other User", email="other2@example.com")
-        other_user.set_password("password123")
+        other_user = Usuario(nombre="Other User", correo="other2@example.com")
+        other_user.codificar_contrasena("password123")
         db.session.add(other_user)
         db.session.commit()
         other_user_id = other_user.id

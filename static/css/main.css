@@ -1,18 +1,16 @@
-/* Nuvoryx - Main CSS Entry Point */
-
 /* Base */
 @import url('base/variables.css');
-@import url('base/reset.css');
+@import url('base/globales.css');
 
 /* Layout */
-@import url('layout/container.css');
-@import url('layout/stats.css');
-@import url('layout/upload-area.css');
+@import url('layout/contenedores.css');
+@import url('layout/estadisticas.css');
+@import url('layout/area_subida.css');
 
 /* Components */
-@import url('components/navbar.css');
-@import url('components/buttons.css');
-@import url('components/panels.css');
-@import url('components/modals.css');
-@import url('components/table.css');
-@import url('components/floating-bar.css');
+@import url('components/barra_navegacion.css');
+@import url('components/botones.css');
+@import url('components/paneles.css');
+@import url('components/modales.css');
+@import url('components/tabla.css');
+@import url('components/barra_flotante.css');

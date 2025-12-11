@@ -1,28 +1,28 @@
-/* Page Header */
 .encabezado-pagina {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
 }
 
 .contenido-encabezado h1 {
-  font-size: 30px;
-  font-weight: 600;
-  margin-bottom: 4px;
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 4px;
 }
 
 .contenido-encabezado p {
-  color: var(--text-secondary);
-  font-size: 16px;
+    color: var(--text-secondary);
+    font-size: 16px;
 }
 
 .acciones-encabezado {
-  display: flex;
-  gap: 12px;
+    display: flex;
+    gap: 12px;
 }
 
-.btn-secundario, .btn-primario {
+.btn-secundario,
+.btn-primario {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -39,7 +39,7 @@
     background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid var(--btn-secondary-border);
     color: var(--btn-secondary-text);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn-secundario:hover {

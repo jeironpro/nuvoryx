@@ -1,6 +1,4 @@
-// auth.js - Manejo de autenticación (Login, Registro, Logout)
-
-import { guardarNotificacion } from './ui.js';
+import { guardarNotificacion } from './interfaz.js';
 
 export function initAuth() {
     setupLogin();
@@ -28,9 +26,9 @@ function setupLogin() {
         errorEl.style.display = 'none';
 
         try {
-            const response = await fetch('/login', {
+            const response = await fetch('/inicio_sesion', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
 
@@ -81,9 +79,9 @@ function setupRegister() {
         errorEl.style.display = 'none';
 
         try {
-            const response = await fetch('/register', {
+            const response = await fetch('/registro', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nombre, email, password })
             });
 
@@ -113,9 +111,9 @@ function setupLogout() {
 
     btnLogout.addEventListener('click', async () => {
         try {
-            const response = await fetch('/logout', {
+            const response = await fetch('/cerrar_sesion', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'}
+                headers: { 'Content-Type': 'application/json' }
             });
 
             if (response.ok) {

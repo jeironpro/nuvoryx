@@ -1,7 +1,3 @@
-// filters.js - Filtrado y búsqueda de archivos
-
-import { actualizarEstadisticas } from './stats.js';
-
 export function initFilters() {
     setupSearch();
     setupTypeFilter();
@@ -54,7 +50,4 @@ function filtrarTabla(searchQuery, tipoFiltro) {
             fila.style.display = 'none';
         }
     });
-
-    // Actualizar estadísticas después de filtrar
-    actualizarEstadisticas();
 }

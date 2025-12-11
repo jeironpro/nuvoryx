@@ -1,0 +1,87 @@
+{% if estadisticas_globales %}
+<section class="estadisticas-dashboard">
+    <div class="tarjeta-estadistica">
+        <div class="icono-estadistica" style="background-color: #ecfdf3; color: #027a48">
+            <span class="material-symbols-outlined">folder</span>
+        </div>
+        <div class="info-estadistica">
+            <p class="titulo-estadistica">Carpetas totales</p>
+            <p class="valor-estadistica">
+                {{ estadisticas_globales.total_carpetas }}
+            </p>
+        </div>
+    </div>
+    <div class="tarjeta-estadistica">
+        <div class="icono-estadistica" style="background-color: #fef3f2; color: #b42318">
+            <span class="material-symbols-outlined">description</span>
+        </div>
+        <div class="info-estadistica">
+            <p class="titulo-estadistica">Archivos totales</p>
+            <p class="valor-estadistica">
+                {{ estadisticas_globales.total_archivos }}
+            </p>
+        </div>
+    </div>
+    <div class="tarjeta-estadistica">
+        <div class="icono-estadistica icono-almacenamiento">
+            <span class="material-symbols-outlined">database</span>
+        </div>
+        <div class="info-estadistica">
+            <p class="titulo-estadistica">Espacio Usado</p>
+            <p class="valor-estadistica">{{ estadisticas_globales.espacio_usado }}</p>
+        </div>
+    </div>
+    <div class="tarjeta-estadistica">
+        <div class="icono-estadistica" style="background-color: #f4ebff; color: #6941c6">
+            <span class="material-symbols-outlined">category</span>
+        </div>
+        <div class="info-estadistica">
+            <p class="titulo-estadistica">Tipo más común</p>
+            <p class="valor-estadistica">{{ estadisticas_globales.tipo_comun }}</p>
+        </div>
+    </div>
+</section>
+{% else %}
+<section class="estadisticas-dashboard">
+    <div class="tarjeta-estadistica">
+        <div class="icono-estadistica" style="background-color: #ecfdf3; color: #027a48">
+            <span class="material-symbols-outlined">folder</span>
+        </div>
+        <div class="info-estadistica">
+            <p class="titulo-estadistica">Carpetas</p>
+            <p class="valor-estadistica">
+                {{ estadisticas_carpeta.total_carpetas }}
+            </p>
+        </div>
+    </div>
+    <div class="tarjeta-estadistica">
+        <div class="icono-estadistica" style="background-color: #fef3f2; color: #b42318">
+            <span class="material-symbols-outlined">description</span>
+        </div>
+        <div class="info-estadistica">
+            <p class="titulo-estadistica">Archivos</p>
+            <p class="valor-estadistica">
+                {{ estadisticas_carpeta.total_archivos }}
+            </p>
+        </div>
+    </div>
+    <div class="tarjeta-estadistica">
+        <div class="icono-estadistica icono-almacenamiento">
+            <span class="material-symbols-outlined">database</span>
+        </div>
+        <div class="info-estadistica">
+            <p class="titulo-estadistica">Espacio Usado</p>
+            <p class="valor-estadistica">{{ estadisticas_carpeta.espacio_usado }}</p>
+        </div>
+    </div>
+    <div class="tarjeta-estadistica">
+        <div class="icono-estadistica" style="background-color: #f4ebff; color: #6941c6">
+            <span class="material-symbols-outlined">category</span>
+        </div>
+        <div class="info-estadistica">
+            <p class="titulo-estadistica">Tipo más común</p>
+            <p class="valor-estadistica">{{ estadisticas_carpeta.tipo_comun }}</p>
+        </div>
+    </div>
+</section>
+{% endif %}

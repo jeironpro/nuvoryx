@@ -1,0 +1,43 @@
+<section class="area-subida" id="zona-arrastre" data-carpeta-actual="{{ carpeta_actual.id if carpeta_actual else '' }}">
+    <input type="file" id="input-archivo" multiple webkitdirectory directory hidden />
+    <div class="contenido-subida">
+        <div class="icono-subida">
+            <span class="material-symbols-outlined">cloud_upload</span>
+        </div>
+        <p>
+            <span class="texto-enlace">Haga clic para subir</span> o arrastre y
+            suelte
+        </p>
+        <p class="sub-texto">Tamaño máximo de archivo 500 MB.</p>
+    </div>
+
+    <div class="cola-archivos"></div>
+    <div id="acciones-cola" style="display: none; margin-top: 16px; text-align: right">
+        <button class="btn-primario" id="btn-subir-todo" style="background-color: #7f56d9">
+            Iniciar subida
+        </button>
+    </div>
+</section>
+
+<div id="contenedor-progreso"></div>
+
+<template id="template-progreso">
+    <div class="item-progreso-subida">
+        <div class="icono-progreso">
+            <span class="material-symbols-outlined">description</span>
+        </div>
+        <div class="detalles-progreso">
+            <div class="info-progreso">
+                <span class="nombre-archivo"></span>
+                <span class="tamano-archivo"></span>
+            </div>
+            <div class="contenedor-barra-progreso">
+                <div class="barra-progreso" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="estado-progreso">0%</div>
+        <button class="btn-cerrar">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+</template>

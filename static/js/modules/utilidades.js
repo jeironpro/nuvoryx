@@ -1,6 +1,3 @@
-
-// utils.js - Funciones de utilidad pura
-
 export function formatearTamano(bytes) {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
