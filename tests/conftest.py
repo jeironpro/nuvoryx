@@ -30,6 +30,7 @@ def app():
     with test_app.app_context():
         db.create_all()
         yield test_app
+        db.session.rollback()
         db.session.remove()
         db.drop_all()
 

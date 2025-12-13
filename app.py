@@ -14,15 +14,13 @@ def create_app(config_class=Config):
     mail.init_app(app)
     login_manager.init_app(app)
 
-    # Configure Login Manager
     login_manager.login_view = "main.index"
 
     @login_manager.user_loader
     def cargar_usuario(usuario_id):
         return Usuario.query.get(int(usuario_id))
 
-    # Register blueprints
-    # Register blueprints
+    # Blueprints
     from blueprints.archivos import files_bp
     from blueprints.autenticacion import auth_bp
     from blueprints.principal import main_bp
@@ -39,10 +37,6 @@ def create_app(config_class=Config):
     @app.errorhandler(403)
     def forbidden(e):
         return render_template("403.html"), 403
-
-    # Create tables
-    with app.app_context():
-        db.create_all()
 
     return app
 

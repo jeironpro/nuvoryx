@@ -175,7 +175,7 @@ def obtener_estadisticas_carpeta(id_carpeta):
     tipos = {}
 
     def recorrer(id_actual):
-        nonlocal total_carpetas, total_archivos, total_bytes, tipos
+        nonlocal total_carpetas, total_archivos, total_bytes
 
         # Subcarpetas directas
         subcarpetas = Carpeta.query.filter_by(carpeta_padre_id=id_actual).all()
