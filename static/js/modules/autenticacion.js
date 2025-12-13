@@ -1,9 +1,11 @@
 import { guardarNotificacion } from './interfaz.js';
 
-export function initAuth() {
+export function inicializarAutenticacion() {
     setupLogin();
     setupRegister();
     setupLogout();
+    setupChangeEmail();
+    setupChangePassword();
 }
 
 function setupLogin() {
@@ -29,7 +31,7 @@ function setupLogin() {
             const response = await fetch('/inicio_sesion', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ correo: email, contrasena: password }) // Note: local vars still email/password
             });
 
             const data = await response.json();
@@ -82,7 +84,7 @@ function setupRegister() {
             const response = await fetch('/registro', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nombre, email, password })
+                body: JSON.stringify({ nombre, correo: email, contrasena: password })
             });
 
             const data = await response.json();
@@ -124,4 +126,95 @@ function setupLogout() {
             console.error('Error al cerrar sesión:', error);
         }
     });
+}
+
+function setupChangeEmail() {
+    const modal = document.getElementById('modal-cambiar-correo');
+    if (!modal) return;
+
+    const btnConfirm = modal.querySelector('.btn-primario');
+    const inputs = modal.querySelectorAll('input');
+    const newEmailInput = inputs[0];
+    const confirmEmailInput = inputs[1];
+
+    if (btnConfirm) {
+        btnConfirm.addEventListener('click', async () => {
+            const newEmail = newEmailInput.value.trim();
+            const confirmEmail = confirmEmailInput.value.trim();
+
+            if (!newEmail || !confirmEmail) return alert("Completa todos los campos");
+            if (newEmail !== confirmEmail) return alert("Los correos no coinciden");
+
+            btnConfirm.textContent = "Guardando...";
+            btnConfirm.disabled = true;
+
+            try {
+                const res = await fetch('/cambiar_correo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo: newEmail })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    guardarNotificacion("Correo actualizado correctamente");
+                    window.location.reload();
+                } else {
+                    alert(data.error || "Error al actualizar");
+                    btnConfirm.textContent = "Guardar cambios";
+                    btnConfirm.disabled = false;
+                }
+            } catch (err) {
+                alert("Error de red");
+                btnConfirm.textContent = "Guardar cambios";
+                btnConfirm.disabled = false;
+            }
+        });
+    }
+}
+
+function setupChangePassword() {
+    const modal = document.getElementById('modal-cambiar-pass');
+    if (!modal) return;
+
+    const btnConfirm = modal.querySelector('.btn-primario');
+    const inputs = modal.querySelectorAll('input');
+    const newPassInput = inputs[0];
+    const confirmPassInput = inputs[1];
+
+    if (btnConfirm) {
+        btnConfirm.addEventListener('click', async () => {
+            const newPass = newPassInput.value;
+            const confirmPass = confirmPassInput.value;
+
+            if (!newPass || !confirmPass) return alert("Completa todos los campos");
+            if (newPass !== confirmPass) return alert("Las contraseñas no coinciden");
+            if (newPass.length < 6) return alert("La contraseña debe tener al menos 6 caracteres");
+
+            btnConfirm.textContent = "Actualizando...";
+            btnConfirm.disabled = true;
+
+            try {
+                const res = await fetch('/cambiar_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contrasena: newPass })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    guardarNotificacion("Contraseña actualizada");
+                    window.location.reload();
+                } else {
+                    alert(data.error || "Error al actualizar");
+                    btnConfirm.textContent = "Actualizar";
+                    btnConfirm.disabled = false;
+                }
+            } catch (err) {
+                alert("Error de red");
+                btnConfirm.textContent = "Actualizar";
+                btnConfirm.disabled = false;
+            }
+        });
+    }
 }

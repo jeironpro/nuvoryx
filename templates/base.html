@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='icon/nuvoryx.png') }}"
+    />
+    <title>{% block title %}Nuvoryx{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+  </head>
+  <body data-authenticated="{{ 'true' if current_user.is_authenticated else 'false' }}">
+    <div class="bg-decoration"></div>
+
+    {% include 'partials/_barra_cabecera.html' %}
+
+    <main class="contenedor fade-in">
+      {% block content %}{% endblock %}
+    </main>
+
+    {% block floating_elements %}{% endblock %}
+
+    {% block overlays %}
+    {% include 'partials/_modales.html' %}
+    {% include 'partials/_modales_autenticacion.html' %}
+    {% endblock %}
+
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

@@ -2,7 +2,7 @@
 Tests para modelos de base de datos
 """
 
-from models import Archivo, Carpeta, Usuario, db
+from modelos import Archivo, Carpeta, Usuario, db
 
 
 def test_crear_usuario(app):

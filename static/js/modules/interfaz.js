@@ -14,7 +14,7 @@ export function abrirModalEspecifico(idModal) {
 window.abrirModalEspecifico = abrirModalEspecifico;
 
 
-export function initUI() {
+export function inicializarInterfaz() {
     renderBadge();
     setupGlobalModalClosers();
     setupPanels();

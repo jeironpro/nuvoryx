@@ -1,0 +1,174 @@
+/* Grid View Styles */
+.vista-cuadricula .tabla-archivos thead {
+    display: none;
+}
+
+.vista-cuadricula .tabla-archivos tbody {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    padding: 16px;
+}
+
+.vista-cuadricula .fila-archivo {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.vista-cuadricula .fila-archivo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.vista-cuadricula .col-casilla {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+}
+
+.vista-cuadricula .fila-archivo td {
+    display: block;
+    padding: 0;
+    border: none;
+    text-align: center;
+}
+
+.vista-cuadricula .info-archivo {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.vista-cuadricula .icono-archivo {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+}
+
+.vista-cuadricula .texto-archivo {
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vista-cuadricula .texto-archivo .nombre {
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vista-cuadricula .texto-archivo .tamano {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.vista-cuadricula .col-fecha,
+.vista-cuadricula .col-actualizado {
+    display: none !important;
+}
+
+.vista-cuadricula .col-subido-por {
+    display: block !important;
+    margin-top: 8px;
+    width: 100%;
+}
+
+.vista-cuadricula .info-usuario {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.vista-cuadricula .detalles-usuario {
+    width: 100%;
+    align-items: center;
+}
+
+.vista-cuadricula .email-usuario {
+    display: block;
+    max-width: 180px; /* Force constraint */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.75rem;
+}
+
+.vista-cuadricula .avatar-icon {
+    font-size: 24px !important;
+}
+
+.vista-cuadricula .acciones-tabla {
+    opacity: 0;
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    transition: opacity 0.2s;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.vista-cuadricula .fila-archivo:hover .acciones-tabla {
+    opacity: 1;
+}
+
+/* Auth Modal Improvements */
+.modal-contenido {
+    max-width: 480px;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.input-modal {
+    padding: 14px 18px;
+    font-size: 16px;
+    margin-bottom: 0px;
+    border-radius: 12px;
+    border: 1px solid #E4E7EC;
+    background-color: #F9FAFB;
+    transition: all 0.2s;
+}
+
+.input-modal:focus {
+    background-color: #fff;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px #F4EBFF;
+}
+
+.label-input {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #344054;
+    font-size: 14px;
+}
+
+.acciones-modal {
+    margin-top: 32px;
+    gap: 12px;
+}
+
+.btn-primario, .btn-secundario {
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: transform 0.1s ease;
+}
+
+.btn-primario:active, .btn-secundario:active {
+    transform: scale(0.98);
+}

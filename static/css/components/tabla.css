@@ -61,7 +61,7 @@
     background-color: rgba(255, 255, 255, 0.6);
 }
 
-.col-checkbox {
+.col-casilla {
     width: 40px;
 }
 
@@ -207,4 +207,85 @@
 
 .btn-texto:hover {
     color: var(--text-primary);
+}
+
+.btn-crea-carpeta-items {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.icono-20px {
+    font-size: 20px;
+}
+
+.select-limpio {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+}
+
+.margen-izq-8 {
+    margin-left: 8px;
+}
+
+.enlace-carpeta-bloque {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.icon-folder {
+    background-color: #f2f4f7;
+    color: #344054;
+}
+
+.icon-doc {
+    background-color: #e8f1fa;
+    color: #2b579a;
+}
+
+.icon-sheet {
+    background-color: #e6f4ea;
+    color: #217346;
+}
+
+.icon-ppt {
+    background-color: #fce8e6;
+    color: #c43e1c;
+}
+
+.icon-audio {
+    background-color: #fce8e6;
+    color: #d93025;
+}
+
+.icon-zip {
+    background-color: #fef7e0;
+    color: #fbbc04;
+}
+
+.icon-code {
+    background-color: #f1f3f4;
+    color: #5f6368;
+}
+
+.celda-sin-archivos {
+    text-align: center;
+    padding: 24px;
+}
+
+.barra-flotante-oculta {
+    display: none;
+}
+
+.texto-contador {
+    font-weight: 500;
+    font-size: 14px;
+    color: #344054;
+}
+
+.icono-18px {
+    font-size: 18px;
 }

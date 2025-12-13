@@ -1,4 +1,4 @@
-export function initFilters() {
+export function inicializarFiltros() {
     setupSearch();
     setupTypeFilter();
 }

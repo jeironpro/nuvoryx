@@ -5,7 +5,7 @@ Tests para operaciones con archivos y carpetas
 import json
 import os
 
-from models import Archivo, Carpeta, db
+from modelos import Archivo, Carpeta, db
 
 
 def test_crear_carpeta(auth_client, app):

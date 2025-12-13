@@ -2,16 +2,16 @@ import os
 
 from flask import current_app as app
 
-from models import Archivo, Carpeta
+from modelos import Archivo, Carpeta
 
 
 # --- Utilidades ---
-def parsear_tamano(tamano_str):
+def parsear_tamano(cadena_tamano):
     """Parsea 'MB' a 'bytes' (float)"""
-    if not tamano_str:
+    if not cadena_tamano:
         return 0.0
     try:
-        partes = tamano_str.split()
+        partes = cadena_tamano.split()
         if len(partes) < 2:
             return 0.0
 
@@ -40,17 +40,17 @@ def formatear_tamano(valor):
     return f"{valor:.2f} TB"
 
 
-def obtener_tamano_carpeta(carpeta_id):
+def obtener_tamano_carpeta(id_carpeta):
     """Calcula recursivamente el tamaño de una carpeta"""
     total = 0.0
 
     # Archivos directos
-    archivos = Archivo.query.filter_by(carpeta_id=carpeta_id).all()
+    archivos = Archivo.query.filter_by(carpeta_id=id_carpeta).all()
     for archivo in archivos:
         total += parsear_tamano(archivo.tamano)
 
     # Subcarpetas
-    subcarpetas = Carpeta.query.filter_by(carpeta_padre_id=carpeta_id).all()
+    subcarpetas = Carpeta.query.filter_by(carpeta_padre_id=id_carpeta).all()
     for subcarpeta in subcarpetas:
         total += obtener_tamano_carpeta(subcarpeta.id)
 
@@ -118,6 +118,18 @@ def detectar_tipo_archivo(nombre_archivo):
     ):
         return "codigo"
 
+    # Word
+    if any(nombre.endswith(ext) for ext in [".doc", ".docx", ".rtf", ".odt"]):
+        return "word"
+
+    # Excel
+    if any(nombre.endswith(ext) for ext in [".xls", ".xlsx", ".csv", ".ods"]):
+        return "excel"
+
+    # PPT
+    if any(nombre.endswith(ext) for ext in [".ppt", ".pptx", ".odp"]):
+        return "powerpoint"
+
     return "otro"
 
 
@@ -155,25 +167,25 @@ def agregar_carpeta_a_zip(archivo_zip, carpeta_obj, ruta_base=""):
         agregar_carpeta_a_zip(archivo_zip, subcarpeta, ruta_carpeta)
 
 
-def obtener_estadisticas_carpeta(carpeta_id):
+def obtener_estadisticas_carpeta(id_carpeta):
     """Devuelve estadísticas completas de una carpeta incluyendo subcarpetas."""
     total_carpetas = 0
     total_archivos = 0
     total_bytes = 0
     tipos = {}
 
-    def recorrer(carpeta_id):
+    def recorrer(id_actual):
         nonlocal total_carpetas, total_archivos, total_bytes, tipos
 
         # Subcarpetas directas
-        subcarpetas = Carpeta.query.filter_by(carpeta_padre_id=carpeta_id).all()
+        subcarpetas = Carpeta.query.filter_by(carpeta_padre_id=id_actual).all()
         total_carpetas += len(subcarpetas)
 
-        # for sub in subcarpetas:
-        #     recorrer(sub.id)
+        for sub in subcarpetas:
+            recorrer(sub.id)
 
         # Archivos directos
-        archivos = Archivo.query.filter_by(carpeta_id=carpeta_id).all()
+        archivos = Archivo.query.filter_by(carpeta_id=id_actual).all()
         total_archivos += len(archivos)
 
         for a in archivos:
@@ -182,7 +194,7 @@ def obtener_estadisticas_carpeta(carpeta_id):
             tipo = detectar_tipo_archivo(a.nombre_original)
             tipos[tipo] = tipos.get(tipo, 0) + 1
 
-    recorrer(carpeta_id)
+    recorrer(id_carpeta)
 
     tipo_comun = "-"
     if tipos:

@@ -1,9 +1,9 @@
 import { formatearTamano, obtenerConfiguracionIcono } from './utilidades.js';
 import { guardarNotificacion } from './interfaz.js';
 
-let filesQueue = [];
+let colaArchivos = [];
 
-export function initUploads() {
+export function inicializarSubidas() {
     const zonaArrastre = document.getElementById('zona-arrastre');
     const inputArchivo = document.getElementById('input-archivo');
     const btnSubirTodo = document.getElementById('btn-subir-todo');
@@ -54,12 +54,12 @@ export function initUploads() {
             btnSubirTodo.disabled = true;
             btnSubirTodo.textContent = 'Subiendo...';
 
-            const copy = [...filesQueue];
-            for (const item of copy) {
+            const copia = [...colaArchivos];
+            for (const item of copia) {
                 await subirArchivoBackend(item);
             }
 
-            filesQueue = [];
+            colaArchivos = [];
             actualizarVisibilidad();
             btnSubirTodo.textContent = 'Completado';
             setTimeout(() => window.location.reload(), 1000);
@@ -67,7 +67,7 @@ export function initUploads() {
     }
 }
 
-function manejarArchivos(files) {
+function manejarArchivos(archivos) {
     // Verificar si el usuario está autenticado
     const isAuthenticated = document.body.getAttribute('data-authenticated') === 'true';
 
@@ -76,35 +76,40 @@ function manejarArchivos(files) {
         return;
     }
 
-    ([...files]).forEach(file => agregarACola(file));
+    ([...archivos]).forEach(archivo => agregarACola(archivo));
     actualizarVisibilidad();
 }
 
-function agregarACola(file) {
+function agregarACola(archivo) {
     const contenedorProgreso = document.getElementById('contenedor-progreso');
     const template = document.getElementById('template-progreso');
     if (!contenedorProgreso || !template) return;
 
     const id = Math.random().toString(36).substr(2, 9);
-    filesQueue.push({ id, file });
+    colaArchivos.push({
+        id,
+        archivo,
+        rutaRelativa: (archivo.webkitRelativePath && archivo.webkitRelativePath.length > 0) ? archivo.webkitRelativePath : archivo.name
+    });
+
 
     const clone = template.content.cloneNode(true);
     const item = clone.querySelector('.item-progreso-subida');
     item.dataset.colaId = id;
 
     // Content
-    clone.querySelector('.nombre-archivo').textContent = file.name;
-    clone.querySelector('.tamano-archivo').textContent = formatearTamano(file.size);
+    clone.querySelector('.nombre-archivo').textContent = archivo.name;
+    clone.querySelector('.tamano-archivo').textContent = formatearTamano(archivo.size);
 
     // Icon
     const iconoContainer = clone.querySelector('.icono-progreso');
-    const conf = obtenerConfiguracionIcono(file);
+    const conf = obtenerConfiguracionIcono(archivo);
     iconoContainer.innerHTML = conf.svg;
     iconoContainer.className = `icono-progreso ${conf.clase}`;
 
     // Remove btn
     item.querySelector('.btn-cerrar').addEventListener('click', () => {
-        filesQueue = filesQueue.filter(f => f.id !== id);
+        colaArchivos = colaArchivos.filter(f => f.id !== id);
         item.remove();
         actualizarVisibilidad();
     });
@@ -115,7 +120,7 @@ function agregarACola(file) {
 function actualizarVisibilidad() {
     const acciones = document.getElementById('acciones-cola');
     if (acciones) {
-        acciones.style.display = filesQueue.length > 0 ? 'block' : 'none';
+        acciones.style.display = colaArchivos.length > 0 ? 'block' : 'none';
     }
 }
 
@@ -131,12 +136,13 @@ function subirArchivoBackend(itemCola) {
 
         estado.textContent = 'Subiendo...';
 
-        const formData = new FormData();
-        formData.append('archivos', itemCola.file);
+        const datosFormulario = new FormData();
+        datosFormulario.append('archivos', itemCola.archivo);
+        datosFormulario.append('rutas_relativas', itemCola.rutaRelativa);
 
         const zona = document.getElementById('zona-arrastre');
         const cid = zona ? zona.getAttribute('data-carpeta-actual') : null;
-        if (cid) formData.append('carpeta_id', cid);
+        if (cid) datosFormulario.append('carpeta_id', cid);
 
         const xhr = new XMLHttpRequest();
         xhr.open('POST', '/subir', true);
@@ -153,7 +159,7 @@ function subirArchivoBackend(itemCola) {
             if (xhr.status === 200) {
                 barra.style.width = '100%';
                 estado.textContent = 'Completado';
-                guardarNotificacion(`Archivo "${itemCola.file.name}" subido.`);
+                guardarNotificacion(`Archivo "${itemCola.archivo.name}" subido.`);
             } else {
                 estado.textContent = 'Error';
                 itemElement.style.backgroundColor = '#FEF3F2';
@@ -166,6 +172,6 @@ function subirArchivoBackend(itemCola) {
             resolve();
         };
 
-        xhr.send(formData);
+        xhr.send(datosFormulario);
     });
 }

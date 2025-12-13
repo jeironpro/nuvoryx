@@ -1,13 +1,13 @@
-import { initUI } from './modules/interfaz.js';
-import { initUploads } from './modules/subidas.js';
-import { initFiles } from './modules/archivos.js';
-import { initAuth } from './modules/autenticacion.js';
-import { initFilters } from './modules/filtros.js';
+import { inicializarInterfaz } from './modules/interfaz.js';
+import { inicializarSubidas } from './modules/subidas.js';
+import { inicializarArchivos } from './modules/archivos.js';
+import { inicializarAutenticacion } from './modules/autenticacion.js';
+import { inicializarFiltros } from './modules/filtros.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    initUI();
-    initUploads();
-    initFiles();
-    initAuth();
-    initFilters();
+    inicializarInterfaz();
+    inicializarSubidas();
+    inicializarArchivos();
+    inicializarAutenticacion();
+    inicializarFiltros();
 });

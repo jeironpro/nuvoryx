@@ -1,8 +1,8 @@
 """
-    Tests para rutas de la aplicación
+Tests para rutas de la aplicación
 """
 
-from models import Carpeta, Usuario, db
+from modelos import Carpeta, Usuario, db
 
 
 def test_ruta_principal_sin_auth(client):

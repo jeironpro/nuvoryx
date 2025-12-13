@@ -15,14 +15,15 @@ El objetivo es demostrar buenas prácticas de programación, organización y doc
 - 📁 Gestión de carpetas y archivos
 - 🔍 Búsqueda y filtrado de archivos
 - 📊 Estadísticas de uso
-- 🎨 Interfaz moderna con glassmorphism
+- 🎨 Interfaz moderna con glassmorphism y **Modo Oscuro**
 - 🔒 Relaciones de base de datos con integridad referencial
+- 🏗️ Arquitectura modular con Blueprints y Application Factory
 
 ## 🚀 Tecnologías
 
 ### Backend
 
-- **Flask** - Framework web
+- **Flask** - Framework web (Blueprints structure)
 - **SQLAlchemy** - ORM
 - **MySQL** - Base de datos
 - **Flask-Login** - Gestión de sesiones
@@ -30,7 +31,7 @@ El objetivo es demostrar buenas prácticas de programación, organización y doc
 
 ### Frontend
 
-- **HTML5** / **CSS3** (modular)
+- **HTML5** / **CSS3** (modular, variables CSS, dark mode support)
 - **JavaScript** (ES6 Modules)
 - **Material Symbols** - Iconografía
 
@@ -40,7 +41,7 @@ El objetivo es demostrar buenas prácticas de programación, organización y doc
 
 - Python 3.9+
 - MySQL 8.0+
-- Node.js (para validación de JS)
+- Node.js (para validación de JS - opcional)
 
 ### Configuración
 
@@ -71,132 +72,40 @@ mysql -u root -p
 CREATE DATABASE nuvoryx;
 ```
 
+Crea un archivo `.env` basado en el ejemplo o configura las variables de entorno necesarias (`DATABASE_URL`, `SECRET_KEY`, etc.).
+
 5. **Ejecutar aplicación**
 
 ```bash
 python app.py
 ```
 
-La aplicación estará disponible en `http://127.0.0.1:5005`
+La aplicación estará disponible en `http://127.0.0.1:5555`
 
 ## 🛠️ Desarrollo
 
-### Instalar dependencias de desarrollo
-
-```bash
-pip install -e ".[dev]"
-```
-
-### Formatear código
-
-```bash
-./scripts/format.sh
-# O manualmente:
-black .
-isort .
-```
-
-### Ejecutar linters
-
-```bash
-./scripts/lint.sh
-# O manualmente:
-black --check .
-flake8 .
-isort --check-only .
-```
-
-### Pre-commit Hooks
-
-Instalar hooks de pre-commit para verificación automática antes de cada commit:
-
-```bash
-pre-commit install
-
-# Ejecutar manualmente en todos los archivos
-pre-commit run --all-files
-```
-
-**¡IMPORTANTE!** Después de ejecutar `pre-commit install`, **cada vez que hagas `git commit`**:
-
-- ✅ Black formateará automáticamente tu código
-- ✅ isort ordenará los imports
-- ✅ flake8 verificará errores de estilo
-- ✅ Se corregirán trailing whitespace y end of file
-- ✅ **Si algo falla, el commit se cancela** y te muestra qué arreglar
-
-**Ya no necesitas ejecutar manualmente** `black .`, `isort .` o `flake8 .` antes de cada commit. ¡Todo es automático!
-
-Los hooks ejecutarán automáticamente:
-
-- Formateo con black
-- Ordenamiento de imports con isort
-- Linting con flake8
-- Verificaciones de archivos (trailing whitespace, EOF, etc.)
-
-### Estructura del Proyecto
+### Estructura del Proyecto Refactorizada
 
 ```
 nuvoryx/
-├── app.py                 # Aplicación principal
+├── app.py                 # Punto de entrada (Application Factory)
+├── blueprints/            # Módulos de la aplicación
+│   ├── auth.py           # Rutas de autenticación
+│   ├── files.py          # Rutas de gestión de archivos
+│   └── main.py           # Rutas principales
+├── config.py              # Configuraciones (Dev, Test, Prod)
+├── extensions.py          # Inicialización de extensiones (db, mail, login)
 ├── models.py              # Modelos de base de datos
-├── static/
-│   ├── css/
-│   │   ├── main.css      # Punto de entrada CSS
-│   │   ├── base/         # Variables, reset
-│   │   ├── components/   # Componentes UI
-│   │   └── layout/       # Layouts
-│   └── js/
-│       ├── main.js       # Punto de entrada JS
-│       └── modules/      # Módulos ES6
-├── templates/
-│   ├── index.html        # Template principal
-│   └── partials/         # Componentes HTML
-├── tests/                # Tests con pytest
-│   ├── conftest.py       # Fixtures
-│   ├── test_models.py    # Tests de modelos
-│   ├── test_auth.py      # Tests de autenticación
-│   ├── test_files.py     # Tests de archivos
-│   └── test_routes.py    # Tests de rutas
-└── uploads/              # Archivos subidos
+├── static/                # Assets (CSS modificado para Dark Mode)
+├── templates/             # Plantillas Jinja2 (Base template restructure)
+└── tests/                 # Tests actualizados
 ```
 
-## 🧪 Testing
-
-### Ejecutar tests
+### Ejecutar Tests
 
 ```bash
-./scripts/test.sh
-# O manualmente:
 pytest -v
 ```
-
-### Tests con cobertura
-
-```bash
-pytest --cov --cov-report=html
-# Ver reporte: htmlcov/index.html
-```
-
-### Tests específicos
-
-```bash
-# Solo tests de modelos
-pytest tests/test_models.py
-
-# Solo tests de autenticación
-pytest tests/test_auth.py
-
-# Test específico
-pytest tests/test_auth.py::test_login_exitoso
-```
-
-### Estructura de Tests
-
-- **test_models.py** - Tests de modelos (Usuario, Carpeta, Archivo)
-- **test_auth.py** - Tests de autenticación (registro, login, logout)
-- **test_files.py** - Tests de operaciones con archivos/carpetas
-- **test_routes.py** - Tests de rutas y navegación
 
 ## 📜 Licencia
 

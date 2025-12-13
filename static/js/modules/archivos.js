@@ -3,11 +3,141 @@ import { guardarNotificacion } from './interfaz.js';
 let idParaEliminar = null;
 let esEliminacionCarpeta = false;
 
-export function initFiles() {
+export function inicializarArchivos() {
     setupCreateFolder();
     setupDeleteActions();
     setupBulkActions();
     setupSorting();
+    setupSorting();
+    setupViewToggle();
+    configurarVistaPrevia();
+}
+
+function configurarVistaPrevia() {
+    // Delegación para clicks en filas o nombres
+    document.addEventListener('click', (e) => {
+        // Ignorar si clic en checkbox o botones
+        if (e.target.closest('.casilla-archivo') || e.target.closest('.acciones-tabla')) return;
+
+        const tr = e.target.closest('tr.fila-archivo');
+        if (!tr || tr.classList.contains('fila-carpeta')) return;
+
+        // Si es archivo
+        e.preventDefault();
+
+        // Obtener datos
+        const id = tr.getAttribute('data-id') || tr.querySelector('.btn-eliminar-trigger').dataset.id;
+        const nombre = tr.querySelector('.nombre').textContent.trim();
+        const tipoRow = tr.getAttribute('data-tipo');
+
+        abrirPrevisualizacion(id, nombre, tipoRow);
+    });
+}
+
+function abrirPrevisualizacion(id, nombre, tipo) {
+    const modal = document.getElementById('modal-previsualizacion');
+    if (!modal) return;
+
+    const title = document.getElementById('titulo-previsualizacion');
+    const content = document.getElementById('contenido-previsualizacion');
+    const btnDown = document.getElementById('btn-descargar-prev');
+
+    title.textContent = nombre;
+    content.innerHTML = '<div style="text-align:center;">Cargando...</div>';
+    btnDown.href = `/descargar/${id}`;
+
+    modal.style.display = 'flex';
+
+    // Lógica visualización
+    if (tipo === 'imagen') {
+        const img = document.createElement('img');
+        img.src = `/descargar/${id}?inline=true`;
+        img.style.maxWidth = '100%';
+        img.style.maxHeight = '100%';
+        img.style.objectFit = 'contain';
+        content.innerHTML = '';
+        content.appendChild(img);
+    } else if (tipo === 'pdf') {
+        const iframe = document.createElement('iframe');
+        iframe.src = `/descargar/${id}?inline=true`;
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        content.innerHTML = '';
+        content.appendChild(iframe);
+    } else if (tipo === 'video') {
+         const video = document.createElement('video');
+         video.src = `/descargar/${id}?inline=true`;
+         video.controls = true;
+         video.style.maxWidth = '100%';
+         video.style.maxHeight = '100%';
+         content.innerHTML = '';
+         content.appendChild(video);
+    } else if (tipo === 'audio') {
+         const audio = document.createElement('audio');
+         audio.src = `/descargar/${id}?inline=true`;
+         audio.controls = true;
+         content.innerHTML = '';
+         content.appendChild(audio);
+    } else if (tipo === 'codigo' || tipo === 'documento' || tipo === 'otro' || tipo === 'word' || tipo === 'excel' || tipo === 'powerpoint' || tipo === 'archivo') {
+        // Texto plano intento leerlo
+        if (tipo === 'codigo' || nombre.endsWith('.txt') || nombre.endsWith('.md') || nombre.endsWith('.json') || nombre.endsWith('.py') || nombre.endsWith('.js') || nombre.endsWith('.css') || nombre.endsWith('.html')) {
+             fetch(`/descargar/${id}?inline=true`)
+                .then(r => r.text())
+                .then(text => {
+                    content.innerHTML = `<pre class="pre-code-block">${escaparHtml(text)}</pre>`;
+                })
+                .catch(e => {
+                     mostrarFallback(content, tipo);
+                });
+        } else {
+             mostrarFallback(content, tipo);
+        }
+    } else {
+        mostrarFallback(content, tipo);
+    }
+}
+
+function mostrarFallback(container, tipo) {
+    let iconName = 'draft';
+    let color = '#ccc';
+
+    if(tipo === 'word') { iconName = 'description'; color = '#2b579a'; }
+    else if(tipo === 'excel') { iconName = 'table_chart'; color = '#217346'; }
+    else if(tipo === 'powerpoint') { iconName = 'slideshow'; color = '#c43e1c'; }
+    else if(tipo === 'archivo') { iconName = 'folder_zip'; color = '#fbbc04'; }
+
+    container.innerHTML = `<div class="fallback-container">
+        <span class="material-symbols-outlined fallback-icon" style="color: ${color};">${iconName}</span>
+        <p class="fallback-title">Vista previa no disponible para este formato.</p>
+        <p class="fallback-subtitle">Por favor descarga el archivo para verlo.</p>
+    </div>`;
+}
+
+function escaparHtml(text) {
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+function setupViewToggle() {
+    const btnToggle = document.getElementById('btn-cambiar-vista');
+    const tableContainer = document.querySelector('.tabla-archivos').parentNode;
+    const icon = btnToggle ? btnToggle.querySelector('span') : null;
+
+    if (!btnToggle || !tableContainer) return;
+
+    // Load saved pref
+    const savedView = localStorage.getItem('modoVista');
+    if (savedView === 'cuadricula') {
+        tableContainer.classList.add('vista-cuadricula');
+        if(icon) icon.textContent = 'list';
+    }
+
+    btnToggle.addEventListener('click', () => {
+        const isGrid = tableContainer.classList.toggle('vista-cuadricula');
+        localStorage.setItem('modoVista', isGrid ? 'cuadricula' : 'lista');
+        if(icon) icon.textContent = isGrid ? 'list' : 'grid_view';
+    });
 }
 
 function setupCreateFolder() {
@@ -126,14 +256,14 @@ function setupBulkActions() {
 
     if (checkAll) {
         checkAll.addEventListener('change', () => {
-            document.querySelectorAll('.checkbox-archivo').forEach(c => c.checked = checkAll.checked);
+            document.querySelectorAll('.casilla-archivo').forEach(c => c.checked = checkAll.checked);
             updateBarra();
         });
     }
 
     // Delegacion change checkboxes
     document.addEventListener('change', (e) => {
-        if (e.target.classList.contains('checkbox-archivo')) {
+        if (e.target.classList.contains('casilla-archivo')) {
             updateBarra();
         }
     });
@@ -142,7 +272,7 @@ function setupBulkActions() {
     if (btnCloseBar) {
         btnCloseBar.addEventListener('click', () => {
             if (checkAll) checkAll.checked = false;
-            document.querySelectorAll('.checkbox-archivo').forEach(c => c.checked = false);
+            document.querySelectorAll('.casilla-archivo').forEach(c => c.checked = false);
             updateBarra();
         });
     }
@@ -150,7 +280,7 @@ function setupBulkActions() {
     const btnDeleteMass = document.getElementById('btn-eliminar-multiples');
     if (btnDeleteMass) {
         btnDeleteMass.addEventListener('click', () => {
-            const checked = document.querySelectorAll('.checkbox-archivo:checked');
+            const checked = document.querySelectorAll('.casilla-archivo:checked');
             if (checked.length === 0) return;
 
             // Setup Modal for Mass Delete
@@ -201,7 +331,7 @@ function setupBulkActions() {
     const btnDownload = document.getElementById('btn-descargar-multiples');
     if (btnDownload) {
         btnDownload.addEventListener('click', () => {
-            const checked = document.querySelectorAll('.checkbox-archivo:checked');
+            const checked = document.querySelectorAll('.casilla-archivo:checked');
             const ids = [];
             checked.forEach(cb => {
                 const tr = cb.closest('tr');
@@ -228,7 +358,7 @@ function setupBulkActions() {
 }
 
 function updateBarra() {
-    const c = document.querySelectorAll('.checkbox-archivo:checked').length;
+    const c = document.querySelectorAll('.casilla-archivo:checked').length;
     const bar = document.getElementById('barra-acciones-masivas');
     const lbl = document.getElementById('contador-seleccionados');
     if (lbl) lbl.textContent = `${c} seleccionados`;
@@ -292,7 +422,7 @@ function ordenarTabla(orden) {
     if (filas.length === 0) {
         const filaVacia = document.createElement('tr');
         filaVacia.id = 'fila-sin-archivos';
-        filaVacia.innerHTML = '<td colspan="6" style="text-align: center; padding: 24px">No hay archivos subidos.</td>';
+        filaVacia.innerHTML = '<td colspan="6" class="celda-sin-archivos">No hay archivos subidos.</td>';
         tbody.appendChild(filaVacia);
     }
 }

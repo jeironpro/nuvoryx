@@ -27,3 +27,139 @@
     border: 1px solid rgba(255, 255, 255, 0.5);
     animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+.modal-oculto {
+    display: none;
+}
+
+.icono-modal-notificaciones {
+    color: #6941c6;
+    background-color: #f9f5ff;
+    border-color: #f4ebff;
+}
+
+.lista-notificaciones-container {
+    max-height: 200px;
+    overflow-y: auto;
+    text-align: left;
+    margin-bottom: 24px;
+}
+
+.texto-sin-notificaciones {
+    text-align: center !important;
+    color: #98a2b3;
+}
+
+.btn-limpiar-notif {
+    background-color: #6941c6;
+}
+
+.icono-modal-correo {
+    color: #027a48;
+    background-color: #ecfdf3;
+    border-color: #d1fadf;
+}
+
+.contenedor-inputs-modal {
+    text-align: left;
+    margin-bottom: 24px;
+}
+
+.icono-modal-pass {
+    color: #027a48;
+    background-color: #ecfdf3;
+    border-color: #d1fadf;
+}
+
+.icono-modal-carpeta {
+    color: #6941C6;
+    background-color: #F9F5FF;
+    border-color: #F4EBFF;
+}
+
+.modal-contenido-fullscreen {
+    max-width: nonebox;
+    max-width: none;
+    width: 95%;
+    height: 95vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header-preview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.titulo-preview {
+    margin: 0;
+    font-size: 18px;
+}
+
+.btn-cerrar-preview {
+    border: none;
+    background: transparent;
+    width: auto;
+    height: auto;
+}
+
+.contenido-preview-body {
+    flex: 1;
+    overflow: auto;
+    background: #f9fafb;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.footer-preview {
+    margin-top: 16px;
+    justify-content: flex-end;
+}
+
+.icono-descargar-preview {
+    font-size: 18px;
+    margin-right: 8px;
+}
+
+.fallback-container {
+    text-align: center;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.fallback-icon {
+    font-size: 96px;
+    margin-bottom: 24px;
+}
+
+.fallback-title {
+    font-size: 18px;
+    color: #555;
+    margin: 0 0 8px 0;
+}
+
+.fallback-subtitle {
+    color: #888;
+    margin: 0;
+}
+
+.pre-code-block {
+    padding: 16px;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    white-space: pre-wrap;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: none;
+    text-align: left;
+}

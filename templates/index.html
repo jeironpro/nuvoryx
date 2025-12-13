@@ -1,29 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="icon"
-      href="{{ url_for('static', filename='icon/nuvoryx.png') }}"
-    />
-    <title>Nuvoryx</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/main.css') }}"
-    />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      rel="stylesheet"
-    />
-  </head>
-  <body data-authenticated="{{ 'true' if current_user.is_authenticated else 'false' }}">
-    <div class="bg-decoration"></div>
+{% extends "base.html" %}
 
-    {% include 'partials/_barra_cabecera.html' %}
-
-    <main class="contenedor fade-in">
+{% block content %}
       <header class="encabezado-pagina">
         <div class="contenido-encabezado">
           <h1>Gestión de Archivos</h1>
@@ -38,50 +15,7 @@
       {% include 'partials/_ruta_navegacion.html' %}
       {% include 'partials/_area_subida.html' %}
       {% include 'partials/_tabla_archivo.html' %}
-    </main>
+{% endblock %}
 
-    <!-- Barra de Acciones Masivas -->
-    <div
-      id="barra-acciones-masivas"
-      class="barra-flotante"
-      style="display: none"
-    >
-      <div class="contenido-barra-flotante">
-        <span
-          id="contador-seleccionados"
-          style="font-weight: 500; font-size: 14px; color: #344054"
-          >0 archivos seleccionados</span
-        >
-        <div class="acciones-flotantes">
-          <button id="btn-descargar-multiples" class="btn-secundario btn-sm">
-            <span class="material-symbols-outlined" style="font-size: 18px"
-              >folder_zip</span
-            >
-            Descargar
-          </button>
-          <div
-            style="width: 1px; height: 24px; background-color: #d0d5dd"
-          ></div>
-          <button
-            id="btn-eliminar-multiples"
-            class="btn-primario btn-peligro btn-sm"
-          >
-            <span class="material-symbols-outlined" style="font-size: 18px"
-              >delete</span
-            >
-            Eliminar
-          </button>
-        </div>
-        <button id="btn-cerrar-barra" class="btn-cerrar-flotante">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-    </div>
-
-    {% include 'partials/_modales.html' %}
-    {% include 'partials/_modales_autenticacion.html' %}
-
-    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
-
-  </body>
-</html>
+{% block floating_elements %}
+{% endblock %}

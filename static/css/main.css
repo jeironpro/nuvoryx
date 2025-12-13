@@ -9,8 +9,34 @@
 
 /* Components */
 @import url('components/barra_navegacion.css');
-@import url('components/botones.css');
+@import url('./components/custom_grid.css');
+
+.contenedor-error {
+    text-align: center;
+    padding: 4rem 1rem;
+}
+
+.icono-error {
+    font-size: 64px;
+    color: var(--color-danger, #ef4444);
+}
+
+.icono-error-warning {
+    color: var(--color-warning, #f59e0b);
+}
+
+.titulo-error {
+    margin: 1rem 0;
+}
+
+.btn-volver {
+    margin-top: 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 @import url('components/paneles.css');
 @import url('components/modales.css');
 @import url('components/tabla.css');
 @import url('components/barra_flotante.css');
+@import url('components/cuadricula.css');

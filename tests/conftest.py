@@ -2,108 +2,38 @@
 Fixtures compartidas para tests
 """
 
+import shutil
 import tempfile
 
 import pytest
-from flask import Flask
-from flask_login import LoginManager
 
-from models import Archivo, Carpeta, Usuario, db
+from app import create_app
+from configuracion import TestConfig
+from extensiones import db
+from modelos import Archivo, Carpeta, Usuario
 
 
 @pytest.fixture(scope="function")
 def app():
-    """Fixture de aplicación Flask para testing - crea una app completamente nueva"""
-    # Obtener el directorio raíz del proyecto
-    import pathlib
-
-    project_root = pathlib.Path(__file__).parent.parent
-
-    # Crear una nueva instancia de Flask para tests con rutas correctas
-    test_app = Flask(
-        __name__,
-        template_folder=str(project_root / "templates"),
-        static_folder=str(project_root / "static"),
-    )
-
-    # Configurar SOLO para testing (NO usa la config de producción)
-    test_app.config["TESTING"] = True
-    test_app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-    test_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    test_app.config["WTF_CSRF_ENABLED"] = False
-    test_app.config["SECRET_KEY"] = "test-secret-key-only-for-testing"
-    test_app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024
-
+    """Fixture de aplicación Flask para testing"""
     # Crear directorio temporal para uploads
     temp_dir = tempfile.mkdtemp()
-    test_app.config["UPLOAD_FOLDER"] = temp_dir
 
-    # Inicializar extensiones
-    db.init_app(test_app)
+    # Configuración de prueba con directorio temporal
+    class TestCaseConfig(TestConfig):
+        UPLOAD_FOLDER = temp_dir
 
-    # Configurar Flask-Login
-    login_manager = LoginManager()
-    login_manager.init_app(test_app)
-    login_manager.login_view = "root"
+    # Crear app
+    test_app = create_app(TestCaseConfig)
 
-    @login_manager.user_loader
-    def load_user(user_id):
-        return Usuario.query.get(int(user_id))
-
-    # Importar y registrar rutas DENTRO del contexto de la app de test
+    # Contexto de aplicación y BD
     with test_app.app_context():
-        # Importar las rutas aquí para que usen esta app
-        from app import (
-            cerrar_sesion,
-            crear_carpeta,
-            descargar_archivo,
-            descargar_carpeta,
-            descargar_zip,
-            eliminar_archivo,
-            eliminar_carpeta_route,
-            eliminar_multiples,
-            index,
-            inicio_sesion,
-            registro,
-            subir_archivo,
-        )
-
-        # Registrar rutas
-        test_app.add_url_rule("/", "index", index, methods=["GET"])
-        test_app.add_url_rule("/crear-carpeta", "crear_carpeta", crear_carpeta, methods=["POST"])
-        test_app.add_url_rule("/subir", "subir_archivo", subir_archivo, methods=["POST"])
-        test_app.add_url_rule("/eliminar/<int:archivo_id>", "eliminar_archivo", eliminar_archivo, methods=["DELETE"])
-        test_app.add_url_rule(
-            "/eliminar-carpeta/<int:carpeta_id>",
-            "eliminar_carpeta",
-            eliminar_carpeta_route,
-            methods=["DELETE"],
-        )
-        test_app.add_url_rule("/eliminar-multiples", "eliminar_multiples", eliminar_multiples, methods=["POST"])
-        test_app.add_url_rule("/descargar-zip", "descargar_zip", descargar_zip, methods=["POST"])
-        test_app.add_url_rule(
-            "/descargar-carpeta/<int:carpeta_id>",
-            "descargar_carpeta",
-            descargar_carpeta,
-            methods=["GET"],
-        )
-        test_app.add_url_rule("/descargar/<int:archivo_id>", "descargar_archivo", descargar_archivo, methods=["GET"])
-        test_app.add_url_rule("/registro", "registro", registro, methods=["POST"])
-        test_app.add_url_rule("/inicio_sesion", "inicio_sesion", inicio_sesion, methods=["POST"])
-        test_app.add_url_rule("/cerrar_sesion", "cerrar_sesion", cerrar_sesion, methods=["POST"])
-
-        # Crear tablas en SQLite en memoria
         db.create_all()
-
         yield test_app
-
-        # Limpiar
         db.session.remove()
         db.drop_all()
 
     # Limpiar directorio temporal
-    import shutil
-
     shutil.rmtree(temp_dir, ignore_errors=True)
 
 
@@ -121,24 +51,22 @@ def runner(app):
 
 @pytest.fixture
 def usuario(app):
-    """Fixture de usuario de prueba - retorna el objeto dentro del contexto"""
+    """Fixture de usuario de prueba"""
     with app.app_context():
-        user = Usuario(nombre="Test User", correo="test@example.com")
+        user = Usuario(nombre="Test User", correo="test@example.com", activo=True)
         user.codificar_contrasena("testpass123")
         db.session.add(user)
         db.session.commit()
-        # Refrescar para asegurar que los datos están cargados
-        db.session.refresh(user)
-        user_id = user.id
-        user_email = user.correo
 
-    # Crear un objeto simple con los datos necesarios
-    class UserData:
-        def __init__(self, id, correo):
-            self.id = id
-            self.correo = correo
+        # Guardar datos básicos para retornar
+        user_data = UserData(user.id, user.correo)
+        return user_data
 
-    return UserData(user_id, user_email)
+
+class UserData:
+    def __init__(self, id, correo):
+        self.id = id
+        self.correo = correo
 
 
 @pytest.fixture
@@ -148,13 +76,12 @@ def carpeta(app, usuario):
         folder = Carpeta(nombre="Test Folder", usuario_id=usuario.id)
         db.session.add(folder)
         db.session.commit()
-        folder_id = folder.id
+        return FolderData(folder.id)
 
-    class FolderData:
-        def __init__(self, id):
-            self.id = id
 
-    return FolderData(folder_id)
+class FolderData:
+    def __init__(self, id):
+        self.id = id
 
 
 @pytest.fixture
@@ -170,18 +97,17 @@ def archivo(app, usuario):
         )
         db.session.add(file)
         db.session.commit()
-        file_id = file.id
+        return FileData(file.id)
 
-    class FileData:
-        def __init__(self, id):
-            self.id = id
 
-    return FileData(file_id)
+class FileData:
+    def __init__(self, id):
+        self.id = id
 
 
 @pytest.fixture
 def auth_client(client, usuario):
     """Cliente autenticado"""
     with client:
-        client.post("/inicio_sesion", json={"email": usuario.correo, "password": "testpass123"})
+        client.post("/inicio_sesion", json={"correo": usuario.correo, "contrasena": "testpass123"})
         yield client

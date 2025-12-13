@@ -1,5 +1,5 @@
 <!-- Modal de Confirmación Eliminación -->
-<div id="modal-eliminar" class="modal-overlay" style="display: none">
+<div id="modal-eliminar" class="modal-overlay modal-oculto">
     <div class="modal-contenido">
         <span class="material-symbols-outlined icono-modal">warning</span>
         <h3>¿Eliminar archivo?</h3>
@@ -19,21 +19,12 @@
 </div>
 
 <!-- Modal de Notificaciones -->
-<div id="modal-notificaciones" class="modal-overlay" style="display: none">
+<div id="modal-notificaciones" class="modal-overlay modal-oculto">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal" style="
-            color: #6941c6;
-            background-color: #f9f5ff;
-            border-color: #f4ebff;
-          ">notifications</span>
+        <span class="material-symbols-outlined icono-modal icono-modal-notificaciones">notifications</span>
         <h3>Notificaciones</h3>
-        <div id="lista-notificaciones" style="
-            max-height: 200px;
-            overflow-y: auto;
-            text-align: left;
-            margin-bottom: 24px;
-          ">
-            <p style="text-align: center; color: #98a2b3">
+        <div id="lista-notificaciones" class="lista-notificaciones-container">
+            <p class="texto-sin-notificaciones">
                 No tienes notificaciones nuevas.
             </p>
         </div>
@@ -41,7 +32,7 @@
             <button id="btn-cerrar-notificaciones" class="btn-secundario">
                 Cerrar
             </button>
-            <button id="btn-limpiar-notificaciones" class="btn-primario" style="background-color: #6941c6">
+            <button id="btn-limpiar-notificaciones" class="btn-primario btn-limpiar-notif">
                 Limpiar
             </button>
         </div>
@@ -49,16 +40,12 @@
 </div>
 
 <!-- Modal Cambiar Correo -->
-<div id="modal-cambiar-correo" class="modal-overlay" style="display: none">
+<div id="modal-cambiar-correo" class="modal-overlay modal-oculto">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal" style="
-            color: #027a48;
-            background-color: #ecfdf3;
-            border-color: #d1fadf;
-          ">mail</span>
+        <span class="material-symbols-outlined icono-modal icono-modal-correo">mail</span>
         <h3>Cambiar Correo</h3>
         <p>Introduce tu nueva dirección de correo electrónico.</p>
-        <div style="text-align: left; margin-bottom: 24px">
+        <div class="contenedor-inputs-modal">
             <label class="label-input">Nuevo Correo</label>
             <input type="email" class="input-modal" />
             <label class="label-input">Confirmar Correo</label>
@@ -72,16 +59,12 @@
 </div>
 
 <!-- Modal Cambiar Contraseña -->
-<div id="modal-cambiar-pass" class="modal-overlay" style="display: none">
+<div id="modal-cambiar-pass" class="modal-overlay modal-oculto">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal" style="
-            color: #027a48;
-            background-color: #ecfdf3;
-            border-color: #d1fadf;
-          ">lock</span>
+        <span class="material-symbols-outlined icono-modal icono-modal-pass">lock</span>
         <h3>Cambiar Contraseña</h3>
         <p>Asegúrate de usar una contraseña segura.</p>
-        <div style="text-align: left; margin-bottom: 24px">
+        <div class="contenedor-inputs-modal">
             <label class="label-input">Nueva Contraseña</label>
             <input type="password" class="input-modal" />
             <label class="label-input">Confirmar Contraseña</label>
@@ -95,7 +78,7 @@
 </div>
 
 <!-- Modal Eliminar Cuenta -->
-<div id="modal-eliminar-cuenta" class="modal-overlay" style="display: none">
+<div id="modal-eliminar-cuenta" class="modal-overlay modal-oculto">
     <div class="modal-contenido">
         <span class="material-symbols-outlined icono-modal">warning</span>
         <h3>¿Eliminar cuenta?</h3>
@@ -111,13 +94,12 @@
 </div>
 
 <!-- Modal Crear Carpeta -->
-<div id="modal-crear-carpeta" class="modal-overlay" style="display: none">
+<div id="modal-crear-carpeta" class="modal-overlay modal-oculto">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal"
-            style="color: #6941C6; background-color: #F9F5FF; border-color: #F4EBFF;">create_new_folder</span>
+        <span class="material-symbols-outlined icono-modal icono-modal-carpeta">create_new_folder</span>
         <h3>Nueva Carpeta</h3>
         <p>Introduce el nombre de la nueva carpeta.</p>
-        <div style="text-align: left; margin-bottom: 24px">
+        <div class="contenedor-inputs-modal">
             <label class="label-input">Nombre</label>
             <input type="text" id="input-nombre-carpeta" class="input-modal" placeholder="Ej. Documentos" />
         </div>
@@ -127,4 +109,25 @@
         </div>
     </div>
 </div>
+</div>
+
+<!-- Modal Previsualización -->
+<div id="modal-previsualizacion" class="modal-overlay modal-oculto">
+    <div class="modal-contenido modal-contenido-fullscreen">
+        <div class="header-preview">
+            <h3 id="titulo-previsualizacion" class="titulo-preview">Archivo</h3>
+            <button class="btn-icono btn-cerrar-modal btn-cerrar-preview">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div id="contenido-previsualizacion" class="contenido-preview-body">
+            <!-- Contenido dinámico -->
+        </div>
+        <div class="acciones-modal footer-preview">
+            <a id="btn-descargar-prev" href="#" class="btn-primario">
+                <span class="material-symbols-outlined icono-descargar-preview">download</span>
+                Descargar
+            </a>
+        </div>
+    </div>
 </div>
