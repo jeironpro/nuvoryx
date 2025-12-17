@@ -22,8 +22,7 @@ def app():
     # Configuración de prueba con directorio temporal
     class ConfiguracionPruebas(ConfiguracionTest):
         CARPETA_SUBIDAS = directorio_temporal
-        MAIL_SUPPRESS_SEND = True
-        MAIL_DEFAULT_SENDER = "test@nuvoryx.com"
+        REMITENTE_POR_DEFECTO_CORREO = "test@nuvoryx.com"
 
     # Crear app
     app_prueba = crear_app(ConfiguracionPruebas)
