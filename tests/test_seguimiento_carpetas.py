@@ -1,7 +1,6 @@
 import time
-from datetime import datetime
 
-from models import Archivo, Carpeta, db
+from models import Carpeta, db
 
 
 def test_seguimiento_actualizacion_carpeta(cliente_autenticado, app, usuario):
@@ -50,7 +49,6 @@ def test_visualizacion_tabla_carpetas(cliente_autenticado, app, usuario):
         carpeta_obj = Carpeta(nombre="Carpeta de Visualización", usuario_id=usuario.id)
         db.session.add(carpeta_obj)
         db.session.commit()
-        folder_id = carpeta_obj.id
 
     respuesta = cliente_autenticado.get("/")
     assert respuesta.status_code == 200

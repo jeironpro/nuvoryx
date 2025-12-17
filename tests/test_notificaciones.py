@@ -1,7 +1,3 @@
-import json
-
-import pytest
-
 from extensiones import db
 from models import Notificacion, Usuario
 
