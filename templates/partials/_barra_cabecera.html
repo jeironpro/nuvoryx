@@ -19,7 +19,7 @@
                 <button class="opcion-panel" onclick="abrirModalEspecifico('modal-cambiar-correo')">
                     <span class="material-symbols-outlined">mail</span> Cambiar Correo
                 </button>
-                <button class="opcion-panel" onclick="abrirModalEspecifico('modal-cambiar-pass')">
+                <button class="opcion-panel" onclick="abrirModalEspecifico('modal-cambiar-contrasena')">
                     <span class="material-symbols-outlined">lock</span> Cambiar
                     Contraseña
                 </button>
@@ -33,7 +33,7 @@
 
         <button class="btn-icono" id="btn-notificaciones" style="position: relative">
             <span class="material-symbols-outlined">notifications</span>
-            <span id="badge-notificaciones" class="badge-notificacion" style="display: none"></span>
+            <span id="indicador-notificaciones" class="badge-notificacion" style="display: none"></span>
         </button>
         {% endif %}
         <div style="position: relative">
@@ -53,12 +53,12 @@
                     </div>
                 </div>
                 <div class="separador-panel"></div>
-                <button class="opcion-panel texto-peligro" id="btn-logout">
+                <button class="opcion-panel texto-peligro" id="btn-cierre-sesion">
                     <span class="material-symbols-outlined">logout</span> Cerrar Sesión
                 </button>
                 {% else %}
                 <!-- Usuario NO autenticado -->
-                <button class="opcion-panel" onclick="abrirModalEspecifico('modal-login')">
+                <button class="opcion-panel" onclick="abrirModalEspecifico('modal-inicio-sesion')">
                     <span class="material-symbols-outlined">login</span> Iniciar Sesión
                 </button>
                 <button class="opcion-panel" onclick="abrirModalEspecifico('modal-registro')">

@@ -1,53 +1,53 @@
 export function inicializarFiltros() {
-    setupSearch();
-    setupTypeFilter();
+    configurarBusqueda();
+    configurarFiltroTipo();
 }
 
-function setupSearch() {
-    const inputBusqueda = document.getElementById('input-busqueda');
-    if (!inputBusqueda) return;
+function configurarBusqueda() {
+    const entradaBusqueda = document.getElementById('entrada-busqueda');
+    if (!entradaBusqueda) return;
 
-    inputBusqueda.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase();
-        filtrarTabla(query, null);
+    entradaBusqueda.addEventListener('input', (e) => {
+        const consulta = e.target.value.toLowerCase();
+        filtrarTabla(consulta, null);
     });
 }
 
-function setupTypeFilter() {
-    const selectTipo = document.getElementById('filtro-tipo');
-    if (!selectTipo) return;
+function configurarFiltroTipo() {
+    const selectorTipo = document.getElementById('filtro-tipo');
+    if (!selectorTipo) return;
 
-    selectTipo.addEventListener('change', (e) => {
+    selectorTipo.addEventListener('change', (e) => {
         const tipo = e.target.value;
         filtrarTabla(null, tipo);
     });
 }
 
-function filtrarTabla(searchQuery, tipoFiltro) {
+function filtrarTabla(consultaBusqueda, tipoFiltro) {
     const filas = document.querySelectorAll('.fila-archivo');
-    const inputBusqueda = document.getElementById('input-busqueda');
-    const selectTipo = document.getElementById('filtro-tipo');
+    const entradaBusqueda = document.getElementById('entrada-busqueda');
+    const selectorTipo = document.getElementById('filtro-tipo');
 
     // Obtener valores actuales si no se pasaron
-    const query = searchQuery !== null ? searchQuery : (inputBusqueda ? inputBusqueda.value.toLowerCase() : '');
-    const tipo = tipoFiltro !== null ? tipoFiltro : (selectTipo ? selectTipo.value : 'todos');
+    const consulta = consultaBusqueda !== null ? consultaBusqueda : (entradaBusqueda ? entradaBusqueda.value.toLowerCase() : '');
+    const tipo = tipoFiltro !== null ? tipoFiltro : (selectorTipo ? selectorTipo.value : 'todos');
 
-    filas.forEach(fila => {
-        const nombreElem = fila.querySelector('.nombre');
-        const nombre = nombreElem ? nombreElem.textContent.toLowerCase() : '';
-        const tipoArchivo = fila.dataset.tipo || 'carpeta';
+    filas.forEach(filaEnc => {
+        const elemNombre = filaEnc.querySelector('.nombre');
+        const nombre = elemNombre ? elemNombre.textContent.toLowerCase() : '';
+        const tipoArchivo = filaEnc.dataset.tipo || 'carpeta';
 
         // Filtro de búsqueda
-        const matchSearch = nombre.includes(query);
+        const coincideBusqueda = nombre.includes(consulta);
 
         // Filtro de tipo
-        const matchType = tipo === 'todos' || tipoArchivo === tipo;
+        const coincideTipo = tipo === 'todos' || tipoArchivo === tipo;
 
         // Mostrar/ocultar fila
-        if (matchSearch && matchType) {
-            fila.style.display = '';
+        if (coincideBusqueda && coincideTipo) {
+            filaEnc.style.display = '';
         } else {
-            fila.style.display = 'none';
+            filaEnc.style.display = 'none';
         }
     });
 }

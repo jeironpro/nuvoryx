@@ -1,124 +1,127 @@
 import { guardarNotificacion } from './interfaz.js';
 
 export function inicializarAutenticacion() {
-    setupLogin();
-    setupRegister();
-    setupLogout();
-    setupChangeEmail();
-    setupChangePassword();
+    configurarInicioSesion();
+    configurarRegistro();
+    configurarCierreSesion();
+    configurarCambioCorreo();
+    configurarCambioContrasena();
+    configurarOlvidoContrasena();
+    configurarRestablecerContrasena();
+    verificarTokenRestablecimiento();
 }
 
-function setupLogin() {
-    const btnLogin = document.getElementById('btn-confirmar-login');
-    if (!btnLogin) return;
+function configurarInicioSesion() {
+    const btnInicioSesion = document.getElementById('btn-confirmar-inicio-sesion');
+    if (!btnInicioSesion) return;
 
-    btnLogin.addEventListener('click', async () => {
-        const email = document.getElementById('input-login-email').value.trim();
-        const password = document.getElementById('input-login-password').value;
-        const errorEl = document.getElementById('error-login');
+    btnInicioSesion.addEventListener('click', async () => {
+        const correo = document.getElementById('entrada-inicio-sesion-correo').value.trim();
+        const contrasena = document.getElementById('entrada-inicio-sesion-contrasena').value;
+        const elError = document.getElementById('error-inicio-sesion');
 
-        if (!email || !password) {
-            errorEl.textContent = 'Por favor completa todos los campos';
-            errorEl.style.display = 'block';
+        if (!correo || !contrasena) {
+            elError.textContent = 'Por favor completa todos los campos';
+            elError.style.display = 'block';
             return;
         }
 
-        btnLogin.textContent = 'Iniciando...';
-        btnLogin.disabled = true;
-        errorEl.style.display = 'none';
+        btnInicioSesion.textContent = 'Iniciando...';
+        btnInicioSesion.disabled = true;
+        elError.style.display = 'none';
 
         try {
-            const response = await fetch('/inicio_sesion', {
+            const respuesta = await fetch('/inicio_sesion', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ correo: email, contrasena: password }) // Note: local vars still email/password
+                body: JSON.stringify({ correo, contrasena })
             });
 
-            const data = await response.json();
+            const datos = await respuesta.json();
 
-            if (response.ok && data.success) {
-                guardarNotificacion(`Bienvenido, ${data.usuario.nombre}!`);
+            if (respuesta.ok && datos.success) {
+                guardarNotificacion(`¡Bienvenido, ${datos.usuario.nombre}!`);
                 window.location.reload();
             } else {
-                errorEl.textContent = data.error || 'Error al iniciar sesión';
-                errorEl.style.display = 'block';
-                btnLogin.textContent = 'Iniciar Sesión';
-                btnLogin.disabled = false;
+                elError.textContent = datos.error || 'Error al iniciar sesión';
+                elError.style.display = 'block';
+                btnInicioSesion.textContent = 'Iniciar Sesión';
+                btnInicioSesion.disabled = false;
             }
         } catch (error) {
-            errorEl.textContent = 'Error de conexión';
-            errorEl.style.display = 'block';
-            btnLogin.textContent = 'Iniciar Sesión';
-            btnLogin.disabled = false;
+            elError.textContent = 'Error de conexión';
+            elError.style.display = 'block';
+            btnInicioSesion.textContent = 'Iniciar Sesión';
+            btnInicioSesion.disabled = false;
         }
     });
 }
 
-function setupRegister() {
-    const btnRegister = document.getElementById('btn-confirmar-registro');
-    if (!btnRegister) return;
+function configurarRegistro() {
+    const btnRegistro = document.getElementById('btn-confirmar-registro');
+    if (!btnRegistro) return;
 
-    btnRegister.addEventListener('click', async () => {
-        const nombre = document.getElementById('input-registro-nombre').value.trim();
-        const email = document.getElementById('input-registro-email').value.trim();
-        const password = document.getElementById('input-registro-password').value;
-        const errorEl = document.getElementById('error-registro');
+    btnRegistro.addEventListener('click', async () => {
+        const nombre = document.getElementById('entrada-registro-nombre').value.trim();
+        const correo = document.getElementById('entrada-registro-correo').value.trim();
+        const contrasena = document.getElementById('entrada-registro-contrasena').value;
+        const elError = document.getElementById('error-registro');
 
-        if (!nombre || !email || !password) {
-            errorEl.textContent = 'Por favor completa todos los campos';
-            errorEl.style.display = 'block';
+        if (!nombre || !correo || !contrasena) {
+            elError.textContent = 'Por favor completa todos los campos';
+            elError.style.display = 'block';
             return;
         }
 
-        if (password.length < 6) {
-            errorEl.textContent = 'La contraseña debe tener al menos 6 caracteres';
-            errorEl.style.display = 'block';
+        if (contrasena.length < 6) {
+            elError.textContent = 'La contraseña debe tener al menos 6 caracteres';
+            elError.style.display = 'block';
             return;
         }
 
-        btnRegister.textContent = 'Creando cuenta...';
-        btnRegister.disabled = true;
-        errorEl.style.display = 'none';
+        btnRegistro.textContent = 'Creando cuenta...';
+        btnRegistro.disabled = true;
+        elError.style.display = 'none';
 
         try {
-            const response = await fetch('/registro', {
+            const respuesta = await fetch('/registro', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nombre, correo: email, contrasena: password })
+                body: JSON.stringify({ nombre, correo, contrasena })
             });
 
-            const data = await response.json();
+            const datos = await respuesta.json();
 
-            if (response.ok && data.success) {
-                guardarNotificacion(`Cuenta creada! Bienvenido, ${data.usuario.nombre}!`);
+            if (respuesta.ok && datos.success) {
+                guardarNotificacion(`¡Cuenta creada! ¡Bienvenido, ${datos.usuario.nombre}!`);
                 window.location.reload();
             } else {
-                errorEl.textContent = data.error || 'Error al crear cuenta';
-                errorEl.style.display = 'block';
-                btnRegister.textContent = 'Crear Cuenta';
-                btnRegister.disabled = false;
+                elError.textContent = datos.error || 'Error al crear cuenta';
+                elError.style.display = 'block';
+                btnRegistro.textContent = 'Crear Cuenta';
+                btnRegistro.disabled = false;
             }
         } catch (error) {
-            errorEl.textContent = 'Error de conexión';
-            errorEl.style.display = 'block';
-            btnRegister.textContent = 'Crear Cuenta';
-            btnRegister.disabled = false;
+            elError.textContent = 'Error de conexión';
+            elError.style.display = 'block';
+            btnRegistro.textContent = 'Crear Cuenta';
+            btnRegistro.disabled = false;
         }
     });
 }
 
-function setupLogout() {
-    const btnLogout = document.getElementById('btn-logout');
-    if (!btnLogout) return;
+function configurarCierreSesion() {
+    const btnCierreSesion = document.getElementById('btn-cierre-sesion');
+    if (!btnCierreSesion) return;
 
-    btnLogout.addEventListener('click', async () => {
+    btnCierreSesion.addEventListener('click', async () => {
         try {
-            const response = await fetch('/cerrar_sesion', {
+            const respuesta = await fetch('/cerrar_sesion', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
 
-            if (response.ok) {
+            if (respuesta.ok) {
                 guardarNotificacion('Sesión cerrada');
                 window.location.reload();
             }
@@ -128,93 +131,195 @@ function setupLogout() {
     });
 }
 
-function setupChangeEmail() {
+function configurarCambioCorreo() {
     const modal = document.getElementById('modal-cambiar-correo');
     if (!modal) return;
 
-    const btnConfirm = modal.querySelector('.btn-primario');
-    const inputs = modal.querySelectorAll('input');
-    const newEmailInput = inputs[0];
-    const confirmEmailInput = inputs[1];
+    const btnConfirmar = modal.querySelector('.btn-primario');
+    const entradas = modal.querySelectorAll('input');
+    const entradaNuevoCorreo = entradas[0];
+    const entradaConfirmarCorreo = entradas[1];
 
-    if (btnConfirm) {
-        btnConfirm.addEventListener('click', async () => {
-            const newEmail = newEmailInput.value.trim();
-            const confirmEmail = confirmEmailInput.value.trim();
+    if (btnConfirmar) {
+        btnConfirmar.addEventListener('click', async () => {
+            const nuevoCorreo = entradaNuevoCorreo.value.trim();
+            const confirmarCorreo = entradaConfirmarCorreo.value.trim();
 
-            if (!newEmail || !confirmEmail) return alert("Completa todos los campos");
-            if (newEmail !== confirmEmail) return alert("Los correos no coinciden");
+            if (!nuevoCorreo || !confirmarCorreo) return alert("Completa todos los campos");
+            if (nuevoCorreo !== confirmarCorreo) return alert("Los correos no coinciden");
 
-            btnConfirm.textContent = "Guardando...";
-            btnConfirm.disabled = true;
+            btnConfirmar.textContent = "Guardando...";
+            btnConfirmar.disabled = true;
 
             try {
-                const res = await fetch('/cambiar_correo', {
+                const resp = await fetch('/cambiar_correo', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo: newEmail })
+                    body: JSON.stringify({ correo: nuevoCorreo })
                 });
 
-                const data = await res.json();
-                if (data.success) {
+                const datos = await resp.json();
+                if (datos.success) {
                     guardarNotificacion("Correo actualizado correctamente");
                     window.location.reload();
                 } else {
-                    alert(data.error || "Error al actualizar");
-                    btnConfirm.textContent = "Guardar cambios";
-                    btnConfirm.disabled = false;
+                    alert(datos.error || "Error al actualizar");
+                    btnConfirmar.textContent = "Guardar cambios";
+                    btnConfirmar.disabled = false;
                 }
             } catch (err) {
                 alert("Error de red");
-                btnConfirm.textContent = "Guardar cambios";
-                btnConfirm.disabled = false;
+                btnConfirmar.textContent = "Guardar cambios";
+                btnConfirmar.disabled = false;
             }
         });
     }
 }
 
-function setupChangePassword() {
-    const modal = document.getElementById('modal-cambiar-pass');
+function configurarCambioContrasena() {
+    const modal = document.getElementById('modal-cambiar-contrasena');
     if (!modal) return;
 
-    const btnConfirm = modal.querySelector('.btn-primario');
-    const inputs = modal.querySelectorAll('input');
-    const newPassInput = inputs[0];
-    const confirmPassInput = inputs[1];
+    const btnConfirmar = modal.querySelector('.btn-primario');
+    const entradas = modal.querySelectorAll('input');
+    const entradaNuevaContrasena = entradas[0];
+    const entradaConfirmarContrasena = entradas[1];
 
-    if (btnConfirm) {
-        btnConfirm.addEventListener('click', async () => {
-            const newPass = newPassInput.value;
-            const confirmPass = confirmPassInput.value;
+    if (btnConfirmar) {
+        btnConfirmar.addEventListener('click', async () => {
+            const nuevaContrasena = entradaNuevaContrasena.value;
+            const confirmarContrasena = entradaConfirmarContrasena.value;
 
-            if (!newPass || !confirmPass) return alert("Completa todos los campos");
-            if (newPass !== confirmPass) return alert("Las contraseñas no coinciden");
-            if (newPass.length < 6) return alert("La contraseña debe tener al menos 6 caracteres");
+            if (!nuevaContrasena || !confirmarContrasena) return alert("Completa todos los campos");
+            if (nuevaContrasena !== confirmarContrasena) return alert("Las contraseñas no coinciden");
+            if (nuevaContrasena.length < 6) return alert("La contraseña debe tener al menos 6 caracteres");
 
-            btnConfirm.textContent = "Actualizando...";
-            btnConfirm.disabled = true;
+            btnConfirmar.textContent = "Actualizando...";
+            btnConfirmar.disabled = true;
 
             try {
-                const res = await fetch('/cambiar_password', {
+                const resp = await fetch('/cambiar_password', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contrasena: newPass })
+                    body: JSON.stringify({ contrasena: nuevaContrasena })
                 });
 
-                const data = await res.json();
-                if (data.success) {
+                const datos = await resp.json();
+                if (datos.success) {
                     guardarNotificacion("Contraseña actualizada");
                     window.location.reload();
                 } else {
-                    alert(data.error || "Error al actualizar");
-                    btnConfirm.textContent = "Actualizar";
-                    btnConfirm.disabled = false;
+                    alert(datos.error || "Error al actualizar");
+                    btnConfirmar.textContent = "Actualizar";
+                    btnConfirmar.disabled = false;
                 }
             } catch (err) {
                 alert("Error de red");
-                btnConfirm.textContent = "Actualizar";
-                btnConfirm.disabled = false;
+                btnConfirmar.textContent = "Actualizar";
+                btnConfirmar.disabled = false;
             }
         });
+    }
+}
+
+function configurarOlvidoContrasena() {
+    const enlace = document.getElementById('enlace-olvido-contrasena');
+    const modal = document.getElementById('modal-olvido-contrasena');
+    const btnEnviar = document.getElementById('btn-confirmar-olvido');
+
+    if (enlace && modal) {
+        enlace.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('modal-inicio-sesion').style.display = 'none';
+            modal.style.display = 'flex';
+        });
+    }
+
+    if (btnEnviar) {
+        btnEnviar.addEventListener('click', async () => {
+            const correo = document.getElementById('entrada-olvido-correo').value.trim();
+            const elError = document.getElementById('error-olvido');
+            const elExito = document.getElementById('exito-olvido');
+
+            if (!correo) return alert("Introduce tu correo electrónico");
+
+            btnEnviar.textContent = "Enviando...";
+            btnEnviar.disabled = true;
+            elError.style.display = 'none';
+
+            try {
+                const resp = await fetch('/olvido_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo })
+                });
+
+                const datos = await resp.json();
+                if (datos.success) {
+                    elExito.textContent = datos.mensaje;
+                    elExito.style.display = 'block';
+                    btnEnviar.style.display = 'none';
+                } else {
+                    elError.textContent = datos.error;
+                    elError.style.display = 'block';
+                    btnEnviar.textContent = "Enviar Enlace";
+                    btnEnviar.disabled = false;
+                }
+            } catch (err) {
+                alert("Error de red");
+                btnEnviar.disabled = false;
+            }
+        });
+    }
+}
+
+function configurarRestablecerContrasena() {
+    const btnRestablecer = document.getElementById('btn-confirmar-restablecer');
+    if (!btnRestablecer) return;
+
+    btnRestablecer.addEventListener('click', async () => {
+        const contrasena = document.getElementById('entrada-restablecer-contrasena').value;
+        const confirmar = document.getElementById('entrada-restablecer-confirmar').value;
+        const elError = document.getElementById('error-restablecer');
+
+        const parametrosUrl = new URLSearchParams(window.location.search);
+        const token = parametrosUrl.get('reset_token');
+
+        if (!contrasena || !confirmar) return alert("Completa todos los campos");
+        if (contrasena !== confirmar) return alert("Las contraseñas no coinciden");
+        if (contrasena.length < 6) return alert("Mínimo 6 caracteres");
+
+        btnRestablecer.textContent = "Actualizando...";
+        btnRestablecer.disabled = true;
+
+        try {
+            const resp = await fetch('/restablecer_password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, contrasena })
+            });
+
+            const datos = await resp.json();
+            if (datos.success) {
+                guardarNotificacion(datos.mensaje);
+                window.location.href = '/'; // Limpiar params y cerrar modal
+            } else {
+                elError.textContent = datos.error;
+                elError.style.display = 'block';
+                btnRestablecer.textContent = "Actualizar Contraseña";
+                btnRestablecer.disabled = false;
+            }
+        } catch (err) {
+            alert("Error de red");
+            btnRestablecer.disabled = false;
+        }
+    });
+}
+
+function verificarTokenRestablecimiento() {
+    const parametrosUrl = new URLSearchParams(window.location.search);
+    if (parametrosUrl.has('reset_token')) {
+        const modal = document.getElementById('modal-restablecer-contrasena');
+        if (modal) modal.style.display = 'flex';
     }
 }

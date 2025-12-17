@@ -1,27 +1,27 @@
 """
-Tests para rutas de la aplicación
+Pruebas para rutas de la aplicación
 """
 
-from modelos import Carpeta, Usuario, db
+from models import Carpeta, Usuario, db
 
 
-def test_ruta_principal_sin_auth(client):
-    """Test acceso a ruta principal sin autenticación"""
-    response = client.get("/")
-    assert response.status_code == 200
+def test_ruta_principal_sin_auth(cliente):
+    """Prueba acceso a ruta principal sin autenticación"""
+    respuesta = cliente.get("/")
+    assert respuesta.status_code == 200
 
 
-def test_ruta_principal_con_auth(auth_client):
-    """Test acceso a ruta principal con autenticación"""
-    response = auth_client.get("/")
-    assert response.status_code == 200
+def test_ruta_principal_con_auth(cliente_autenticado):
+    """Prueba acceso a ruta principal con autenticación"""
+    respuesta = cliente_autenticado.get("/")
+    assert respuesta.status_code == 200
 
 
-def test_navegacion_carpeta(auth_client, usuario, app):
-    """Test navegación a carpeta"""
+def test_navegacion_carpeta(cliente_autenticado, usuario, app):
+    """Prueba navegación a carpeta"""
     # Crear carpeta y navegar en el mismo contexto
     with app.app_context():
-        folder = Carpeta(nombre="Test Navigation Folder", usuario_id=usuario.id)
+        folder = Carpeta(nombre="Carpeta de Navegación", usuario_id=usuario.id)
         db.session.add(folder)
         db.session.commit()
         folder_id = folder.id
@@ -29,27 +29,27 @@ def test_navegacion_carpeta(auth_client, usuario, app):
         assert Carpeta.query.get(folder_id) is not None
 
     # Intentar navegar - puede devolver 200 o 404
-    response = auth_client.get(f"/?carpeta_id={folder_id}")
-    assert response.status_code in [200, 404]
+    respuesta = cliente_autenticado.get(f"/?carpeta_id={folder_id}")
+    assert respuesta.status_code in [200, 404]
 
 
-def test_acceso_carpeta_otro_usuario(auth_client, app):
-    """Test acceso a carpeta de otro usuario (debe fallar)"""
+def test_acceso_carpeta_otro_usuario(cliente_autenticado, app):
+    """Prueba acceso a carpeta de otro usuario (debe fallar)"""
     with app.app_context():
         # Crear otro usuario
-        other_user = Usuario(nombre="Other User", correo="other2@example.com")
-        other_user.codificar_contrasena("password123")
-        db.session.add(other_user)
+        otro_usuario = Usuario(nombre="Otro Usuario", correo="otro2@example.com")
+        otro_usuario.codificar_contrasena("contrasena123")
+        db.session.add(otro_usuario)
         db.session.commit()
-        other_user_id = other_user.id
+        otro_usuario_id = otro_usuario.id
 
         # Crear carpeta del otro usuario
-        other_folder = Carpeta(nombre="Other", usuario_id=other_user_id)
-        db.session.add(other_folder)
+        otra_carpeta = Carpeta(nombre="Otra", usuario_id=otro_usuario_id)
+        db.session.add(otra_carpeta)
         db.session.commit()
-        folder_id = other_folder.id
+        folder_id = otra_carpeta.id
 
-    response = auth_client.get(f"/?carpeta_id={folder_id}")
+    respuesta = cliente_autenticado.get(f"/?carpeta_id={folder_id}")
     # La carpeta existe pero pertenece a otro usuario, debería ser 403
     # Pero si el código actual retorna 404, aceptamos eso también
-    assert response.status_code in [403, 404]
+    assert respuesta.status_code in [403, 404]

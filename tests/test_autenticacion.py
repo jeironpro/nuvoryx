@@ -1,80 +1,82 @@
 """
-Tests para autenticación
+Pruebas para autenticación
 """
 
 import json
 from unittest.mock import patch
 
 
-def test_registro_exitoso(client):
-    """Test registro de usuario exitoso"""
+def test_registro_exitoso(cliente):
+    """Prueba registro de usuario exitoso"""
     with patch("blueprints.autenticacion.enviar_correo_confirmacion") as mock_email:
-        response = client.post(
+        respuesta = cliente.post(
             "/registro",
-            json={"nombre": "New User", "correo": "newuser@example.com", "contrasena": "password123"},
+            json={"nombre": "Nuevo Usuario", "correo": "nuevo@example.com", "contrasena": "contrasena123"},
         )
 
-        assert response.status_code == 200
-        data = json.loads(response.data)
-        assert data["success"] is True
-        assert data["usuario"]["nombre"] == "New User"
-        assert data["usuario"]["correo"] == "newuser@example.com"
+        assert respuesta.status_code == 200
+        datos = json.loads(respuesta.data)
+        assert datos["success"] is True
+        assert datos["usuario"]["nombre"] == "Nuevo Usuario"
+        assert datos["usuario"]["correo"] == "nuevo@example.com"
         mock_email.assert_called_once()
 
 
-def test_registro_email_duplicado(client, usuario):
-    """Test registro con email duplicado"""
-    response = client.post(
+def test_registro_email_duplicado(cliente, usuario):
+    """Prueba registro con email duplicado"""
+    respuesta = cliente.post(
         "/registro",
-        json={"nombre": "Another User", "correo": usuario.correo, "contrasena": "password123"},
+        json={"nombre": "Otro Usuario", "correo": usuario.correo, "contrasena": "contrasena123"},
     )
 
-    assert response.status_code == 400
-    data = json.loads(response.data)
-    assert "error" in data
+    assert respuesta.status_code == 400
+    datos = json.loads(respuesta.data)
+    assert "error" in datos
 
 
-def test_registro_password_corto(client):
-    """Test registro con contraseña corta"""
-    response = client.post("/registro", json={"nombre": "User", "correo": "user@example.com", "contrasena": "123"})
+def test_registro_password_corto(cliente):
+    """Prueba registro con contraseña corta"""
+    respuesta = cliente.post(
+        "/registro", json={"nombre": "Usuario", "correo": "usuario@example.com", "contrasena": "123"}
+    )
 
-    assert response.status_code == 400
-    data = json.loads(response.data)
-    assert "error" in data
-
-
-def test_login_exitoso(client, usuario):
-    """Test login exitoso"""
-    response = client.post("/inicio_sesion", json={"correo": usuario.correo, "contrasena": "testpass123"})
-
-    assert response.status_code == 200
-    data = json.loads(response.data)
-    assert data["success"] is True
-    assert data["usuario"]["correo"] == usuario.correo
+    assert respuesta.status_code == 400
+    datos = json.loads(respuesta.data)
+    assert "error" in datos
 
 
-def test_login_password_incorrecta(client, usuario):
-    """Test login con contraseña incorrecta"""
-    response = client.post("/inicio_sesion", json={"correo": usuario.correo, "contrasena": "wrongpassword"})
+def test_login_exitoso(cliente, usuario):
+    """Prueba login exitoso"""
+    respuesta = cliente.post("/inicio_sesion", json={"correo": usuario.correo, "contrasena": "contrasenaprueba123"})
 
-    assert response.status_code == 401
-    data = json.loads(response.data)
-    assert "error" in data
-
-
-def test_login_correo_inexistente(client):
-    """Test login con correo inexistente"""
-    response = client.post("/inicio_sesion", json={"correo": "noexiste@example.com", "contrasena": "password123"})
-
-    assert response.status_code == 401
-    data = json.loads(response.data)
-    assert "error" in data
+    assert respuesta.status_code == 200
+    datos = json.loads(respuesta.data)
+    assert datos["success"] is True
+    assert datos["usuario"]["correo"] == usuario.correo
 
 
-def test_logout(auth_client):
-    """Test logout"""
-    response = auth_client.post("/cerrar_sesion")
+def test_login_password_incorrecta(cliente, usuario):
+    """Prueba login con contraseña incorrecta"""
+    respuesta = cliente.post("/inicio_sesion", json={"correo": usuario.correo, "contrasena": "clave_erronea"})
 
-    assert response.status_code == 200
-    data = json.loads(response.data)
-    assert data["success"] is True
+    assert respuesta.status_code == 401
+    datos = json.loads(respuesta.data)
+    assert "error" in datos
+
+
+def test_login_correo_inexistente(cliente):
+    """Prueba login con correo inexistente"""
+    respuesta = cliente.post("/inicio_sesion", json={"correo": "noexiste@example.com", "contrasena": "contrasena123"})
+
+    assert respuesta.status_code == 401
+    datos = json.loads(respuesta.data)
+    assert "error" in datos
+
+
+def test_logout(cliente_autenticado):
+    """Prueba cierre de sesión"""
+    respuesta = cliente_autenticado.post("/cerrar_sesion")
+
+    assert respuesta.status_code == 200
+    datos = json.loads(respuesta.data)
+    assert datos["success"] is True

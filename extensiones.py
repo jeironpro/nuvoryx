@@ -3,5 +3,5 @@ from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
-login_manager = LoginManager()
+gestor_login = LoginManager()
 mail = Mail()

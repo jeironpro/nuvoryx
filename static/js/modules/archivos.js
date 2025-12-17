@@ -4,12 +4,11 @@ let idParaEliminar = null;
 let esEliminacionCarpeta = false;
 
 export function inicializarArchivos() {
-    setupCreateFolder();
-    setupDeleteActions();
-    setupBulkActions();
-    setupSorting();
-    setupSorting();
-    setupViewToggle();
+    configurarCrearCarpeta();
+    configurarAccionesEliminar();
+    configurarAccionesMasivas();
+    configurarOrdenamiento();
+    configurarCambioVista();
     configurarVistaPrevia();
 }
 
@@ -26,11 +25,11 @@ function configurarVistaPrevia() {
         e.preventDefault();
 
         // Obtener datos
-        const id = tr.getAttribute('data-id') || tr.querySelector('.btn-eliminar-trigger').dataset.id;
+        const id = tr.getAttribute('data-id') || tr.querySelector('.btn-eliminar-disparador').dataset.id;
         const nombre = tr.querySelector('.nombre').textContent.trim();
-        const tipoRow = tr.getAttribute('data-tipo');
+        const tipoFila = tr.getAttribute('data-tipo');
 
-        abrirPrevisualizacion(id, nombre, tipoRow);
+        abrirPrevisualizacion(id, nombre, tipoFila);
     });
 }
 
@@ -38,208 +37,252 @@ function abrirPrevisualizacion(id, nombre, tipo) {
     const modal = document.getElementById('modal-previsualizacion');
     if (!modal) return;
 
-    const title = document.getElementById('titulo-previsualizacion');
-    const content = document.getElementById('contenido-previsualizacion');
-    const btnDown = document.getElementById('btn-descargar-prev');
+    const titulo = document.getElementById('titulo-previsualizacion');
+    const contenido = document.getElementById('contenido-previsualizacion');
+    const btnDescargar = document.getElementById('btn-descargar-prev');
 
-    title.textContent = nombre;
-    content.innerHTML = '<div style="text-align:center;">Cargando...</div>';
-    btnDown.href = `/descargar/${id}`;
+    titulo.textContent = nombre;
+    contenido.innerHTML = '<div class="preview-loading"><span class="material-symbols-outlined spin">sync</span> Cargando vista previa...</div>';
 
+    // Generar URL completa para visores externos si es necesario
+    const urlActual = window.location.origin;
+    const urlArchivo = `${urlActual}/descargar/${id}?inline=true`;
+
+    btnDescargar.href = `/descargar/${id}`;
     modal.style.display = 'flex';
 
-    // Lógica visualización
+    // Lógica de visualización mejorada
     if (tipo === 'imagen') {
         const img = document.createElement('img');
-        img.src = `/descargar/${id}?inline=true`;
-        img.style.maxWidth = '100%';
-        img.style.maxHeight = '100%';
-        img.style.objectFit = 'contain';
-        content.innerHTML = '';
-        content.appendChild(img);
-    } else if (tipo === 'pdf') {
-        const iframe = document.createElement('iframe');
-        iframe.src = `/descargar/${id}?inline=true`;
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
-        iframe.style.border = 'none';
-        content.innerHTML = '';
-        content.appendChild(iframe);
-    } else if (tipo === 'video') {
-         const video = document.createElement('video');
-         video.src = `/descargar/${id}?inline=true`;
-         video.controls = true;
-         video.style.maxWidth = '100%';
-         video.style.maxHeight = '100%';
-         content.innerHTML = '';
-         content.appendChild(video);
-    } else if (tipo === 'audio') {
-         const audio = document.createElement('audio');
-         audio.src = `/descargar/${id}?inline=true`;
-         audio.controls = true;
-         content.innerHTML = '';
-         content.appendChild(audio);
-    } else if (tipo === 'codigo' || tipo === 'documento' || tipo === 'otro' || tipo === 'word' || tipo === 'excel' || tipo === 'powerpoint' || tipo === 'archivo') {
-        // Texto plano intento leerlo
-        if (tipo === 'codigo' || nombre.endsWith('.txt') || nombre.endsWith('.md') || nombre.endsWith('.json') || nombre.endsWith('.py') || nombre.endsWith('.js') || nombre.endsWith('.css') || nombre.endsWith('.html')) {
-             fetch(`/descargar/${id}?inline=true`)
-                .then(r => r.text())
-                .then(text => {
-                    content.innerHTML = `<pre class="pre-code-block">${escaparHtml(text)}</pre>`;
-                })
-                .catch(e => {
-                     mostrarFallback(content, tipo);
-                });
-        } else {
-             mostrarFallback(content, tipo);
-        }
-    } else {
-        mostrarFallback(content, tipo);
+        img.src = urlArchivo;
+        img.className = 'preview-img';
+        contenido.innerHTML = '';
+        contenido.appendChild(img);
+    }
+    else if (tipo === 'pdf') {
+        contenido.innerHTML = `<iframe src="${urlArchivo}" class="preview-iframe"></iframe>`;
+    }
+    else if (tipo === 'video') {
+         contenido.innerHTML = `<video src="${urlArchivo}" controls class="preview-video"></video>`;
+    }
+    else if (tipo === 'audio') {
+         contenido.innerHTML = `<div class="preview-audio-container">
+            <span class="material-symbols-outlined audio-icon">audiotrack</span>
+            <audio src="${urlArchivo}" controls></audio>
+         </div>`;
+    }
+    else if (tipo === 'markdown') {
+        fetch(urlArchivo)
+            .then(r => r.text())
+            .then(texto => {
+                contenido.innerHTML = `<div class="preview-markdown markdown-body">${marked.parse(texto)}</div>`;
+            })
+            .catch(() => mostrarRespaldo(contenido, tipo));
+    }
+    else if (tipo === 'csv') {
+        fetch(urlArchivo)
+            .then(r => r.text())
+            .then(texto => {
+                const filas = texto.split('\n').filter(r => r.trim()).map(r => r.split(','));
+                let html = '<div class="preview-table-container"><table class="preview-table"><thead><tr>';
+                if (filas.length > 0) {
+                    filas[0].forEach(celda => html += `<th>${escaparHtml(celda)}</th>`);
+                    html += '</tr></thead><tbody>';
+                    for (let i = 1; i < filas.length; i++) {
+                        html += '<tr>';
+                        filas[i].forEach(celda => html += `<td>${escaparHtml(celda)}</td>`);
+                        html += '</tr>';
+                    }
+                    html += '</tbody></table></div>';
+                    contenido.innerHTML = html;
+                } else {
+                    contenido.innerHTML = '<p>Archivo CSV vacío</p>';
+                }
+            })
+            .catch(() => mostrarRespaldo(contenido, tipo));
+    }
+    else if (tipo === 'json') {
+        fetch(urlArchivo)
+            .then(r => r.json())
+            .then(json => {
+                const formateado = JSON.stringify(json, null, 2);
+                contenido.innerHTML = `<pre class="preview-code"><code class="language-json">${escaparHtml(formateado)}</code></pre>`;
+                hljs.highlightElement(contenido.querySelector('code'));
+            })
+            .catch(() => mostrarRespaldo(contenido, tipo));
+    }
+    else if (tipo === 'word' || tipo === 'excel' || tipo === 'powerpoint') {
+        // Usar visor de Google para documentos de Office
+        const urlCodificada = encodeURIComponent(urlArchivo);
+        const urlVisorGoogle = `https://docs.google.com/viewer?url=${urlCodificada}&embedded=true`;
+
+        contenido.innerHTML = `
+            <div class="preview-office-container">
+                <iframe src="${urlVisorGoogle}" class="preview-iframe"></iframe>
+                <div class="office-fallback-msg">
+                    <small>Si el visor no carga, es posible que el archivo no sea accesible públicamente desde internet.</small>
+                </div>
+            </div>`;
+    }
+    else if (tipo === 'codigo' || tipo === 'texto') {
+        fetch(urlArchivo)
+            .then(r => r.text())
+            .then(texto => {
+                const claseLang = tipo === 'codigo' ? '' : 'language-plaintext';
+                contenido.innerHTML = `<pre class="preview-code"><code class="${claseLang}">${escaparHtml(texto)}</code></pre>`;
+                if (tipo === 'codigo') {
+                    hljs.highlightElement(contenido.querySelector('code'));
+                }
+            })
+            .catch(() => mostrarRespaldo(contenido, tipo));
+    }
+    else {
+        mostrarRespaldo(contenido, tipo);
     }
 }
 
-function mostrarFallback(container, tipo) {
-    let iconName = 'draft';
+function mostrarRespaldo(contenedor, tipo) {
+    let nombreIcono = 'draft';
     let color = '#ccc';
 
-    if(tipo === 'word') { iconName = 'description'; color = '#2b579a'; }
-    else if(tipo === 'excel') { iconName = 'table_chart'; color = '#217346'; }
-    else if(tipo === 'powerpoint') { iconName = 'slideshow'; color = '#c43e1c'; }
-    else if(tipo === 'archivo') { iconName = 'folder_zip'; color = '#fbbc04'; }
+    if(tipo === 'word') { nombreIcono = 'description'; color = '#2b579a'; }
+    else if(tipo === 'excel') { nombreIcono = 'table_chart'; color = '#217346'; }
+    else if(tipo === 'powerpoint') { nombreIcono = 'slideshow'; color = '#c43e1c'; }
+    else if(tipo === 'archivo') { nombreIcono = 'folder_zip'; color = '#fbbc04'; }
 
-    container.innerHTML = `<div class="fallback-container">
-        <span class="material-symbols-outlined fallback-icon" style="color: ${color};">${iconName}</span>
+    contenedor.innerHTML = `<div class="fallback-container">
+        <span class="material-symbols-outlined fallback-icon" style="color: ${color};">${nombreIcono}</span>
         <p class="fallback-title">Vista previa no disponible para este formato.</p>
         <p class="fallback-subtitle">Por favor descarga el archivo para verlo.</p>
     </div>`;
 }
 
-function escaparHtml(text) {
-    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+function escaparHtml(texto) {
+    const mapa = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+    return texto.replace(/[&<>"']/g, function(m) { return mapa[m]; });
 }
 
-function setupViewToggle() {
-    const btnToggle = document.getElementById('btn-cambiar-vista');
-    const tableContainer = document.querySelector('.tabla-archivos').parentNode;
-    const icon = btnToggle ? btnToggle.querySelector('span') : null;
+function configurarCambioVista() {
+    const btnVista = document.getElementById('btn-cambiar-vista');
+    const contenedorTabla = document.querySelector('.tabla-archivos').parentNode;
+    const icono = btnVista ? btnVista.querySelector('span') : null;
 
-    if (!btnToggle || !tableContainer) return;
+    if (!btnVista || !contenedorTabla) return;
 
-    // Load saved pref
-    const savedView = localStorage.getItem('modoVista');
-    if (savedView === 'cuadricula') {
-        tableContainer.classList.add('vista-cuadricula');
-        if(icon) icon.textContent = 'list';
+    // Cargar preferencia guardada
+    const vistaGuardada = localStorage.getItem('modoVista');
+    if (vistaGuardada === 'cuadricula') {
+        contenedorTabla.classList.add('vista-cuadricula');
+        if(icono) icono.textContent = 'list';
     }
 
-    btnToggle.addEventListener('click', () => {
-        const isGrid = tableContainer.classList.toggle('vista-cuadricula');
-        localStorage.setItem('modoVista', isGrid ? 'cuadricula' : 'lista');
-        if(icon) icon.textContent = isGrid ? 'list' : 'grid_view';
+    btnVista.addEventListener('click', () => {
+        const esCuadricula = contenedorTabla.classList.toggle('vista-cuadricula');
+        localStorage.setItem('modoVista', esCuadricula ? 'cuadricula' : 'lista');
+        if(icono) icono.textContent = esCuadricula ? 'list' : 'grid_view';
     });
 }
 
-function setupCreateFolder() {
-    const btnCrear = document.getElementById('btn-confirmar-crear-carpeta');
-    if (!btnCrear) return;
+function configurarCrearCarpeta() {
+    const btnConfirmar = document.getElementById('btn-confirmar-crear-carpeta');
+    if (!btnConfirmar) return;
 
     // Clonamos para asegurar pureza
-    const newBtn = btnCrear.cloneNode(true);
-    btnCrear.parentNode.replaceChild(newBtn, btnCrear);
+    const nuevoBtn = btnConfirmar.cloneNode(true);
+    btnConfirmar.parentNode.replaceChild(nuevoBtn, btnConfirmar);
 
-    newBtn.addEventListener('click', () => {
-        const inputNombre = document.getElementById('input-nombre-carpeta');
-        const nombre = inputNombre.value.trim();
+    nuevoBtn.addEventListener('click', () => {
+        const entradaNombre = document.getElementById('entrada-nombre-carpeta');
+        const nombre = entradaNombre.value.trim();
         if (!nombre) return;
 
         const zona = document.getElementById('zona-arrastre');
         const cid = zona ? zona.getAttribute('data-carpeta-actual') : null;
 
-        const formData = new FormData();
-        formData.append('nombre', nombre);
-        if (cid) formData.append('carpeta_padre_id', cid);
+        const datosForm = new FormData();
+        datosForm.append('nombre', nombre);
+        if (cid) datosForm.append('carpeta_padre_id', cid);
 
-        newBtn.textContent = "Creando...";
-        newBtn.disabled = true;
+        nuevoBtn.textContent = "Creando...";
+        nuevoBtn.disabled = true;
 
-        fetch('/crear-carpeta', { method: 'POST', body: formData })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    guardarNotificacion(`Carpeta "${data.nombre}" creada.`);
+        fetch('/crear-carpeta', { method: 'POST', body: datosForm })
+            .then(resp => resp.json())
+            .then(datos => {
+                if (datos.success) {
+                    guardarNotificacion(`Carpeta "${datos.nombre}" creada.`);
                     window.location.reload();
                 } else {
-                    alert('Error: ' + data.error);
-                    newBtn.disabled = false;
-                    newBtn.textContent = "Crear";
+                    alert('Error: ' + datos.error);
+                    nuevoBtn.disabled = false;
+                    nuevoBtn.textContent = "Crear";
                 }
             })
             .catch(err => {
                 console.error(err);
-                newBtn.disabled = false;
+                nuevoBtn.disabled = false;
             });
     });
 }
 
-function setupDeleteActions() {
+function configurarAccionesEliminar() {
     // Delegación
     document.addEventListener('click', (e) => {
-        const btnFolder = e.target.closest('.btn-eliminar-carpeta');
-        if (btnFolder) {
+        const btnCarpeta = e.target.closest('.btn-eliminar-carpeta');
+        if (btnCarpeta) {
             e.preventDefault();
-            confirmarEliminacion(btnFolder.dataset.id, true);
+            confirmarEliminacion(btnCarpeta.dataset.id, true);
             return;
         }
 
-        const btnFile = e.target.closest('.btn-eliminar-trigger');
-        if (btnFile) {
+        const btnArchivo = e.target.closest('.btn-eliminar-disparador');
+        if (btnArchivo) {
             e.preventDefault();
-            confirmarEliminacion(btnFile.dataset.id, false);
+            confirmarEliminacion(btnArchivo.dataset.id, false);
             return;
         }
     });
 }
 
-function confirmarEliminacion(id, isFolder) {
+function confirmarEliminacion(id, esCarpeta) {
     idParaEliminar = id;
-    esEliminacionCarpeta = isFolder;
+    esEliminacionCarpeta = esCarpeta;
 
     const modal = document.getElementById('modal-eliminar');
     if (!modal) return;
 
-    modal.querySelector('h3').textContent = isFolder ? "¿Eliminar carpeta?" : "¿Eliminar archivo?";
-    modal.querySelector('p').textContent = isFolder
+    modal.querySelector('h3').textContent = esCarpeta ? "¿Eliminar carpeta?" : "¿Eliminar archivo?";
+    modal.querySelector('p').textContent = esCarpeta
         ? "Se eliminarán todos los archivos contenidos. Irreversible."
         : "Esta acción no se puede deshacer.";
 
     modal.style.display = 'flex';
 
-    const btnConfirm = document.getElementById('btn-confirmar-modal');
-    if (btnConfirm) {
-        // Replace listener
-        const newBtn = btnConfirm.cloneNode(true);
-        btnConfirm.parentNode.replaceChild(newBtn, btnConfirm);
+    const btnConfirmar = document.getElementById('btn-confirmar-modal');
+    if (btnConfirmar) {
+        // Reemplazar listener
+        const nuevoBtn = btnConfirmar.cloneNode(true);
+        btnConfirmar.parentNode.replaceChild(nuevoBtn, btnConfirmar);
 
-        newBtn.textContent = "Eliminar";
-        newBtn.disabled = false;
-        newBtn.addEventListener('click', () => ejecutarEliminacion(newBtn));
+        nuevoBtn.textContent = "Eliminar";
+        nuevoBtn.disabled = false;
+        nuevoBtn.addEventListener('click', () => ejecutarEliminacion(nuevoBtn));
     }
 }
 
-function ejecutarEliminacion(btnElement) {
+function ejecutarEliminacion(btnEjecutar) {
     if (!idParaEliminar) return;
 
-    btnElement.textContent = "Eliminando...";
-    btnElement.disabled = true;
+    btnEjecutar.textContent = "Eliminando...";
+    btnEjecutar.disabled = true;
 
     const endpoint = esEliminacionCarpeta
         ? `/eliminar-carpeta/${idParaEliminar}`
         : `/eliminar/${idParaEliminar}`;
 
     fetch(endpoint, { method: 'DELETE' })
-        .then(res => res.json())
-        .then(data => {
+        .then(resp => resp.json())
+        .then(datos => {
             guardarNotificacion("Elemento eliminado.");
             window.location.reload();
         })
@@ -250,76 +293,76 @@ function ejecutarEliminacion(btnElement) {
 }
 
 
-function setupBulkActions() {
-    const checkAll = document.getElementById('checkbox-seleccionar-todo');
-    const bar = document.getElementById('barra-acciones-masivas');
+function configurarAccionesMasivas() {
+    const casillaTodo = document.getElementById('casilla-seleccionar-todo');
+    const barra = document.getElementById('barra-acciones-masivas');
 
-    if (checkAll) {
-        checkAll.addEventListener('change', () => {
-            document.querySelectorAll('.casilla-archivo').forEach(c => c.checked = checkAll.checked);
-            updateBarra();
+    if (casillaTodo) {
+        casillaTodo.addEventListener('change', () => {
+            document.querySelectorAll('.casilla-archivo').forEach(c => c.checked = casillaTodo.checked);
+            actualizarBarraAcciones();
         });
     }
 
-    // Delegacion change checkboxes
+    // Delegacion cambio checkboxes
     document.addEventListener('change', (e) => {
         if (e.target.classList.contains('casilla-archivo')) {
-            updateBarra();
+            actualizarBarraAcciones();
         }
     });
 
-    const btnCloseBar = document.getElementById('btn-cerrar-barra');
-    if (btnCloseBar) {
-        btnCloseBar.addEventListener('click', () => {
-            if (checkAll) checkAll.checked = false;
+    const btnCerrarBarra = document.getElementById('btn-cerrar-barra');
+    if (btnCerrarBarra) {
+        btnCerrarBarra.addEventListener('click', () => {
+            if (casillaTodo) casillaTodo.checked = false;
             document.querySelectorAll('.casilla-archivo').forEach(c => c.checked = false);
-            updateBarra();
+            actualizarBarraAcciones();
         });
     }
 
-    const btnDeleteMass = document.getElementById('btn-eliminar-multiples');
-    if (btnDeleteMass) {
-        btnDeleteMass.addEventListener('click', () => {
-            const checked = document.querySelectorAll('.casilla-archivo:checked');
-            if (checked.length === 0) return;
+    const btnEliminarMultiples = document.getElementById('btn-eliminar-multiples');
+    if (btnEliminarMultiples) {
+        btnEliminarMultiples.addEventListener('click', () => {
+            const marcados = document.querySelectorAll('.casilla-archivo:checked');
+            if (marcados.length === 0) return;
 
-            // Setup Modal for Mass Delete
+            // Preparar modal para eliminación masiva
             const modal = document.getElementById('modal-eliminar');
             if (!modal) return;
 
-            const fileIds = [];
-            const folderIds = [];
+            const idsArchivos = [];
+            const idsCarpetas = [];
 
-            checked.forEach(cb => {
+            marcados.forEach(cb => {
                 const tr = cb.closest('tr');
                 const id = tr.dataset.id;
-                if (tr.classList.contains('fila-carpeta')) folderIds.push(id);
-                else fileIds.push(id);
+                if (tr.classList.contains('fila-carpeta')) idsCarpetas.push(id);
+                else idsArchivos.push(id);
             });
 
-            modal.querySelector('h3').textContent = `¿Eliminar ${checked.length} elementos?`;
+            modal.querySelector('h3').textContent = `¿Eliminar ${marcados.length} elementos?`;
             modal.querySelector('p').textContent = "Se eliminará todo permanentemente.";
             modal.style.display = 'flex';
 
-            const btnConfirm = document.getElementById('btn-confirmar-modal');
-            const newBtn = btnConfirm.cloneNode(true);
-            btnConfirm.parentNode.replaceChild(newBtn, btnConfirm);
+            const btnConfirmar = document.getElementById('btn-confirmar-modal');
+            const nuevoBtn = btnConfirmar.cloneNode(true);
+            btnConfirmar.parentNode.replaceChild(nuevoBtn, btnConfirmar);
 
-            newBtn.textContent = "Eliminar Todo";
-            newBtn.disabled = false;
+            nuevoBtn.textContent = "Eliminar Todo";
+            nuevoBtn.disabled = false;
 
-            newBtn.addEventListener('click', () => {
-                newBtn.textContent = "Procesando...";
-                newBtn.disabled = true;
+            nuevoBtn.addEventListener('click', () => {
+                nuevoBtn.textContent = "Procesando...";
+                nuevoBtn.disabled = true;
 
                 fetch('/eliminar-multiples', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ids: fileIds, carpetas_ids: folderIds })
+                    body: JSON.stringify({ ids: idsArchivos, carpetas_ids: idsCarpetas })
                 })
-                    .then(res => res.json())
+                    .then(resp => resp.json())
                     .then(d => {
-                        guardarNotificacion(`${d.deleted} elementos eliminados.`);
+                        guardarNotificacion(`${d.deleted || d.eliminados} elementos eliminados.`);
                         window.location.reload();
                     })
                     .catch(() => window.location.reload());
@@ -327,13 +370,12 @@ function setupBulkActions() {
         });
     }
 
-    // Descarga masiva no implementada igual: solo archivos
-    const btnDownload = document.getElementById('btn-descargar-multiples');
-    if (btnDownload) {
-        btnDownload.addEventListener('click', () => {
-            const checked = document.querySelectorAll('.casilla-archivo:checked');
+    const btnDescargar = document.getElementById('btn-descargar-multiples');
+    if (btnDescargar) {
+        btnDescargar.addEventListener('click', () => {
+            const marcados = document.querySelectorAll('.casilla-archivo:checked');
             const ids = [];
-            checked.forEach(cb => {
+            marcados.forEach(cb => {
                 const tr = cb.closest('tr');
                 if (!tr.classList.contains('fila-carpeta')) ids.push(tr.dataset.id);
             });
@@ -345,11 +387,11 @@ function setupBulkActions() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ids })
             })
-                .then(res => res.ok ? res.blob() : Promise.reject())
+                .then(resp => resp.ok ? resp.blob() : Promise.reject())
                 .then(blob => {
-                    const u = window.URL.createObjectURL(blob);
+                    const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
-                    a.href = u; a.download = 'archivos.zip';
+                    a.href = url; a.download = 'archivos.zip';
                     document.body.appendChild(a); a.click(); a.remove();
                 })
                 .catch(() => alert("Error descarga"));
@@ -357,20 +399,20 @@ function setupBulkActions() {
     }
 }
 
-function updateBarra() {
-    const c = document.querySelectorAll('.casilla-archivo:checked').length;
-    const bar = document.getElementById('barra-acciones-masivas');
-    const lbl = document.getElementById('contador-seleccionados');
-    if (lbl) lbl.textContent = `${c} seleccionados`;
-    if (bar) bar.style.display = c > 0 ? 'flex' : 'none';
+function actualizarBarraAcciones() {
+    const numSeleccionados = document.querySelectorAll('.casilla-archivo:checked').length;
+    const barra = document.getElementById('barra-acciones-masivas');
+    const etiqueta = document.getElementById('contador-seleccionados');
+    if (etiqueta) etiqueta.textContent = `${numSeleccionados} seleccionados`;
+    if (barra) barra.style.display = numSeleccionados > 0 ? 'flex' : 'none';
 }
 
-function setupSorting() {
-    const selectOrden = document.getElementById('orden-fecha');
-    if (!selectOrden) return;
+function configurarOrdenamiento() {
+    const selectorOrden = document.getElementById('orden-fecha');
+    if (!selectorOrden) return;
 
-    selectOrden.addEventListener('change', () => {
-        ordenarTabla(selectOrden.value);
+    selectorOrden.addEventListener('change', () => {
+        ordenarTabla(selectorOrden.value);
     });
 
     // Aplicar orden por defecto (descendente)
@@ -378,11 +420,11 @@ function setupSorting() {
 }
 
 function ordenarTabla(orden) {
-    const tbody = document.getElementById('tabla-body');
-    if (!tbody) return;
+    const cuerpoTabla = document.getElementById('cuerpo-tabla');
+    if (!cuerpoTabla) return;
 
     // Obtener todas las filas (carpetas y archivos)
-    const filas = Array.from(tbody.querySelectorAll('tr:not(#fila-sin-archivos)'));
+    const filas = Array.from(cuerpoTabla.querySelectorAll('tr:not(#fila-sin-archivos)'));
 
     // Separar carpetas y archivos
     const carpetas = filas.filter(f => f.classList.contains('fila-carpeta'));
@@ -411,18 +453,18 @@ function ordenarTabla(orden) {
         return orden === 'asc' ? fechaA - fechaB : fechaB - fechaA;
     });
 
-    // Limpiar tbody
-    tbody.innerHTML = '';
+    // Limpiar cuerpoTabla
+    cuerpoTabla.innerHTML = '';
 
     // Insertar carpetas primero, luego archivos
-    carpetas.forEach(f => tbody.appendChild(f));
-    archivos.forEach(f => tbody.appendChild(f));
+    carpetas.forEach(f => cuerpoTabla.appendChild(f));
+    archivos.forEach(f => cuerpoTabla.appendChild(f));
 
     // Si no hay elementos, mostrar mensaje
     if (filas.length === 0) {
         const filaVacia = document.createElement('tr');
         filaVacia.id = 'fila-sin-archivos';
         filaVacia.innerHTML = '<td colspan="6" class="celda-sin-archivos">No hay archivos subidos.</td>';
-        tbody.appendChild(filaVacia);
+        cuerpoTabla.appendChild(filaVacia);
     }
 }

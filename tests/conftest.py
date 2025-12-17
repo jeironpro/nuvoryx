@@ -1,5 +1,5 @@
 """
-Fixtures compartidas para tests
+Fixtures compartidas para pruebas
 """
 
 import shutil
@@ -7,46 +7,46 @@ import tempfile
 
 import pytest
 
-from app import create_app
-from configuracion import TestConfig
+from app import crear_app
+from configuracion import ConfiguracionTest
 from extensiones import db
-from modelos import Archivo, Carpeta, Usuario
+from models import Archivo, Carpeta, Usuario
 
 
 @pytest.fixture(scope="function")
 def app():
-    """Fixture de aplicación Flask para testing"""
-    # Crear directorio temporal para uploads
-    temp_dir = tempfile.mkdtemp()
+    """Fixture de aplicación Flask para pruebas"""
+    # Crear directorio temporal para subidas
+    directorio_temporal = tempfile.mkdtemp()
 
     # Configuración de prueba con directorio temporal
-    class TestCaseConfig(TestConfig):
-        UPLOAD_FOLDER = temp_dir
+    class ConfiguracionPruebas(ConfiguracionTest):
+        CARPETA_SUBIDAS = directorio_temporal
 
     # Crear app
-    test_app = create_app(TestCaseConfig)
+    app_prueba = crear_app(ConfiguracionPruebas)
 
     # Contexto de aplicación y BD
-    with test_app.app_context():
+    with app_prueba.app_context():
         db.create_all()
-        yield test_app
+        yield app_prueba
         db.session.rollback()
         db.session.remove()
         db.drop_all()
 
     # Limpiar directorio temporal
-    shutil.rmtree(temp_dir, ignore_errors=True)
+    shutil.rmtree(directorio_temporal, ignore_errors=True)
 
 
 @pytest.fixture
-def client(app):
-    """Fixture de cliente de test"""
+def cliente(app):
+    """Fixture de cliente de prueba"""
     return app.test_client()
 
 
 @pytest.fixture
-def runner(app):
-    """Fixture de CLI runner"""
+def ejecutor(app):
+    """Fixture de ejecutor de CLI"""
     return app.test_cli_runner()
 
 
@@ -54,17 +54,17 @@ def runner(app):
 def usuario(app):
     """Fixture de usuario de prueba"""
     with app.app_context():
-        user = Usuario(nombre="Test User", correo="test@example.com", activo=True)
-        user.codificar_contrasena("testpass123")
+        user = Usuario(nombre="Usuario Prueba", correo="prueba@example.com", activo=True)
+        user.codificar_contrasena("contrasenaprueba123")
         db.session.add(user)
         db.session.commit()
 
         # Guardar datos básicos para retornar
-        user_data = UserData(user.id, user.correo)
-        return user_data
+        datos_usuario = DatosUsuario(user.id, user.correo)
+        return datos_usuario
 
 
-class UserData:
+class DatosUsuario:
     def __init__(self, id, correo):
         self.id = id
         self.correo = correo
@@ -74,13 +74,13 @@ class UserData:
 def carpeta(app, usuario):
     """Fixture de carpeta de prueba"""
     with app.app_context():
-        folder = Carpeta(nombre="Test Folder", usuario_id=usuario.id)
+        folder = Carpeta(nombre="Carpeta Prueba", usuario_id=usuario.id)
         db.session.add(folder)
         db.session.commit()
-        return FolderData(folder.id)
+        return DatosCarpeta(folder.id)
 
 
-class FolderData:
+class DatosCarpeta:
     def __init__(self, id):
         self.id = id
 
@@ -90,25 +90,25 @@ def archivo(app, usuario):
     """Fixture de archivo de prueba"""
     with app.app_context():
         file = Archivo(
-            nombre_original="test.txt",
-            nombre_hash="test_hash.txt",
+            nombre_original="prueba.txt",
+            nombre_hash="prueba_hash.txt",
             tipo="otro",
             tamano="1.0 KB",
             usuario_id=usuario.id,
         )
         db.session.add(file)
         db.session.commit()
-        return FileData(file.id)
+        return DatosArchivo(file.id)
 
 
-class FileData:
+class DatosArchivo:
     def __init__(self, id):
         self.id = id
 
 
 @pytest.fixture
-def auth_client(client, usuario):
+def cliente_autenticado(cliente, usuario):
     """Cliente autenticado"""
-    with client:
-        client.post("/inicio_sesion", json={"correo": usuario.correo, "contrasena": "testpass123"})
-        yield client
+    with cliente:
+        cliente.post("/inicio_sesion", json={"correo": usuario.correo, "contrasena": "contrasenaprueba123"})
+        yield cliente

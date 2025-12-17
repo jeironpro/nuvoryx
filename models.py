@@ -19,6 +19,7 @@ class Usuario(UserMixin, db.Model):
     # Relaciones
     archivos = db.relationship("Archivo", backref="propietario", lazy=True, foreign_keys="Archivo.usuario_id")
     carpetas = db.relationship("Carpeta", backref="propietario", lazy=True, foreign_keys="Carpeta.usuario_id")
+    notificaciones = db.relationship("Notificacion", backref="usuario", lazy=True, cascade="all, delete-orphan")
 
     def codificar_contrasena(self, contrasena):
         """Codifica la contraseña usando bcrypt"""
@@ -38,6 +39,7 @@ class Carpeta(db.Model):
     carpeta_padre_id = db.Column(db.Integer, db.ForeignKey("carpeta.id"), nullable=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey("usuario.id"), nullable=False)
     fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relación con subcarpetas
     subcarpetas = db.relationship("Carpeta", backref=db.backref("padre", remote_side=[id]), lazy=True)
@@ -62,3 +64,15 @@ class Archivo(db.Model):
 
     def __repr__(self):
         return f"<Archivo {self.nombre_original}>"
+
+
+class Notificacion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey("usuario.id"), nullable=False)
+    mensaje = db.Column(db.String(255), nullable=False)
+    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+    leida = db.Column(db.Boolean, default=False)
+    tipo = db.Column(db.String(50), default="info")
+
+    def __repr__(self):
+        return f"<Notificacion {self.mensaje[:20]}...>"

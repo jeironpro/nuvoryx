@@ -1,12 +1,12 @@
-// Estado interno de notificaciones
-let notificaciones = JSON.parse(localStorage.getItem('notificaciones')) || [];
-let badgeActive = localStorage.getItem('badgeNotificacion') === 'true';
+// Estado interno de notificaciones (se cargará de la DB)
+let listaNotificaciones = [];
+let indicadorActivo = false;
 
 export function abrirModalEspecifico(idModal) {
     const m = document.getElementById(idModal);
     if (m) {
         m.style.display = 'flex';
-        closePanels();
+        cerrarPaneles();
     }
 }
 
@@ -15,35 +15,53 @@ window.abrirModalEspecifico = abrirModalEspecifico;
 
 
 export function inicializarInterfaz() {
-    renderBadge();
-    setupGlobalModalClosers();
-    setupPanels();
-    setupNotificationUI();
+    cargarNotificaciones();
+    configurarCierreModalesGlobal();
+    configurarPaneles();
+    configurarInterfazNotificaciones();
+}
+
+async function cargarNotificaciones() {
+    try {
+        const resp = await fetch('/notificaciones');
+        if (resp.ok) {
+            listaNotificaciones = await resp.json();
+            indicadorActivo = listaNotificaciones.some(n => !n.leida);
+            renderizarIndicador();
+        }
+    } catch (err) {
+        console.error("Error cargando notificaciones:", err);
+    }
 }
 
 export function guardarNotificacion(msg, tipo = 'info') {
-    notificaciones.unshift({ mensaje: msg, fecha: new Date().toLocaleTimeString() });
-    if (notificaciones.length > 50) notificaciones.pop(); // limit
-    localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-
-    badgeActive = true;
-    localStorage.setItem('badgeNotificacion', 'true');
-    renderBadge();
+    fetch('/notificaciones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mensaje: msg, tipo: tipo })
+    })
+    .then(resp => resp.json())
+    .then(datos => {
+        if (datos.success) {
+            cargarNotificaciones(); // Recargar para tener el estado fresco
+        }
+    })
+    .catch(err => console.error("Error guardando notificación:", err));
 }
 
-function renderBadge() {
-    const badge = document.getElementById('badge-notificaciones');
-    if (badge) badge.style.display = badgeActive ? 'block' : 'none';
+function renderizarIndicador() {
+    const indicador = document.getElementById('indicador-notificaciones');
+    if (indicador) indicador.style.display = indicadorActivo ? 'block' : 'none';
 }
 
-function closePanels() {
+function cerrarPaneles() {
     const p1 = document.getElementById('panel-ajustes');
     if (p1) p1.style.display = 'none';
     const p2 = document.getElementById('panel-usuario');
     if (p2) p2.style.display = 'none';
 }
 
-function setupPanels() {
+function configurarPaneles() {
     const btnAjustes = document.getElementById('btn-ajustes');
     const panelAjustes = document.getElementById('panel-ajustes');
     const btnUsuario = document.getElementById('btn-usuario');
@@ -53,7 +71,7 @@ function setupPanels() {
         btnAjustes.addEventListener('click', (e) => {
             e.stopPropagation();
             const visible = panelAjustes.style.display === 'block';
-            closePanels(); // close others
+            cerrarPaneles(); // cerrar otros
             panelAjustes.style.display = visible ? 'none' : 'block';
         });
     }
@@ -62,12 +80,12 @@ function setupPanels() {
         btnUsuario.addEventListener('click', (e) => {
             e.stopPropagation();
             const visible = panelUsuario.style.display === 'block';
-            closePanels();
+            cerrarPaneles();
             panelUsuario.style.display = visible ? 'none' : 'block';
         });
     }
 
-    // Close on click outside
+    // Cerrar al hacer click fuera
     window.addEventListener('click', (e) => {
         if (panelAjustes && panelAjustes.style.display === 'block') {
             if (!panelAjustes.contains(e.target) && e.target !== btnAjustes) {
@@ -82,7 +100,7 @@ function setupPanels() {
     });
 }
 
-function setupGlobalModalClosers() {
+function configurarCierreModalesGlobal() {
     // Cierra cualquier modal al hacer click en el overlay
     window.addEventListener('click', (e) => {
         if (e.target.classList.contains('modal-overlay')) {
@@ -111,40 +129,56 @@ function setupGlobalModalClosers() {
     });
 }
 
-function setupNotificationUI() {
+function configurarInterfazNotificaciones() {
     const btn = document.getElementById('btn-notificaciones');
     const modal = document.getElementById('modal-notificaciones');
     const lista = document.getElementById('lista-notificaciones');
 
     if (btn && modal) {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
+            lista.innerHTML = '<div style="text-align:center;padding:10px;">Cargando...</div>';
+
+            await cargarNotificaciones(); // Asegurar datos frescos
+
             lista.innerHTML = '';
-            if (notificaciones.length === 0) {
+            if (listaNotificaciones.length === 0) {
                 lista.innerHTML = '<p style="padding:10px;text-align:center;color:#888">Sin notificaciones</p>';
             } else {
-                notificaciones.forEach(n => {
+                listaNotificaciones.forEach(n => {
                     const div = document.createElement('div');
                     div.innerHTML = `<strong>${n.mensaje}</strong><br><small>${n.fecha}</small>`;
                     div.style.borderBottom = '1px solid #eee';
                     div.style.padding = '8px 0';
+                    div.style.opacity = n.leida ? '0.6' : '1';
                     lista.appendChild(div);
                 });
             }
             modal.style.display = 'flex';
 
-            // Mark read
-            badgeActive = false;
-            localStorage.setItem('badgeNotificacion', 'false');
-            renderBadge();
+            // Marcar leídas
+            if (indicadorActivo) {
+                fetch('/notificaciones/marcar-leidas', { method: 'POST' })
+                    .then(() => {
+                        indicadorActivo = false;
+                        renderizarIndicador();
+                    });
+            }
         });
     }
 
-    const btnClean = document.getElementById('btn-limpiar-notificaciones');
-    if (btnClean) {
-        btnClean.addEventListener('click', () => {
-            notificaciones = [];
-            localStorage.setItem('notificaciones', '[]');
-            if (lista) lista.innerHTML = '<p style="padding:10px;text-align:center;color:#888">Sin notificaciones</p>';
+    const btnLimpiar = document.getElementById('btn-limpiar-notificaciones');
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', () => {
+            fetch('/notificaciones/limpiar', { method: 'DELETE' })
+                .then(resp => resp.json())
+                .then(datos => {
+                    if (datos.success) {
+                        listaNotificaciones = [];
+                        if (lista) lista.innerHTML = '<p style="padding:10px;text-align:center;color:#888">Sin notificaciones</p>';
+                        indicadorActivo = false;
+                        renderizarIndicador();
+                    }
+                });
         });
     }
 }

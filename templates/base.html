@@ -12,29 +12,39 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/main.css') }}"
     />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
       rel="stylesheet"
     />
+    <!-- Preview Libraries -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   </head>
-  <body data-authenticated="{{ 'true' if current_user.is_authenticated else 'false' }}">
+  <body
+    data-authenticated="{{ 'true' if current_user.is_authenticated else 'false' }}"
+  >
     <div class="bg-decoration"></div>
 
     {% include 'partials/_barra_cabecera.html' %}
 
-    <main class="contenedor fade-in">
-      {% block content %}{% endblock %}
-    </main>
+    <main class="contenedor fade-in">{% block content %}{% endblock %}</main>
 
-    {% block floating_elements %}{% endblock %}
+    {% block floating_elements %}{% endblock %} {% block overlays %} {% include
+    'partials/_modales.html' %} {% include
+    'partials/_modales_autenticacion.html' %} {% endblock %}
 
-    {% block overlays %}
-    {% include 'partials/_modales.html' %}
-    {% include 'partials/_modales_autenticacion.html' %}
-    {% endblock %}
-
-    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script
+      type="module"
+      src="{{ url_for('static', filename='js/main.js') }}"
+    ></script>
     {% block scripts %}{% endblock %}
   </body>
 </html>

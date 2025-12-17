@@ -2,18 +2,19 @@ import io
 import os
 import uuid
 import zipfile
+from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, request, send_file, send_from_directory
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
-from modelos import Archivo, Carpeta, db
+from models import Archivo, Carpeta, db
 from utils.utilidades import agregar_carpeta_a_zip, borrar_fisicos, detectar_tipo_archivo
 
-files_bp = Blueprint("files", __name__)
+archivos_bp = Blueprint("archivos", __name__)
 
 
-@files_bp.route("/crear-carpeta", methods=["POST"])
+@archivos_bp.route("/crear-carpeta", methods=["POST"])
 @login_required
 def crear_carpeta():
     nombre = request.form.get("nombre")
@@ -27,12 +28,19 @@ def crear_carpeta():
 
     nueva_carpeta = Carpeta(nombre=nombre, carpeta_padre_id=carpeta_padre_id, usuario_id=usuario_id)
     db.session.add(nueva_carpeta)
+
+    # Actualizar fecha de la carpeta padre
+    if carpeta_padre_id:
+        padre = Carpeta.query.get(carpeta_padre_id)
+        if padre:
+            padre.fecha_actualizacion = datetime.utcnow()
+
     db.session.commit()
 
     return jsonify({"success": True, "id": nueva_carpeta.id, "nombre": nueva_carpeta.nombre})
 
 
-@files_bp.route("/subir", methods=["POST"])
+@archivos_bp.route("/subir", methods=["POST"])
 @login_required
 def subir_archivo():
     if "archivos" not in request.files:
@@ -76,7 +84,7 @@ def subir_archivo():
         # ---------------------------------------
         extension_archivo = os.path.splitext(nombre_archivo)[1].lower()
         nombre_hash = f"{uuid.uuid4().hex}{extension_archivo}"
-        ruta_archivo = os.path.join(current_app.config["UPLOAD_FOLDER"], nombre_hash)
+        ruta_archivo = os.path.join(current_app.config["CARPETA_SUBIDAS"], nombre_hash)
         archivo.save(ruta_archivo)
 
         # Tamaño
@@ -103,6 +111,13 @@ def subir_archivo():
             usuario_id=usuario_id,
         )
         db.session.add(nuevo_archivo)
+
+        # Actualizar fecha de la carpeta contenedora
+        if carpeta_actual_id:
+            padre = Carpeta.query.get(carpeta_actual_id)
+            if padre:
+                padre.fecha_actualizacion = datetime.utcnow()
+
         db.session.commit()
 
         archivos_guardados.append(
@@ -116,36 +131,50 @@ def subir_archivo():
     return jsonify({"message": "Archivos subidos", "archivos": archivos_guardados})
 
 
-@files_bp.route("/eliminar/<int:archivo_id>", methods=["DELETE"])
+@archivos_bp.route("/eliminar/<int:archivo_id>", methods=["DELETE"])
 def eliminar_archivo(archivo_id):
     archivo = Archivo.query.get_or_404(archivo_id)
 
     # Eliminar del disco
-    ruta_archivo = os.path.join(current_app.config["UPLOAD_FOLDER"], archivo.nombre_hash)
+    ruta_archivo = os.path.join(current_app.config["CARPETA_SUBIDAS"], archivo.nombre_hash)
     try:
         if os.path.exists(ruta_archivo):
             os.remove(ruta_archivo)
     except Exception as e:
         print(f"Error eliminando archivo {ruta_archivo}: {e}")
 
+    parent_id = archivo.carpeta_id
     db.session.delete(archivo)
+
+    if parent_id:
+        padre = Carpeta.query.get(parent_id)
+        if padre:
+            padre.fecha_actualizacion = datetime.utcnow()
+
     db.session.commit()
 
     return jsonify({"success": True})
 
 
-@files_bp.route("/eliminar-carpeta/<int:carpeta_id>", methods=["DELETE"])
+@archivos_bp.route("/eliminar-carpeta/<int:carpeta_id>", methods=["DELETE"])
 def eliminar_carpeta_route(carpeta_id):
     carpeta = Carpeta.query.get_or_404(carpeta_id)
 
+    parent_id = carpeta.carpeta_padre_id
     borrar_fisicos(carpeta)
     db.session.delete(carpeta)
+
+    if parent_id:
+        padre = Carpeta.query.get(parent_id)
+        if padre:
+            padre.fecha_actualizacion = datetime.utcnow()
+
     db.session.commit()
 
     return jsonify({"success": True})
 
 
-@files_bp.route("/eliminar-multiples", methods=["POST"])
+@archivos_bp.route("/eliminar-multiples", methods=["POST"])
 def eliminar_multiples():
     data = request.get_json()
     ids = data.get("ids", [])
@@ -156,11 +185,15 @@ def eliminar_multiples():
     exitos = 0
     errores = 0
 
+    parents_to_update = set()
+
     for archivo_id in ids:
         archivo = Archivo.query.get(archivo_id)
         if archivo:
+            if archivo.carpeta_id:
+                parents_to_update.add(archivo.carpeta_id)
             # Eliminar del disco
-            ruta_archivo = os.path.join(current_app.config["UPLOAD_FOLDER"], archivo.nombre_hash)
+            ruta_archivo = os.path.join(current_app.config["CARPETA_SUBIDAS"], archivo.nombre_hash)
             try:
                 if os.path.exists(ruta_archivo):
                     os.remove(ruta_archivo)
@@ -177,6 +210,8 @@ def eliminar_multiples():
     for carpeta_id in carpetas_ids:
         carpeta = Carpeta.query.get(carpeta_id)
         if carpeta:
+            if carpeta.carpeta_padre_id:
+                parents_to_update.add(carpeta.carpeta_padre_id)
             # Aquí idealmente deberíamos eliminar recursivamente
             # los archivos físicos dentro. Por simplicidad delegamos
             # en cascade delete de la BD para los registros.
@@ -185,11 +220,17 @@ def eliminar_multiples():
             db.session.delete(carpeta)
             exitos += 1
 
+    # Actualizar fechas de las carpetas padres afectadas
+    for p_id in parents_to_update:
+        padre = Carpeta.query.get(p_id)
+        if padre:
+            padre.fecha_actualizacion = datetime.utcnow()
+
     db.session.commit()
     return jsonify({"success": True, "deleted": exitos, "errors": errores})
 
 
-@files_bp.route("/descargar-zip", methods=["POST"])
+@archivos_bp.route("/descargar-zip", methods=["POST"])
 def descargar_zip():
     # Obtener IDs del formulario (si se usa form submit) o JSON
     if request.is_json:
@@ -211,7 +252,7 @@ def descargar_zip():
                 archivo = Archivo.query.get(archivo_id)
 
                 if archivo:
-                    ruta_archivo = os.path.join(current_app.config["UPLOAD_FOLDER"], archivo.nombre_hash)
+                    ruta_archivo = os.path.join(current_app.config["CARPETA_SUBIDAS"], archivo.nombre_hash)
 
                     if os.path.exists(ruta_archivo):
                         # Añadir al zip con el nombre original
@@ -231,7 +272,7 @@ def descargar_zip():
     )
 
 
-@files_bp.route("/descargar-carpeta/<int:carpeta_id>", methods=["GET"])
+@archivos_bp.route("/descargar-carpeta/<int:carpeta_id>", methods=["GET"])
 def descargar_carpeta(carpeta_id):
     carpeta = Carpeta.query.get_or_404(carpeta_id)
 
@@ -252,13 +293,13 @@ def descargar_carpeta(carpeta_id):
     return send_file(memoria_archivo, mimetype="application/zip", as_attachment=True, download_name=zip_filename)
 
 
-@files_bp.route("/descargar/<int:archivo_id>", methods=["GET"])
+@archivos_bp.route("/descargar/<int:archivo_id>", methods=["GET"])
 def descargar_archivo(archivo_id):
     archivo = Archivo.query.get_or_404(archivo_id)
     inline = request.args.get("inline", "false").lower() == "true"
 
     return send_from_directory(
-        current_app.config["UPLOAD_FOLDER"],
+        current_app.config["CARPETA_SUBIDAS"],
         archivo.nombre_hash,
         as_attachment=not inline,
         download_name=archivo.nombre_original,

@@ -1,15 +1,21 @@
 /* Base */
-@import url('base/variables.css');
 @import url('base/globales.css');
+@import url('base/variables.css');
 
 /* Layout */
+@import url('layout/area_subida.css');
 @import url('layout/contenedores.css');
 @import url('layout/estadisticas.css');
-@import url('layout/area_subida.css');
 
 /* Components */
+@import url('components/barra_flotante.css');
 @import url('components/barra_navegacion.css');
-@import url('./components/custom_grid.css');
+@import url('components/botones.css');
+@import url('components/cuadricula.css');
+@import url('components/modales.css');
+@import url('components/paneles.css');
+@import url('components/previsualizacion.css');
+@import url('components/tabla.css');
 
 .contenedor-error {
     text-align: center;
@@ -35,8 +41,3 @@
     align-items: center;
     gap: 0.5rem;
 }
-@import url('components/paneles.css');
-@import url('components/modales.css');
-@import url('components/tabla.css');
-@import url('components/barra_flotante.css');
-@import url('components/cuadricula.css');

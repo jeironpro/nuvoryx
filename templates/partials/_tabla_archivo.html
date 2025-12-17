@@ -5,7 +5,7 @@
         </div>
         <div class="barra-busqueda">
             <span class="material-symbols-outlined">search</span>
-            <input type="text" id="input-busqueda" placeholder="Buscar" />
+            <input type="text" id="entrada-busqueda" placeholder="Buscar" />
         </div>
         <button class="btn-crea-carpeta btn-crea-carpeta-items" onclick="abrirModalEspecifico('modal-crear-carpeta')">
             <span class="material-symbols-outlined icono-20px">create_new_folder</span>
@@ -37,7 +37,7 @@
         <thead>
             <tr>
                 <th class="col-casilla">
-                    <input type="checkbox" id="checkbox-seleccionar-todo" />
+                    <input type="checkbox" id="casilla-seleccionar-todo" />
                 </th>
                 <th class="col-nombre">Nombre del archivo</th>
                 <th class="col-fecha">Fecha de subida</th>
@@ -46,13 +46,13 @@
                 <th class="col-acciones"></th>
             </tr>
         </thead>
-        <tbody id="tabla-body">
+        <tbody id="cuerpo-tabla">
             <!-- Carpetas -->
             {% for carpeta in carpetas %}
             <tr class="fila-archivo fila-carpeta" data-tipo="carpeta" data-id="{{ carpeta.id }}">
                 <td><input type="checkbox" class="casilla-archivo casilla-carpeta" /></td>
                 <td>
-                    <a href="{{ url_for('main.index', carpeta_id=carpeta.id) }}" class="enlace-carpeta enlace-carpeta-bloque">
+                    <a href="{{ url_for('principal.indice', carpeta_id=carpeta.id) }}" class="enlace-carpeta enlace-carpeta-bloque">
                         <div class="info-archivo">
                             <div class="icono-archivo icon-folder">
                                 <span class="material-symbols-outlined">folder</span>
@@ -64,8 +64,8 @@
                         </div>
                     </a>
                 </td>
-                <td>{{ carpeta.fecha_creacion }}</td>
-                <td>-</td>
+                <td>{{ carpeta.fecha_creacion.strftime('%Y-%m-%d %H:%M') if carpeta.fecha_creacion else '-' }}</td>
+                <td>{{ carpeta.fecha_actualizacion.strftime('%Y-%m-%d %H:%M') if carpeta.fecha_actualizacion else '-' }}</td>
                 <td>
                     <div class="info-usuario">
                         <span class="material-symbols-outlined avatar-icon">account_circle</span>
@@ -81,7 +81,7 @@
                             title="Eliminar">
                             <span class="material-symbols-outlined">delete</span>
                         </button>
-                        <a href="{{ url_for('files.descargar_carpeta', carpeta_id=carpeta.id) }}" class="btn-icono-tabla"
+                        <a href="{{ url_for('archivos.descargar_carpeta', carpeta_id=carpeta.id) }}" class="btn-icono-tabla"
                             title="Descargar">
                             <span class="material-symbols-outlined">download</span>
                         </a>
@@ -142,8 +142,8 @@
                         </div>
                     </div>
                 </td>
-                <td>{{ archivo.fecha_subida }}</td>
-                <td>{{ archivo.ultima_actualizacion }}</td>
+                <td>{{ archivo.fecha_subida.strftime('%Y-%m-%d %H:%M') if archivo.fecha_subida else '-' }}</td>
+                <td>-</td>
                 <td>
                     <div class="info-usuario">
                         <span class="material-symbols-outlined avatar-icon">account_circle</span>
@@ -155,11 +155,11 @@
                 </td>
                 <td>
                     <div class="acciones-tabla">
-                        <button class="btn-icono-tabla btn-eliminar-trigger" data-id="{{ archivo.id }}"
+                        <button class="btn-icono-tabla btn-eliminar-disparador" data-id="{{ archivo.id }}"
                             title="Eliminar">
                             <span class="material-symbols-outlined">delete</span>
                         </button>
-                        <a href="{{ url_for('files.descargar_archivo', archivo_id=archivo.id) }}" class="btn-icono-tabla"
+                        <a href="{{ url_for('archivos.descargar_archivo', archivo_id=archivo.id) }}" class="btn-icono-tabla"
                             title="Descargar" download><span class="material-symbols-outlined">download</span></a>
                     </div>
                 </td>

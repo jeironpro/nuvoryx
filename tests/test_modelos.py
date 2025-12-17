@@ -1,86 +1,86 @@
 """
-Tests para modelos de base de datos
+Pruebas para modelos de base de datos
 """
 
-from modelos import Archivo, Carpeta, Usuario, db
+from models import Archivo, Carpeta, Usuario, db
 
 
 def test_crear_usuario(app):
-    """Test crear usuario"""
+    """Prueba crear usuario"""
     with app.app_context():
-        user = Usuario(nombre="John Doe", correo="john@example.com")
-        user.codificar_contrasena("password123")
-        db.session.add(user)
+        usuario = Usuario(nombre="Juan Perez", correo="juan@example.com")
+        usuario.codificar_contrasena("contrasena123")
+        db.session.add(usuario)
         db.session.commit()
 
-        assert user.id is not None
-        assert user.nombre == "John Doe"
-        assert user.correo == "john@example.com"
-        assert user.contrasena_hash is not None
+        assert usuario.id is not None
+        assert usuario.nombre == "Juan Perez"
+        assert usuario.correo == "juan@example.com"
+        assert usuario.contrasena_hash is not None
 
 
 def test_verificar_contrasena(app, usuario):
-    """Test verificación de contraseña"""
+    """Prueba verificación de contraseña"""
     with app.app_context():
         user = Usuario.query.get(usuario.id)
-        assert user.verificar_contrasena("testpass123") is True
-        assert user.verificar_contrasena("wrongpass") is False
+        assert user.verificar_contrasena("contrasenaprueba123") is True
+        assert user.verificar_contrasena("clave_incorrecta") is False
 
 
 def test_crear_carpeta(app, usuario):
-    """Test crear carpeta"""
+    """Prueba crear carpeta"""
     with app.app_context():
-        folder = Carpeta(nombre="My Folder", usuario_id=usuario.id)
-        db.session.add(folder)
+        carpeta_obj = Carpeta(nombre="Mi Carpeta", usuario_id=usuario.id)
+        db.session.add(carpeta_obj)
         db.session.commit()
 
-        assert folder.id is not None
-        assert folder.nombre == "My Folder"
-        assert folder.usuario_id == usuario.id
+        assert carpeta_obj.id is not None
+        assert carpeta_obj.nombre == "Mi Carpeta"
+        assert carpeta_obj.usuario_id == usuario.id
 
 
 def test_crear_archivo(app, usuario):
-    """Test crear archivo"""
+    """Prueba crear archivo"""
     with app.app_context():
-        file = Archivo(
-            nombre_original="document.pdf",
+        archivo_obj = Archivo(
+            nombre_original="documento.pdf",
             nombre_hash="hash123.pdf",
             tipo="pdf",
             tamano="2.5 MB",
             usuario_id=usuario.id,
         )
-        db.session.add(file)
+        db.session.add(archivo_obj)
         db.session.commit()
 
-        assert file.id is not None
-        assert file.nombre_original == "document.pdf"
-        assert file.tipo == "pdf"
-        assert file.usuario_id == usuario.id
+        assert archivo_obj.id is not None
+        assert archivo_obj.nombre_original == "documento.pdf"
+        assert archivo_obj.tipo == "pdf"
+        assert archivo_obj.usuario_id == usuario.id
 
 
 def test_relacion_usuario_carpetas(app, usuario, carpeta):
-    """Test relación usuario-carpetas"""
+    """Prueba relación usuario-carpetas"""
     with app.app_context():
         user = Usuario.query.get(usuario.id)
         assert len(user.carpetas) == 1
-        assert user.carpetas[0].nombre == "Test Folder"
+        assert user.carpetas[0].nombre == "Carpeta Prueba"
 
 
 def test_relacion_usuario_archivos(app, usuario, archivo):
-    """Test relación usuario-archivos"""
+    """Prueba relación usuario-archivos"""
     with app.app_context():
         user = Usuario.query.get(usuario.id)
         assert len(user.archivos) == 1
-        assert user.archivos[0].nombre_original == "test.txt"
+        assert user.archivos[0].nombre_original == "prueba.txt"
 
 
 def test_carpeta_subcarpetas(app, usuario, carpeta):
-    """Test subcarpetas"""
+    """Prueba subcarpetas"""
     with app.app_context():
-        parent = Carpeta.query.get(carpeta.id)
-        subfolder = Carpeta(nombre="Subfolder", carpeta_padre_id=parent.id, usuario_id=usuario.id)
-        db.session.add(subfolder)
+        padre = Carpeta.query.get(carpeta.id)
+        subcarpeta = Carpeta(nombre="Subcarpeta", carpeta_padre_id=padre.id, usuario_id=usuario.id)
+        db.session.add(subcarpeta)
         db.session.commit()
 
-        assert len(parent.subcarpetas) == 1
-        assert parent.subcarpetas[0].nombre == "Subfolder"
+        assert len(padre.subcarpetas) == 1
+        assert padre.subcarpetas[0].nombre == "Subcarpeta"

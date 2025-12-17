@@ -2,7 +2,7 @@ import os
 
 from flask import current_app as app
 
-from modelos import Archivo, Carpeta
+from models import Archivo, Carpeta
 
 
 # --- Utilidades ---
@@ -58,7 +58,7 @@ def obtener_tamano_carpeta(id_carpeta):
 
 
 def detectar_tipo_archivo(nombre_archivo):
-    """Detecta el tipo de archivo por extensión (replica lógica de utils.js)"""
+    """Detecta el tipo de archivo por extensión para mejor previsualización"""
     if not nombre_archivo:
         return "otro"
 
@@ -80,21 +80,29 @@ def detectar_tipo_archivo(nombre_archivo):
     if any(nombre.endswith(ext) for ext in [".mp3", ".wav", ".ogg", ".m4a", ".flac", ".aac"]):
         return "audio"
 
-    # Documentos
-    if any(nombre.endswith(ext) for ext in [".doc", ".docx", ".txt", ".rtf", ".odt"]):
-        return "documento"
+    # Markdown
+    if nombre.endswith(".md"):
+        return "markdown"
 
-    # Hojas de cálculo
-    if any(nombre.endswith(ext) for ext in [".xls", ".xlsx", ".csv", ".ods"]):
-        return "hoja_calculo"
+    # CSV
+    if nombre.endswith(".csv"):
+        return "csv"
 
-    # Presentaciones
+    # JSON
+    if nombre.endswith(".json"):
+        return "json"
+
+    # Office Documents (Word)
+    if any(nombre.endswith(ext) for ext in [".doc", ".docx", ".rtf", ".odt"]):
+        return "word"
+
+    # Office Documents (Excel)
+    if any(nombre.endswith(ext) for ext in [".xls", ".xlsx", ".ods"]):
+        return "excel"
+
+    # Office Documents (PowerPoint)
     if any(nombre.endswith(ext) for ext in [".ppt", ".pptx", ".odp"]):
-        return "presentacion"
-
-    # Archivos comprimidos
-    if any(nombre.endswith(ext) for ext in [".zip", ".rar", ".7z", ".tar", ".gz", ".bz2"]):
-        return "archivo"
+        return "powerpoint"
 
     # Código
     if any(
@@ -114,21 +122,26 @@ def detectar_tipo_archivo(nombre_archivo):
             ".rb",
             ".go",
             ".rs",
+            ".sql",
+            ".sh",
+            ".bat",
+            ".ps1",
+            ".xml",
+            ".yaml",
+            ".yml",
+            ".ini",
+            ".conf",
         ]
     ):
         return "codigo"
 
-    # Word
-    if any(nombre.endswith(ext) for ext in [".doc", ".docx", ".rtf", ".odt"]):
-        return "word"
+    # Archivos comprimidos
+    if any(nombre.endswith(ext) for ext in [".zip", ".rar", ".7z", ".tar", ".gz", ".bz2"]):
+        return "archivo"
 
-    # Excel
-    if any(nombre.endswith(ext) for ext in [".xls", ".xlsx", ".csv", ".ods"]):
-        return "excel"
-
-    # PPT
-    if any(nombre.endswith(ext) for ext in [".ppt", ".pptx", ".odp"]):
-        return "powerpoint"
+    # Texto plano por defecto si no es nada de lo anterior pero parece texto
+    if any(nombre.endswith(ext) for ext in [".txt", ".log"]):
+        return "texto"
 
     return "otro"
 
@@ -179,10 +192,12 @@ def obtener_estadisticas_carpeta(id_carpeta):
 
         # Subcarpetas directas
         subcarpetas = Carpeta.query.filter_by(carpeta_padre_id=id_actual).all()
-        total_carpetas += len(subcarpetas)
 
-        for sub in subcarpetas:
-            recorrer(sub.id)
+        for c in subcarpetas:
+            tamano_bytes = obtener_tamano_carpeta(c.id)
+            total_bytes += tamano_bytes
+
+        total_carpetas += len(subcarpetas)
 
         # Archivos directos
         archivos = Archivo.query.filter_by(carpeta_id=id_actual).all()

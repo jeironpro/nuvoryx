@@ -5,39 +5,39 @@ let colaArchivos = [];
 
 export function inicializarSubidas() {
     const zonaArrastre = document.getElementById('zona-arrastre');
-    const inputArchivo = document.getElementById('input-archivo');
+    const entradaArchivo = document.getElementById('entrada-archivo');
     const btnSubirTodo = document.getElementById('btn-subir-todo');
 
-    if (zonaArrastre && inputArchivo) {
-        // Click to open
-        zonaArrastre.addEventListener('click', () => inputArchivo.click());
-        inputArchivo.addEventListener('click', (e) => e.stopPropagation());
+    if (zonaArrastre && entradaArchivo) {
+        // Click para abrir
+        zonaArrastre.addEventListener('click', () => entradaArchivo.click());
+        entradaArchivo.addEventListener('click', (e) => e.stopPropagation());
 
-        // Change event
-        inputArchivo.addEventListener('change', (e) => {
+        // Evento de cambio
+        entradaArchivo.addEventListener('change', (e) => {
             manejarArchivos(e.target.files);
-            inputArchivo.value = '';
+            entradaArchivo.value = '';
         });
 
-        // DnD Events
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            zonaArrastre.addEventListener(eventName, (e) => {
+        // Eventos Drago and Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(nombreEvento => {
+            zonaArrastre.addEventListener(nombreEvento, (e) => {
                 e.preventDefault();
                 e.stopPropagation();
             }, false);
         });
 
-        ['dragenter', 'dragover'].forEach(eventName => {
-            zonaArrastre.addEventListener(eventName, () => {
-                zonaArrastre.classList.add('highlight');
+        ['dragenter', 'dragover'].forEach(nombreEvento => {
+            zonaArrastre.addEventListener(nombreEvento, () => {
+                zonaArrastre.classList.add('resaltado');
                 zonaArrastre.style.borderColor = 'var(--primary-color)';
                 zonaArrastre.style.backgroundColor = '#F9F5FF';
             }, false);
         });
 
-        ['dragleave', 'drop'].forEach(eventName => {
-            zonaArrastre.addEventListener(eventName, () => {
-                zonaArrastre.classList.remove('highlight');
+        ['dragleave', 'drop'].forEach(nombreEvento => {
+            zonaArrastre.addEventListener(nombreEvento, () => {
+                zonaArrastre.classList.remove('resaltado');
                 zonaArrastre.style.borderColor = 'var(--border-color)';
                 zonaArrastre.style.backgroundColor = '#FFFFFF';
             }, false);
@@ -56,7 +56,7 @@ export function inicializarSubidas() {
 
             const copia = [...colaArchivos];
             for (const item of copia) {
-                await subirArchivoBackend(item);
+                await subirArchivoAlServidor(item);
             }
 
             colaArchivos = [];
@@ -69,9 +69,9 @@ export function inicializarSubidas() {
 
 function manejarArchivos(archivos) {
     // Verificar si el usuario está autenticado
-    const isAuthenticated = document.body.getAttribute('data-authenticated') === 'true';
+    const estaAutenticado = document.body.getAttribute('data-authenticated') === 'true';
 
-    if (!isAuthenticated) {
+    if (!estaAutenticado) {
         guardarNotificacion('Debes iniciar sesión para subir archivos.', 'error');
         return;
     }
@@ -82,8 +82,8 @@ function manejarArchivos(archivos) {
 
 function agregarACola(archivo) {
     const contenedorProgreso = document.getElementById('contenedor-progreso');
-    const template = document.getElementById('template-progreso');
-    if (!contenedorProgreso || !template) return;
+    const plantilla = document.getElementById('plantilla-progreso');
+    if (!contenedorProgreso || !plantilla) return;
 
     const id = Math.random().toString(36).substr(2, 9);
     colaArchivos.push({
@@ -93,21 +93,21 @@ function agregarACola(archivo) {
     });
 
 
-    const clone = template.content.cloneNode(true);
-    const item = clone.querySelector('.item-progreso-subida');
+    const clon = plantilla.content.cloneNode(true);
+    const item = clon.querySelector('.item-progreso-subida');
     item.dataset.colaId = id;
 
-    // Content
-    clone.querySelector('.nombre-archivo').textContent = archivo.name;
-    clone.querySelector('.tamano-archivo').textContent = formatearTamano(archivo.size);
+    // Contenido
+    clon.querySelector('.nombre-archivo').textContent = archivo.name;
+    clon.querySelector('.tamano-archivo').textContent = formatearTamano(archivo.size);
 
-    // Icon
-    const iconoContainer = clone.querySelector('.icono-progreso');
+    // Icono
+    const contenedorIcono = clon.querySelector('.icono-progreso');
     const conf = obtenerConfiguracionIcono(archivo);
-    iconoContainer.innerHTML = conf.svg;
-    iconoContainer.className = `icono-progreso ${conf.clase}`;
+    contenedorIcono.innerHTML = conf.svg;
+    contenedorIcono.className = `icono-progreso ${conf.clase}`;
 
-    // Remove btn
+    // Botón eliminar
     item.querySelector('.btn-cerrar').addEventListener('click', () => {
         colaArchivos = colaArchivos.filter(f => f.id !== id);
         item.remove();
@@ -124,14 +124,14 @@ function actualizarVisibilidad() {
     }
 }
 
-function subirArchivoBackend(itemCola) {
+function subirArchivoAlServidor(itemCola) {
     return new Promise((resolve) => {
-        const itemElement = document.querySelector(`.item-progreso-subida[data-cola-id="${itemCola.id}"]`);
-        if (!itemElement) { resolve(); return; }
+        const elementoItem = document.querySelector(`.item-progreso-subida[data-cola-id="${itemCola.id}"]`);
+        if (!elementoItem) { resolve(); return; }
 
-        const barra = itemElement.querySelector('.barra-progreso');
-        const estado = itemElement.querySelector('.estado-progreso');
-        const btnCerrar = itemElement.querySelector('.btn-cerrar');
+        const barra = elementoItem.querySelector('.barra-progreso');
+        const estado = elementoItem.querySelector('.estado-progreso');
+        const btnCerrar = elementoItem.querySelector('.btn-cerrar');
         if (btnCerrar) btnCerrar.style.display = 'none';
 
         estado.textContent = 'Subiendo...';
@@ -149,9 +149,9 @@ function subirArchivoBackend(itemCola) {
 
         xhr.upload.onprogress = (e) => {
             if (e.lengthComputable) {
-                const pct = (e.loaded / e.total) * 100;
-                barra.style.width = pct + '%';
-                estado.textContent = Math.round(pct) + '%';
+                const porcentaje = (e.loaded / e.total) * 100;
+                barra.style.width = porcentaje + '%';
+                estado.textContent = Math.round(porcentaje) + '%';
             }
         };
 
@@ -162,13 +162,13 @@ function subirArchivoBackend(itemCola) {
                 guardarNotificacion(`Archivo "${itemCola.archivo.name}" subido.`);
             } else {
                 estado.textContent = 'Error';
-                itemElement.style.backgroundColor = '#FEF3F2';
+                elementoItem.style.backgroundColor = '#FEF3F2';
             }
             resolve();
         };
         xhr.onerror = () => {
             estado.textContent = 'Error red';
-            itemElement.style.backgroundColor = '#FEF3F2';
+            elementoItem.style.backgroundColor = '#FEF3F2';
             resolve();
         };
 

@@ -1,5 +1,5 @@
 <section class="area-subida" id="zona-arrastre" data-carpeta-actual="{{ carpeta_actual.id if carpeta_actual else '' }}">
-    <input type="file" id="input-archivo" multiple webkitdirectory directory hidden />
+    <input type="file" id="entrada-archivo" multiple webkitdirectory directory hidden />
     <div class="contenido-subida">
         <div class="icono-subida">
             <span class="material-symbols-outlined">cloud_upload</span>
@@ -21,7 +21,7 @@
 
 <div id="contenedor-progreso"></div>
 
-<template id="template-progreso">
+<template id="plantilla-progreso">
     <div class="item-progreso-subida">
         <div class="icono-progreso">
             <span class="material-symbols-outlined">description</span>

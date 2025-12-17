@@ -1,7 +1,7 @@
 from flask import Blueprint, abort, render_template, request
 from flask_login import current_user
 
-from modelos import Archivo, Carpeta
+from models import Archivo, Carpeta
 from utils.utilidades import (
     detectar_tipo_archivo,
     formatear_tamano,
@@ -10,11 +10,11 @@ from utils.utilidades import (
     parsear_tamano,
 )
 
-main_bp = Blueprint("main", __name__)
+principal_bp = Blueprint("principal", __name__)
 
 
-@main_bp.route("/", methods=["GET"])
-def index():
+@principal_bp.route("/", methods=["GET"])
+def indice():
     carpeta_id = request.args.get("carpeta_id", type=int)
 
     # Obtener carpeta actual y ruta de migas
@@ -131,19 +131,20 @@ def index():
                 "id": c.id,
                 "nombre": c.nombre,
                 "fecha_creacion": c.fecha_creacion,
+                "fecha_actualizacion": c.fecha_actualizacion,
                 "tamano": formatear_tamano(tamano_bytes),
             }
         )
 
     # Sumar el tamaño de las carpetas a la estadística de la carpeta actual
-    if estadisticas_carpeta:
-        tamano_carpetas = sum([float(carpeta["tamano"][:-3]) for carpeta in carpetas])
-        try:
-            espacio_carpeta = float(estadisticas_carpeta["espacio_usado"].split(" ")[0])
-        except ValueError:
-            espacio_carpeta = 0.0
+    # if estadisticas_carpeta:
+    #     tamano_carpetas = sum([float(carpeta["tamano"][:-3]) for carpeta in carpetas])
+    #     try:
+    #         espacio_carpeta = float(estadisticas_carpeta["espacio_usado"].split(" ")[0])
+    #     except ValueError:
+    #         espacio_carpeta = 0.0
 
-        estadisticas_carpeta["espacio_usado"] = espacio_carpeta + tamano_carpetas
+    #     estadisticas_carpeta["espacio_usado"] = formatear_tamano(espacio_carpeta + tamano_carpetas)
 
     # Formatear la respuesta para la plantilla
     lista_archivos = []

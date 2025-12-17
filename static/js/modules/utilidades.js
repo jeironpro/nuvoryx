@@ -1,34 +1,34 @@
 export function formatearTamano(bytes) {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
-    const items = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const unidades = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + items[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + unidades[i];
 }
 
-export function parseTamano(str) {
-    if (!str) return 0;
-    const parts = str.trim().split(' ');
-    if (parts.length < 2) return 0;
-    let val = parseFloat(parts[0].replace(',', '.'));
-    const unit = parts[1].toUpperCase();
+export function parseTamano(cadena) {
+    if (!cadena) return 0;
+    const partes = cadena.trim().split(' ');
+    if (partes.length < 2) return 0;
+    let valor = parseFloat(partes[0].replace(',', '.'));
+    const unidad = partes[1].toUpperCase();
     const k = 1024;
-    if (unit.startsWith('KB')) val *= k;
-    else if (unit.startsWith('MB')) val *= k*k;
-    else if (unit.startsWith('GB')) val *= k*k*k;
-    return val;
+    if (unidad.startsWith('KB')) valor *= k;
+    else if (unidad.startsWith('MB')) valor *= k*k;
+    else if (unidad.startsWith('GB')) valor *= k*k*k;
+    return valor;
 }
 
-export function obtenerConfiguracionIcono(file) {
-    const n = file.name.toLowerCase();
-    if (n.endsWith('.pdf')) return { clase: 'icon-pdf', svg: '<span class="material-symbols-outlined">picture_as_pdf</span>' };
-    if (/\.(jpg|jpeg|png)$/.test(n)) return { clase: 'icon-img', svg: '<span class="material-symbols-outlined">image</span>' };
+export function obtenerConfiguracionIcono(archivo) {
+    const nombre = archivo.name.toLowerCase();
+    if (nombre.endsWith('.pdf')) return { clase: 'icon-pdf', svg: '<span class="material-symbols-outlined">picture_as_pdf</span>' };
+    if (/\.(jpg|jpeg|png)$/.test(nombre)) return { clase: 'icon-img', svg: '<span class="material-symbols-outlined">image</span>' };
     return { clase: 'icon-fig', svg: '<span class="material-symbols-outlined">draft</span>' };
 }
 
-export function detectarTipo(nombre) {
-    if (!nombre) return 'otro';
-    const n = nombre.toLowerCase();
+export function detectarTipo(nombreArchivo) {
+    if (!nombreArchivo) return 'otro';
+    const n = nombreArchivo.toLowerCase();
 
     // PDF
     if (n.endsWith('.pdf')) return 'pdf';
