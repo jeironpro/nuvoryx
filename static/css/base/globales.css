@@ -4,6 +4,16 @@
     padding: 0;
 }
 
+:root {
+    font-size: 16px;
+}
+
+@media (max-width: 640px) {
+    :root {
+        font-size: 14px;
+    }
+}
+
 body {
     font-family: var(--font-body);
     background-color: var(--bg-color);
@@ -13,6 +23,13 @@ body {
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
+    padding: 0 var(--space-unit, 1rem); /* Side padding for mobile */
+}
+
+@media (min-width: 640px) {
+    body {
+        padding: 0;
+    }
 }
 
 .bg-decoration {

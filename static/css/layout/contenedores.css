@@ -2,21 +2,41 @@
     display: flex;
     flex: 1;
     overflow: hidden;
-    max-width: 95%;
+    max-width: var(--container-max, 1280px);
     width: 100%;
     margin: 0 auto;
     flex-direction: column;
     padding-bottom: 60px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+@media (min-width: 640px) {
+    .contenedor {
+        padding-left: 32px;
+        padding-right: 32px;
+    }
 }
 
 .migas-pan {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
-    margin-bottom: 24px;
+    margin: 16px 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 640px) {
+    .migas-pan {
+        gap: 8px;
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
 }
 
 .migas-pan .barra {

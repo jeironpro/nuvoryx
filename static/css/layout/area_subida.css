@@ -2,10 +2,10 @@
     background: rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(10px);
     border: 2px dashed var(--primary-light);
-    border-radius: 24px;
-    padding: 64px;
+    border-radius: 20px;
+    padding: 32px 16px;
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,26 +16,43 @@
     overflow: hidden;
 }
 
+@media (min-width: 640px) {
+    .area-subida {
+        border-radius: 24px;
+        padding: 64px;
+        margin-bottom: 32px;
+    }
+}
+
 .area-subida:hover,
 .area-subida.highlight {
     border-color: var(--primary-color);
     background: rgba(255, 255, 255, 0.8);
-    transform: scale(1.01);
+    transform: scale(1.005);
     box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.15);
 }
 
 .icono-subida {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     background: linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%);
-    border-radius: 20px;
+    border-radius: 16px;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     color: var(--primary-color);
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (min-width: 640px) {
+    .icono-subida {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        margin-bottom: 16px;
+    }
 }
 
 .area-subida:hover .icono-subida {
@@ -50,8 +67,14 @@
 
 .contenido-subida p {
     color: var(--text-secondary);
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
+}
+
+@media (min-width: 640px) {
+    .contenido-subida p {
+        font-size: 16px;
+    }
 }
 
 .texto-enlace {
@@ -64,35 +87,60 @@
 }
 
 .sub-texto {
-    font-size: 12px;
+    font-size: 11px;
     margin-top: 4px;
+}
+
+@media (min-width: 640px) {
+    .sub-texto {
+        font-size: 12px;
+    }
 }
 
 .item-progreso-subida {
     background-color: #ffffff;
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 32px;
+    padding: 12px;
+    margin-bottom: 24px;
     display: flex;
     align-items: flex-start;
-    gap: 16px;
+    gap: 12px;
+}
+
+@media (min-width: 640px) {
+    .item-progreso-subida {
+        padding: 16px;
+        margin-bottom: 32px;
+        gap: 16px;
+    }
 }
 
 .icono-progreso {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-secondary);
     background: #f2f4f7;
-    border-radius: 8px;
-    padding: 6px;
+    border-radius: 6px;
+    padding: 4px;
+    flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+    .icono-progreso {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        padding: 6px;
+    }
 }
 
 .detalles-progreso {
     flex: 1;
+    min-width: 0; /* Allow text truncate */
 }
 
 .info-progreso {
@@ -103,21 +151,43 @@
 
 .info-progreso .nombre-archivo {
     font-weight: 500;
-    font-size: 14px;
+    font-size: 13px;
     color: #344054;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+    .info-progreso .nombre-archivo {
+        font-size: 14px;
+    }
 }
 
 .info-progreso .tamano-archivo {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-secondary);
+}
+
+@media (min-width: 640px) {
+    .info-progreso .tamano-archivo {
+        font-size: 12px;
+    }
 }
 
 .contenedor-barra-progreso {
     width: 100%;
-    height: 8px;
+    height: 6px;
     background-color: #f2f4f7;
-    border-radius: 4px;
+    border-radius: 3px;
     overflow: hidden;
+}
+
+@media (min-width: 640px) {
+    .contenedor-barra-progreso {
+        height: 8px;
+        border-radius: 4px;
+    }
 }
 
 .barra-progreso {
@@ -127,11 +197,17 @@
 }
 
 .estado-progreso {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
     color: #344054;
     align-self: flex-start;
     margin-top: 2px;
+}
+
+@media (min-width: 640px) {
+    .estado-progreso {
+        font-size: 14px;
+    }
 }
 
 .btn-cerrar {

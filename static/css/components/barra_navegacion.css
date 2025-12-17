@@ -2,7 +2,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 32px;
+    padding: 12px 16px;
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -11,6 +11,12 @@
     top: 0;
     z-index: 100;
     transition: all 0.3s ease;
+}
+
+@media (min-width: 640px) {
+    .barra-navegacion {
+        padding: 16px 32px;
+    }
 }
 
 .badge-notificacion {
@@ -28,23 +34,35 @@
 .nav-izquierda {
     display: flex;
     align-items: center;
-    gap: 40px;
+    gap: 16px;
+}
+
+@media (min-width: 1024px) {
+    .nav-izquierda {
+        gap: 40px;
+    }
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .logo img {
-    height: 32px;
+    height: 28px;
     width: auto;
+}
+
+@media (min-width: 640px) {
+    .logo img {
+        height: 32px;
+    }
 }
 
 .nombre-marca {
     font-weight: 700;
-    font-size: 20px;
+    font-size: 18px;
     color: var(--text-primary);
     background: var(--accent-gradient);
     -webkit-background-clip: text;
@@ -52,18 +70,48 @@
     -webkit-text-fill-color: transparent;
 }
 
+@media (max-width: 480px) {
+    .nombre-marca {
+        display: none; /* Hide text on very small screens to save space */
+    }
+}
+
+@media (min-width: 640px) {
+    .nombre-marca {
+        font-size: 20px;
+    }
+}
+
 .enlaces-nav {
     list-style: none;
-    display: flex;
-    gap: 32px;
+    display: none; /* Hidden on mobile by default */
+    gap: 20px;
+}
+
+@media (min-width: 768px) {
+    .enlaces-nav {
+        display: flex;
+    }
+}
+
+@media (min-width: 1024px) {
+    .enlaces-nav {
+        gap: 32px;
+    }
 }
 
 .enlaces-nav a {
     text-decoration: none;
     color: var(--text-secondary);
     font-weight: 500;
-    font-size: 16px;
+    font-size: 14px;
     transition: color 0.2s;
+}
+
+@media (min-width: 640px) {
+    .enlaces-nav a {
+        font-size: 16px;
+    }
 }
 
 .enlaces-nav a:hover {
@@ -73,11 +121,17 @@
 .nav-derecha {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 8px;
+}
+
+@media (min-width: 640px) {
+    .nav-derecha {
+        gap: 16px;
+    }
 }
 
 .btn-mejorar {
-    display: flex;
+    display: none; /* Hidden on mobile */
     align-items: center;
     gap: 8px;
     padding: 8px 14px;
@@ -90,20 +144,35 @@
     cursor: pointer;
 }
 
+@media (min-width: 1024px) {
+    .btn-mejorar {
+        display: flex;
+    }
+}
+
 .btn-icono {
     background-color: #ffffff;
     border: 1px solid #eaecf0;
     color: #667085;
     cursor: pointer;
-    padding: 8px;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    padding: 6px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
     box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+@media (min-width: 640px) {
+    .btn-icono {
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+    }
 }
 
 .btn-icono:hover {
@@ -121,10 +190,16 @@
 }
 
 .avatar-icon {
-    font-size: 40px !important;
+    font-size: 32px !important;
     color: #667085;
     cursor: pointer;
     transition: opacity 0.2s;
+}
+
+@media (min-width: 640px) {
+    .avatar-icon {
+        font-size: 40px !important;
+    }
 }
 
 .avatar-icon:hover {
@@ -132,7 +207,13 @@
 }
 
 .detalles-usuario {
-    display: flex;
+    display: none; /* Hidden on small screens */
     flex-direction: column;
     justify-content: center;
+}
+
+@media (min-width: 1024px) {
+    .detalles-usuario {
+        display: flex;
+    }
 }

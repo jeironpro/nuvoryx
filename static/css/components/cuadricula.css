@@ -1,13 +1,35 @@
 /* Grid View Styles */
+.vista-cuadricula .tabla-archivos-contenedor {
+    overflow: visible;
+}
+
+.vista-cuadricula .tabla-archivos {
+    min-width: 100%;
+}
+
 .vista-cuadricula .tabla-archivos thead {
     display: none;
 }
 
 .vista-cuadricula .tabla-archivos tbody {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
-    padding: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    padding: 12px 0;
+}
+
+@media (min-width: 480px) {
+    .vista-cuadricula .tabla-archivos tbody {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+        padding: 16px 0;
+    }
+}
+
+@media (min-width: 768px) {
+    .vista-cuadricula .tabla-archivos tbody {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
 }
 
 .vista-cuadricula .fila-archivo {
@@ -16,10 +38,17 @@
     background: white;
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 16px;
+    padding: 12px;
     transition: all 0.2s ease;
     cursor: pointer;
     position: relative;
+    max-width: 100%;
+}
+
+@media (min-width: 480px) {
+    .vista-cuadricula .fila-archivo {
+        padding: 16px;
+    }
 }
 
 .vista-cuadricula .fila-archivo:hover {
@@ -29,9 +58,16 @@
 
 .vista-cuadricula .col-casilla {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 8px;
+    right: 8px;
     z-index: 10;
+}
+
+@media (min-width: 480px) {
+    .vista-cuadricula .col-casilla {
+        top: 12px;
+        right: 12px;
+    }
 }
 
 .vista-cuadricula .fila-archivo td {
@@ -44,35 +80,62 @@
 .vista-cuadricula .info-archivo {
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     width: 100%;
 }
 
+@media (min-width: 480px) {
+    .vista-cuadricula .info-archivo {
+        gap: 12px;
+    }
+}
+
 .vista-cuadricula .icono-archivo {
-    width: 64px;
-    height: 64px;
-    font-size: 32px;
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+}
+
+@media (min-width: 480px) {
+    .vista-cuadricula .icono-archivo {
+        width: 64px;
+        height: 64px;
+        font-size: 32px;
+    }
 }
 
 .vista-cuadricula .texto-archivo {
     text-align: center;
     width: 100%;
     overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .vista-cuadricula .texto-archivo .nombre {
     font-weight: 600;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 13px;
+}
+
+@media (min-width: 480px) {
+    .vista-cuadricula .texto-archivo .nombre {
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
 }
 
 .vista-cuadricula .texto-archivo .tamano {
     color: var(--text-secondary);
-    font-size: 0.85rem;
+    font-size: 11px;
+}
+
+@media (min-width: 480px) {
+    .vista-cuadricula .texto-archivo .tamano {
+        font-size: 12px;
+    }
 }
 
 .vista-cuadricula .col-fecha,
@@ -81,9 +144,15 @@
 }
 
 .vista-cuadricula .col-subido-por {
-    display: block !important;
-    margin-top: 8px;
-    width: 100%;
+    display: none !important; /* Hide uploaded by in small grid */
+}
+
+@media (min-width: 640px) {
+    .vista-cuadricula .col-subido-por {
+        display: block !important;
+        margin-top: 8px;
+        width: 100%;
+    }
 }
 
 .vista-cuadricula .info-usuario {
@@ -100,73 +169,59 @@
 
 .vista-cuadricula .email-usuario {
     display: block;
-    max-width: 180px; /* Force constraint */
+    max-width: 150px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 0.75rem;
+    font-size: 11px;
 }
 
 .vista-cuadricula .avatar-icon {
-    font-size: 24px !important;
+    font-size: 20px !important;
 }
 
 .vista-cuadricula .acciones-tabla {
     opacity: 0;
     position: absolute;
-    bottom: 12px;
-    right: 12px;
+    bottom: 8px;
+    right: 8px;
     transition: opacity 0.2s;
     background: rgba(255, 255, 255, 0.9);
     border-radius: 8px;
-    padding: 4px;
+    padding: 2px;
+    display: flex;
+    gap: 2px;
+}
+
+@media (min-width: 480px) {
+    .vista-cuadricula .acciones-tabla {
+        bottom: 12px;
+        right: 12px;
+        padding: 4px;
+        gap: 4px;
+    }
 }
 
 .vista-cuadricula .fila-archivo:hover .acciones-tabla {
     opacity: 1;
 }
 
-/* Auth Modal Improvements */
-.modal-contenido {
-    max-width: 480px;
-    padding: 40px;
-    border-radius: 24px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.input-modal {
-    padding: 14px 18px;
-    font-size: 16px;
-    margin-bottom: 0px;
-    border-radius: 12px;
-    border: 1px solid #E4E7EC;
-    background-color: #F9FAFB;
-    transition: all 0.2s;
-}
-
-.input-modal:focus {
-    background-color: #fff;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px #F4EBFF;
-}
-
-.label-input {
-    margin-bottom: 8px;
+/* Modal and General UI Improvements (Moved from here to modales.css/botones.css where they belong if missing) */
+/* Kept here for compatibility but optimized */
+.btn-primario, .btn-secundario {
+    padding: 10px 20px;
+    border-radius: 10px;
     font-weight: 600;
-    color: #344054;
+    transition: transform 0.1s ease;
+    cursor: pointer;
     font-size: 14px;
 }
 
-.acciones-modal {
-    margin-top: 32px;
-    gap: 12px;
-}
-
-.btn-primario, .btn-secundario {
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 600;
-    transition: transform 0.1s ease;
+@media (min-width: 640px) {
+    .btn-primario, .btn-secundario {
+        padding: 12px 24px;
+        border-radius: 12px;
+    }
 }
 
 .btn-primario:active, .btn-secundario:active {

@@ -1,15 +1,30 @@
+.tabla-archivos-contenedor {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 24px;
+    border-radius: 12px;
+}
+
 .tabla-archivos {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     background-color: transparent;
+    min-width: 600px; /* Ensure table doesn't compress too much */
+}
+
+@media (max-width: 640px) {
+    .tabla-archivos {
+        min-width: 500px;
+    }
 }
 
 .tabla-archivos th {
     text-align: left;
-    padding: 16px 32px;
+    padding: 12px 16px;
     color: var(--text-secondary);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -20,14 +35,28 @@
     z-index: 10;
 }
 
+@media (min-width: 640px) {
+    .tabla-archivos th {
+        padding: 16px 32px;
+        font-size: 12px;
+    }
+}
+
 .tabla-archivos td {
-    padding: 20px 32px;
+    padding: 12px 16px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.03);
     vertical-align: middle;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-primary);
     background-color: transparent;
     transition: background-color 0.2s;
+}
+
+@media (min-width: 640px) {
+    .tabla-archivos td {
+        padding: 20px 32px;
+        font-size: 14px;
+    }
 }
 
 .tabla-archivos tr {
@@ -36,7 +65,7 @@
 
 .tabla-archivos tr:hover {
     background: rgba(255, 255, 255, 0.6);
-    transform: scale(1.005);
+    transform: scale(1.002);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     z-index: 5;
     position: relative;
@@ -66,11 +95,38 @@
 }
 
 .col-nombre {
-    width: 35%;
+    width: auto;
+}
+
+@media (min-width: 1024px) {
+    .col-nombre {
+        width: 35%;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Hide some columns on tablet/mobile to save space */
+    .col-actualizado,
+    .col-subido-por {
+        display: none;
+    }
+
+    .tabla-archivos th:nth-child(4),
+    .tabla-archivos td:nth-child(4),
+    .tabla-archivos th:nth-child(5),
+    .tabla-archivos td:nth-child(5) {
+        display: none;
+    }
 }
 
 .col-fecha {
-    width: 17%;
+    width: 120px;
+}
+
+@media (min-width: 640px) {
+    .col-fecha {
+        width: 17%;
+    }
 }
 
 .col-actualizado {
@@ -82,48 +138,74 @@
 }
 
 .col-acciones {
-    width: 10%;
+    width: 100px;
     text-align: center;
+}
+
+@media (min-width: 640px) {
+    .col-acciones {
+        width: 10%;
+    }
 }
 
 .info-archivo {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
+}
+
+@media (min-width: 640px) {
+    .info-archivo {
+        gap: 16px;
+    }
 }
 
 .icono-archivo {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 }
 
+@media (min-width: 640px) {
+    .icono-archivo {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+    }
+}
+
 .icon-pdf {
     background-color: #fef3f2;
     color: #f04438;
-    border: 4px solid #fef3f2;
+    border: 3px solid #fef3f2;
+}
+
+@media (min-width: 640px) {
+    .icon-pdf {
+        border-width: 4px;
+    }
 }
 
 .icon-img {
     background-color: #f9f5ff;
     color: #9e77ed;
-    border: 4px solid #f9f5ff;
+    border: 3px solid #f9f5ff;
 }
 
 .icon-video {
     background-color: #ecfdf3;
     color: #12b76a;
-    border: 4px solid #ecfdf3;
+    border: 3px solid #ecfdf3;
 }
 
 .icon-fig {
     background-color: #fff4ed;
     color: #fb6514;
-    border: 4px solid #fff4ed;
+    border: 3px solid #fff4ed;
 }
 
 .texto-archivo {
@@ -133,11 +215,27 @@
 
 .texto-archivo .nombre {
     font-weight: 500;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+    .texto-archivo .nombre {
+        max-width: none;
+    }
 }
 
 .texto-archivo .tamano {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-secondary);
+}
+
+@media (min-width: 640px) {
+    .texto-archivo .tamano {
+        font-size: 12px;
+    }
 }
 
 .info-usuario {
@@ -172,7 +270,13 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
+}
+
+@media (min-width: 640px) {
+    .acciones-tabla {
+        gap: 8px;
+    }
 }
 
 .btn-icono-tabla {
@@ -180,14 +284,30 @@
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 6px;
+    padding: 4px;
     border-radius: 6px;
     transition: all 0.2s;
+}
+
+@media (min-width: 640px) {
+    .btn-icono-tabla {
+        padding: 6px;
+    }
 }
 
 .btn-icono-tabla:hover {
     background-color: #f2f4f7;
     color: var(--text-primary);
+}
+
+.btn-icono-tabla .material-symbols-outlined {
+    font-size: 20px;
+}
+
+@media (min-width: 640px) {
+    .btn-icono-tabla .material-symbols-outlined {
+        font-size: 24px;
+    }
 }
 
 .btn-icono-tabla[title="Eliminar"]:hover {
