@@ -52,10 +52,13 @@ function abrirPrevisualizacion(id, nombre, tipo) {
     modal.style.display = 'flex';
 
     // Lógica de visualización mejorada
+    const extension = nombre.split('.').pop().toLowerCase();
+
     if (tipo === 'imagen') {
         const img = document.createElement('img');
         img.src = urlArchivo;
         img.className = 'preview-img';
+        img.onerror = () => mostrarRespaldo(contenido, tipo);
         contenido.innerHTML = '';
         contenido.appendChild(img);
     }
@@ -111,8 +114,21 @@ function abrirPrevisualizacion(id, nombre, tipo) {
             })
             .catch(() => mostrarRespaldo(contenido, tipo));
     }
+    else if (tipo === 'word' && extension === 'docx') {
+        // Previsualización local para .docx usando mammoth
+        fetch(urlArchivo)
+            .then(r => r.arrayBuffer())
+            .then(arrayBuffer => {
+                mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+                    .then(result => {
+                        contenido.innerHTML = `<div class="preview-docx-container">${result.value}</div>`;
+                    })
+                    .catch(() => mostrarRespaldo(contenido, tipo));
+            })
+            .catch(() => mostrarRespaldo(contenido, tipo));
+    }
     else if (tipo === 'word' || tipo === 'excel' || tipo === 'powerpoint') {
-        // Usar visor de Google para documentos de Office
+        // Usar visor de Google para documentos de Office (solo funciona si es público)
         const urlCodificada = encodeURIComponent(urlArchivo);
         const urlVisorGoogle = `https://docs.google.com/viewer?url=${urlCodificada}&embedded=true`;
 
@@ -120,7 +136,7 @@ function abrirPrevisualizacion(id, nombre, tipo) {
             <div class="preview-office-container">
                 <iframe src="${urlVisorGoogle}" class="preview-iframe"></iframe>
                 <div class="office-fallback-msg">
-                    <small>Si el visor no carga, es posible que el archivo no sea accesible públicamente desde internet.</small>
+                    <small>Este visor requiere que el archivo sea accesible por internet. Si no carga, descárgalo para verlo.</small>
                 </div>
             </div>`;
     }
@@ -143,12 +159,26 @@ function abrirPrevisualizacion(id, nombre, tipo) {
 
 function mostrarRespaldo(contenedor, tipo) {
     let nombreIcono = 'draft';
-    let color = '#ccc';
+    let color = '#64748b';
 
-    if(tipo === 'word') { nombreIcono = 'description'; color = '#2b579a'; }
-    else if(tipo === 'excel') { nombreIcono = 'table_chart'; color = '#217346'; }
-    else if(tipo === 'powerpoint') { nombreIcono = 'slideshow'; color = '#c43e1c'; }
-    else if(tipo === 'archivo') { nombreIcono = 'folder_zip'; color = '#fbbc04'; }
+    const mapeo = {
+        'word': { icon: 'description', color: '#2b579a' },
+        'excel': { icon: 'table_chart', color: '#217346' },
+        'powerpoint': { icon: 'slideshow', color: '#c43e1c' },
+        'archivo': { icon: 'folder_zip', color: '#fbbc04' },
+        'pdf': { icon: 'picture_as_pdf', color: '#f04438' },
+        'imagen': { icon: 'image', color: '#9e77ed' },
+        'video': { icon: 'movie', color: '#12b76a' },
+        'audio': { icon: 'audiotrack', color: '#d93025' },
+        'codigo': { icon: 'code', color: '#5f6368' },
+        'texto': { icon: 'article', color: '#667085' },
+        'fig': { icon: 'token', color: '#ff7262' }
+    };
+
+    if (mapeo[tipo]) {
+        nombreIcono = mapeo[tipo].icon;
+        color = mapeo[tipo].color;
+    }
 
     contenedor.innerHTML = `<div class="fallback-container">
         <span class="material-symbols-outlined fallback-icon" style="color: ${color};">${nombreIcono}</span>

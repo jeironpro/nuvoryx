@@ -205,25 +205,3 @@
 .vista-cuadricula .fila-archivo:hover .acciones-tabla {
     opacity: 1;
 }
-
-/* Modal and General UI Improvements (Moved from here to modales.css/botones.css where they belong if missing) */
-/* Kept here for compatibility but optimized */
-.btn-primario, .btn-secundario {
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-weight: 600;
-    transition: transform 0.1s ease;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-@media (min-width: 640px) {
-    .btn-primario, .btn-secundario {
-        padding: 12px 24px;
-        border-radius: 12px;
-    }
-}
-
-.btn-primario:active, .btn-secundario:active {
-    transform: scale(0.98);
-}

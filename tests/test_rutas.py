@@ -5,13 +5,13 @@ Pruebas para rutas de la aplicación
 from models import Carpeta, Usuario, db
 
 
-def test_ruta_principal_sin_auth(cliente):
+def test_ruta_principal_sin_autenticacion(cliente):
     """Prueba acceso a ruta principal sin autenticación"""
     respuesta = cliente.get("/")
     assert respuesta.status_code == 200
 
 
-def test_ruta_principal_con_auth(cliente_autenticado):
+def test_ruta_principal_con_autenticacion(cliente_autenticado):
     """Prueba acceso a ruta principal con autenticación"""
     respuesta = cliente_autenticado.get("/")
     assert respuesta.status_code == 200

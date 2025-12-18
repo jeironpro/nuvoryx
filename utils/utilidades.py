@@ -64,24 +64,47 @@ def detectar_tipo_archivo(nombre_archivo):
 
     nombre = nombre_archivo.lower()
 
+    # Filenames without extension (common in dev environments)
+    nom_exactos = ["license", "readme", "procfile", "dockerfile", "makefile", ".env", ".gitignore", "docker-compose"]
+    if nombre in nom_exactos or any(nombre.startswith(n + ".") for n in nom_exactos):
+        return "texto"
+
     # PDF
     if nombre.endswith(".pdf"):
         return "pdf"
 
-    # Imágenes
-    if any(nombre.endswith(ext) for ext in [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".bmp", ".ico"]):
+    # Images
+    ext_img = [
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".webp",
+        ".svg",
+        ".bmp",
+        ".ico",
+        ".tiff",
+        ".tif",
+        ".avif",
+        ".heic",
+        ".heif",
+        ".fig",
+    ]
+    if any(nombre.endswith(ext) for ext in ext_img):
         return "imagen"
 
     # Videos
-    if any(nombre.endswith(ext) for ext in [".mp4", ".mov", ".avi", ".webm", ".mkv", ".flv", ".wmv"]):
+    ext_video = [".mp4", ".mov", ".avi", ".webm", ".mkv", ".flv", ".wmv", ".m4v", ".3gp", ".3g2", ".ogv"]
+    if any(nombre.endswith(ext) for ext in ext_video):
         return "video"
 
     # Audio
-    if any(nombre.endswith(ext) for ext in [".mp3", ".wav", ".ogg", ".m4a", ".flac", ".aac"]):
+    ext_audio = [".mp3", ".wav", ".ogg", ".m4a", ".flac", ".aac", ".wma", ".opus"]
+    if any(nombre.endswith(ext) for ext in ext_audio):
         return "audio"
 
     # Markdown
-    if nombre.endswith(".md"):
+    if nombre.endswith(".md") or nombre.endswith(".markdown"):
         return "markdown"
 
     # CSV
@@ -93,54 +116,99 @@ def detectar_tipo_archivo(nombre_archivo):
         return "json"
 
     # Office Documents (Word)
-    if any(nombre.endswith(ext) for ext in [".doc", ".docx", ".rtf", ".odt"]):
+    if any(nombre.endswith(ext) for ext in [".doc", ".docx", ".rtf", ".odt", ".pages"]):
         return "word"
 
     # Office Documents (Excel)
-    if any(nombre.endswith(ext) for ext in [".xls", ".xlsx", ".ods"]):
+    if any(nombre.endswith(ext) for ext in [".xls", ".xlsx", ".ods", ".numbers"]):
         return "excel"
 
     # Office Documents (PowerPoint)
-    if any(nombre.endswith(ext) for ext in [".ppt", ".pptx", ".odp"]):
+    if any(nombre.endswith(ext) for ext in [".ppt", ".pptx", ".odp", ".key"]):
         return "powerpoint"
 
-    # Código
-    if any(
-        nombre.endswith(ext)
-        for ext in [
-            ".html",
-            ".css",
-            ".js",
-            ".jsx",
-            ".ts",
-            ".tsx",
-            ".py",
-            ".java",
-            ".c",
-            ".cpp",
-            ".php",
-            ".rb",
-            ".go",
-            ".rs",
-            ".sql",
-            ".sh",
-            ".bat",
-            ".ps1",
-            ".xml",
-            ".yaml",
-            ".yml",
-            ".ini",
-            ".conf",
-        ]
-    ):
+    # Código / Config / Data
+    ext_codigo = [
+        ".html",
+        ".htm",
+        ".xhtml",
+        ".ejs",
+        ".pug",
+        ".haml",
+        ".css",
+        ".less",
+        ".scss",
+        ".sass",
+        ".js",
+        ".jsx",
+        ".ts",
+        ".tsx",
+        ".vue",
+        ".svelte",
+        ".py",
+        ".pyw",
+        ".ipynb",
+        ".java",
+        ".kt",
+        ".kts",
+        ".scala",
+        ".gradle",
+        ".c",
+        ".cpp",
+        ".cc",
+        ".h",
+        ".hpp",
+        ".hh",
+        ".cs",
+        ".fs",
+        ".php",
+        ".rb",
+        ".go",
+        ".rs",
+        ".pl",
+        ".pm",
+        ".t",
+        ".sql",
+        ".xml",
+        ".yaml",
+        ".yml",
+        ".toml",
+        ".ini",
+        ".conf",
+        ".dockerfile",
+        ".env",
+        ".gitignore",
+        ".makefile",
+        ".sh",
+        ".bash",
+        ".zsh",
+        ".bat",
+        ".cmd",
+        ".ps1",
+        ".r",
+        ".rmd",
+        ".jl",
+        ".dart",
+        ".lua",
+        ".clj",
+        ".ex",
+        ".erl",
+        ".hs",
+        ".ml",
+        ".pas",
+        ".d",
+        ".nim",
+        ".zig",
+    ]
+    if any(nombre.endswith(ext) for ext in ext_codigo):
         return "codigo"
 
     # Archivos comprimidos
-    if any(nombre.endswith(ext) for ext in [".zip", ".rar", ".7z", ".tar", ".gz", ".bz2"]):
+    if any(nombre.endswith(ext) for ext in [".zip", ".rar", ".7z", ".tar", ".gz", ".bz2", ".xz", ".iso", ".dmg"]):
         return "archivo"
 
-    # Texto plano por defecto si no es nada de lo anterior pero parece texto
-    if any(nombre.endswith(ext) for ext in [".txt", ".log"]):
+    # Texto plano por defecto
+    if any(nombre.endswith(ext) for ext in [".txt", ".log", ".tex", ".latex", ".ascii"]):
         return "texto"
 
     return "otro"

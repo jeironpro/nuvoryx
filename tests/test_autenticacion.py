@@ -22,8 +22,8 @@ def test_registro_exitoso(cliente):
         mock_email.assert_called_once()
 
 
-def test_registro_email_duplicado(cliente, usuario):
-    """Prueba registro con email duplicado"""
+def test_registro_correo_duplicado(cliente, usuario):
+    """Prueba registro con correo duplicado"""
     respuesta = cliente.post(
         "/registro",
         json={"nombre": "Otro Usuario", "correo": usuario.correo, "contrasena": "contrasena123"},
@@ -34,7 +34,7 @@ def test_registro_email_duplicado(cliente, usuario):
     assert "error" in datos
 
 
-def test_registro_password_corto(cliente):
+def test_registro_contrasena_corto(cliente):
     """Prueba registro con contraseña corta"""
     respuesta = cliente.post(
         "/registro", json={"nombre": "Usuario", "correo": "usuario@example.com", "contrasena": "123"}
@@ -55,7 +55,7 @@ def test_login_exitoso(cliente, usuario):
     assert datos["usuario"]["correo"] == usuario.correo
 
 
-def test_login_password_incorrecta(cliente, usuario):
+def test_login_contrasena_incorrecta(cliente, usuario):
     """Prueba login con contraseña incorrecta"""
     respuesta = cliente.post("/inicio_sesion", json={"correo": usuario.correo, "contrasena": "clave_erronea"})
 
@@ -73,7 +73,7 @@ def test_login_correo_inexistente(cliente):
     assert "error" in datos
 
 
-def test_logout(cliente_autenticado):
+def test_cerrar_sesion(cliente_autenticado):
     """Prueba cierre de sesión"""
     respuesta = cliente_autenticado.post("/cerrar_sesion")
 

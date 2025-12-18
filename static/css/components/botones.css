@@ -108,3 +108,35 @@
     box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
     transform: translateY(-2px);
 }
+
+.btn-crea-carpeta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #ffffff;
+    border: 1px solid var(--btn-secondary-border);
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+@media (min-width: 640px) {
+    .btn-crea-carpeta {
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-size: 14px;
+    }
+}
+
+.btn-crea-carpeta:hover {
+    background-color: #f9fafb;
+    border-color: #d0d5dd;
+    color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}

@@ -19,20 +19,27 @@
 .modal-contenido {
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(24px);
-    padding: 24px;
+    padding: 32px;
     border-radius: 20px;
     width: 100%;
     max-width: 440px;
+    max-height: 90vh;
+    overflow-y: auto;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.5);
     animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 @media (min-width: 640px) {
     .modal-contenido {
-        padding: 40px;
+        padding: 48px;
         border-radius: 24px;
+        max-height: 95vh;
+        gap: 24px;
     }
 }
 
@@ -61,9 +68,9 @@
 /* Modal UI Helpers */
 .input-modal {
     width: 100%;
-    padding: 12px 16px;
+    padding: 14px 18px;
     font-size: 14px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     border-radius: 10px;
     border: 1px solid #E4E7EC;
     background-color: #F9FAFB;
@@ -87,7 +94,7 @@
 
 .label-input {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: 600;
     color: #344054;
     font-size: 13px;
@@ -103,8 +110,8 @@
 .acciones-modal {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 24px;
+    gap: 16px;
+    margin-top: 32px;
 }
 
 @media (min-width: 480px) {
@@ -123,7 +130,10 @@
 
 .contenedor-inputs-modal {
     text-align: left;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .icono-modal-pass {
