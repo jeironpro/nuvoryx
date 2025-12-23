@@ -1,13 +1,8 @@
-"""
-Pruebas para autenticación
-"""
-
 import json
 from unittest.mock import patch
 
 
 def test_registro_exitoso(cliente):
-    """Prueba registro de usuario exitoso"""
     with patch("blueprints.autenticacion.enviar_correo_confirmacion") as mock_email:
         respuesta = cliente.post(
             "/registro",
@@ -23,7 +18,6 @@ def test_registro_exitoso(cliente):
 
 
 def test_registro_correo_duplicado(cliente, usuario):
-    """Prueba registro con correo duplicado"""
     respuesta = cliente.post(
         "/registro",
         json={"nombre": "Otro Usuario", "correo": usuario.correo, "contrasena": "contrasena123"},
@@ -35,7 +29,6 @@ def test_registro_correo_duplicado(cliente, usuario):
 
 
 def test_registro_contrasena_corto(cliente):
-    """Prueba registro con contraseña corta"""
     respuesta = cliente.post(
         "/registro", json={"nombre": "Usuario", "correo": "usuario@example.com", "contrasena": "123"}
     )
@@ -46,7 +39,6 @@ def test_registro_contrasena_corto(cliente):
 
 
 def test_login_exitoso(cliente, usuario):
-    """Prueba login exitoso"""
     respuesta = cliente.post("/inicio_sesion", json={"correo": usuario.correo, "contrasena": "contrasenaprueba123"})
 
     assert respuesta.status_code == 200
@@ -56,7 +48,6 @@ def test_login_exitoso(cliente, usuario):
 
 
 def test_login_contrasena_incorrecta(cliente, usuario):
-    """Prueba login con contraseña incorrecta"""
     respuesta = cliente.post("/inicio_sesion", json={"correo": usuario.correo, "contrasena": "clave_erronea"})
 
     assert respuesta.status_code == 401
@@ -65,7 +56,6 @@ def test_login_contrasena_incorrecta(cliente, usuario):
 
 
 def test_login_correo_inexistente(cliente):
-    """Prueba login con correo inexistente"""
     respuesta = cliente.post("/inicio_sesion", json={"correo": "noexiste@example.com", "contrasena": "contrasena123"})
 
     assert respuesta.status_code == 401
@@ -74,7 +64,6 @@ def test_login_correo_inexistente(cliente):
 
 
 def test_cerrar_sesion(cliente_autenticado):
-    """Prueba cierre de sesión"""
     respuesta = cliente_autenticado.post("/cerrar_sesion")
 
     assert respuesta.status_code == 200

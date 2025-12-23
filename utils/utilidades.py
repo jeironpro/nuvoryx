@@ -5,9 +5,7 @@ from flask import current_app as app
 from models import Archivo, Carpeta
 
 
-# --- Utilidades ---
 def parsear_tamano(cadena_tamano):
-    """Parsea 'MB' a 'bytes' (float)"""
     if not cadena_tamano:
         return 0.0
     try:
@@ -32,7 +30,6 @@ def parsear_tamano(cadena_tamano):
 
 
 def formatear_tamano(valor):
-    """Formatea 'bytes' a 'string' legible"""
     for unidad in ["Bytes", "KB", "MB", "GB", "TB"]:
         if valor < 1024:
             return f"{valor:.2f} {unidad}"
@@ -41,15 +38,12 @@ def formatear_tamano(valor):
 
 
 def obtener_tamano_carpeta(id_carpeta):
-    """Calcula recursivamente el tamaño de una carpeta"""
     total = 0.0
 
-    # Archivos directos
     archivos = Archivo.query.filter_by(carpeta_id=id_carpeta).all()
     for archivo in archivos:
         total += parsear_tamano(archivo.tamano)
 
-    # Subcarpetas
     subcarpetas = Carpeta.query.filter_by(carpeta_padre_id=id_carpeta).all()
     for subcarpeta in subcarpetas:
         total += obtener_tamano_carpeta(subcarpeta.id)
@@ -58,22 +52,18 @@ def obtener_tamano_carpeta(id_carpeta):
 
 
 def detectar_tipo_archivo(nombre_archivo):
-    """Detecta el tipo de archivo por extensión para mejor previsualización"""
     if not nombre_archivo:
         return "otro"
 
     nombre = nombre_archivo.lower()
 
-    # Filenames without extension (common in dev environments)
     nom_exactos = ["license", "readme", "procfile", "dockerfile", "makefile", ".env", ".gitignore", "docker-compose"]
     if nombre in nom_exactos or any(nombre.startswith(n + ".") for n in nom_exactos):
         return "texto"
 
-    # PDF
     if nombre.endswith(".pdf"):
         return "pdf"
 
-    # Images
     ext_img = [
         ".jpg",
         ".jpeg",
@@ -93,41 +83,31 @@ def detectar_tipo_archivo(nombre_archivo):
     if any(nombre.endswith(ext) for ext in ext_img):
         return "imagen"
 
-    # Videos
     ext_video = [".mp4", ".mov", ".avi", ".webm", ".mkv", ".flv", ".wmv", ".m4v", ".3gp", ".3g2", ".ogv"]
     if any(nombre.endswith(ext) for ext in ext_video):
         return "video"
-
-    # Audio
     ext_audio = [".mp3", ".wav", ".ogg", ".m4a", ".flac", ".aac", ".wma", ".opus"]
     if any(nombre.endswith(ext) for ext in ext_audio):
         return "audio"
 
-    # Markdown
     if nombre.endswith(".md") or nombre.endswith(".markdown"):
         return "markdown"
 
-    # CSV
     if nombre.endswith(".csv"):
         return "csv"
 
-    # JSON
     if nombre.endswith(".json"):
         return "json"
 
-    # Office Documents (Word)
     if any(nombre.endswith(ext) for ext in [".doc", ".docx", ".rtf", ".odt", ".pages"]):
         return "word"
 
-    # Office Documents (Excel)
     if any(nombre.endswith(ext) for ext in [".xls", ".xlsx", ".ods", ".numbers"]):
         return "excel"
 
-    # Office Documents (PowerPoint)
     if any(nombre.endswith(ext) for ext in [".ppt", ".pptx", ".odp", ".key"]):
         return "powerpoint"
 
-    # Código / Config / Data
     ext_codigo = [
         ".html",
         ".htm",
@@ -203,11 +183,9 @@ def detectar_tipo_archivo(nombre_archivo):
     if any(nombre.endswith(ext) for ext in ext_codigo):
         return "codigo"
 
-    # Archivos comprimidos
     if any(nombre.endswith(ext) for ext in [".zip", ".rar", ".7z", ".tar", ".gz", ".bz2", ".xz", ".iso", ".dmg"]):
         return "archivo"
 
-    # Texto plano por defecto
     if any(nombre.endswith(ext) for ext in [".txt", ".log", ".tex", ".latex", ".ascii"]):
         return "texto"
 
@@ -215,7 +193,6 @@ def detectar_tipo_archivo(nombre_archivo):
 
 
 def borrar_fisicos(carpeta_obj):
-    """Función recursiva para borrar físicos"""
     for subcarpeta in carpeta_obj.subcarpetas:
         borrar_fisicos(subcarpeta)
 
@@ -230,26 +207,20 @@ def borrar_fisicos(carpeta_obj):
 
 
 def agregar_carpeta_a_zip(archivo_zip, carpeta_obj, ruta_base=""):
-    """Recursivamente agrega archivos y subcarpetas al ZIP"""
-    # Ruta actual en el ZIP
     ruta_carpeta = os.path.join(ruta_base, carpeta_obj.nombre) if ruta_base else carpeta_obj.nombre
 
-    # Agregar archivos de esta carpeta
     for archivo in carpeta_obj.archivos:
         ruta_archivo = os.path.join(app.config["UPLOAD_FOLDER"], archivo.nombre_hash)
 
         if os.path.exists(ruta_archivo):
-            # Agregar con la ruta completa en el ZIP
             nombre_archivo = os.path.join(ruta_carpeta, archivo.nombre_original)
             archivo_zip.write(ruta_archivo, arcname=nombre_archivo)
 
-    # Agregar subcarpetas recursivamente
     for subcarpeta in carpeta_obj.subcarpetas:
         agregar_carpeta_a_zip(archivo_zip, subcarpeta, ruta_carpeta)
 
 
 def obtener_estadisticas_carpeta(id_carpeta):
-    """Devuelve estadísticas completas de una carpeta incluyendo subcarpetas."""
     total_carpetas = 0
     total_archivos = 0
     total_bytes = 0
@@ -258,7 +229,6 @@ def obtener_estadisticas_carpeta(id_carpeta):
     def recorrer(id_actual):
         nonlocal total_carpetas, total_archivos, total_bytes
 
-        # Subcarpetas directas
         subcarpetas = Carpeta.query.filter_by(carpeta_padre_id=id_actual).all()
 
         for c in subcarpetas:
@@ -267,7 +237,6 @@ def obtener_estadisticas_carpeta(id_carpeta):
 
         total_carpetas += len(subcarpetas)
 
-        # Archivos directos
         archivos = Archivo.query.filter_by(carpeta_id=id_actual).all()
         total_archivos += len(archivos)
 

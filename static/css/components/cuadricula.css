@@ -1,4 +1,3 @@
-/* Grid View Styles */
 .vista-cuadricula .tabla-archivos-contenedor {
     overflow: visible;
 }
@@ -13,12 +12,12 @@
 
 .vista-cuadricula .tabla-archivos tbody {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 12px;
     padding: 12px 0;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 640px) {
     .vista-cuadricula .tabla-archivos tbody {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 16px;
@@ -26,9 +25,10 @@
     }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     .vista-cuadricula .tabla-archivos tbody {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
     }
 }
 
@@ -36,16 +36,16 @@
     display: flex;
     flex-direction: column;
     background: white;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-color, #e5e7eb);
     border-radius: 12px;
-    padding: 12px;
+    padding: 14px;
     transition: all 0.2s ease;
     cursor: pointer;
     position: relative;
     max-width: 100%;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 640px) {
     .vista-cuadricula .fila-archivo {
         padding: 16px;
     }
@@ -53,17 +53,18 @@
 
 .vista-cuadricula .fila-archivo:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary-color, #6941c6);
 }
 
 .vista-cuadricula .col-casilla {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 10px;
+    right: 10px;
     z-index: 10;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 640px) {
     .vista-cuadricula .col-casilla {
         top: 12px;
         right: 12px;
@@ -80,23 +81,23 @@
 .vista-cuadricula .info-archivo {
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 640px) {
     .vista-cuadricula .info-archivo {
         gap: 12px;
     }
 }
 
 .vista-cuadricula .icono-archivo {
-    width: 48px;
-    height: 48px;
-    font-size: 24px;
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 640px) {
     .vista-cuadricula .icono-archivo {
         width: 64px;
         height: 64px;
@@ -112,30 +113,24 @@
 
 .vista-cuadricula .texto-archivo .nombre {
     font-weight: 600;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
     display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 13px;
+    color: #111827;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 640px) {
     .vista-cuadricula .texto-archivo .nombre {
         font-size: 14px;
-        margin-bottom: 4px;
     }
 }
 
 .vista-cuadricula .texto-archivo .tamano {
-    color: var(--text-secondary);
-    font-size: 11px;
-}
-
-@media (min-width: 480px) {
-    .vista-cuadricula .texto-archivo .tamano {
-        font-size: 12px;
-    }
+    color: var(--text-secondary, #6b7280);
+    font-size: 12px;
 }
 
 .vista-cuadricula .col-fecha,
@@ -144,13 +139,13 @@
 }
 
 .vista-cuadricula .col-subido-por {
-    display: none !important; /* Hide uploaded by in small grid */
+    display: none !important;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
     .vista-cuadricula .col-subido-por {
         display: block !important;
-        margin-top: 8px;
+        margin-top: 10px;
         width: 100%;
     }
 }
@@ -160,11 +155,17 @@
     align-items: center;
     text-align: center;
     width: 100%;
+    gap: 4px;
 }
 
 .vista-cuadricula .detalles-usuario {
     width: 100%;
     align-items: center;
+}
+
+.vista-cuadricula .nombre-usuario {
+    font-size: 12px;
+    font-weight: 500;
 }
 
 .vista-cuadricula .email-usuario {
@@ -177,31 +178,37 @@
 }
 
 .vista-cuadricula .avatar-icon {
-    font-size: 20px !important;
+    font-size: 24px !important;
 }
 
 .vista-cuadricula .acciones-tabla {
     opacity: 0;
     position: absolute;
-    bottom: 8px;
-    right: 8px;
+    bottom: 10px;
+    right: 10px;
     transition: opacity 0.2s;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
     border-radius: 8px;
-    padding: 2px;
+    padding: 4px;
     display: flex;
-    gap: 2px;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-@media (min-width: 480px) {
+@media (min-width: 640px) {
     .vista-cuadricula .acciones-tabla {
         bottom: 12px;
         right: 12px;
-        padding: 4px;
-        gap: 4px;
     }
 }
 
 .vista-cuadricula .fila-archivo:hover .acciones-tabla {
     opacity: 1;
+}
+
+@media (hover: none) {
+    .vista-cuadricula .acciones-tabla {
+        opacity: 1;
+    }
 }

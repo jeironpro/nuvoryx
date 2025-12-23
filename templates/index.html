@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-      <header class="encabezado-pagina">
-        <div class="contenido-encabezado">
-          <h1>Gestión de Archivos</h1>
-          <p>
+<header class="encabezado-pagina">
+    <div class="contenido-encabezado">
+        <h1>Gestión de Archivos</h1>
+        <p>
             Administra, organiza y comparte tus archivos de manera centralizada
             y segura.
-          </p>
-        </div>
-      </header>
+        </p>
+    </div>
+</header>
 
-      {% include 'partials/_estadisticas.html' %}
-      {% include 'partials/_ruta_navegacion.html' %}
-      {% include 'partials/_area_subida.html' %}
-      {% include 'partials/_tabla_archivo.html' %}
+{% include 'partials/_estadisticas.html' %}
+{% include 'partials/_ruta_navegacion.html' %}
+{% include 'partials/_area_subida.html' %}
+{% include 'partials/_tabla_archivo.html' %}
 {% endblock %}
 
 {% block floating_elements %}

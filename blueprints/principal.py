@@ -17,7 +17,6 @@ principal_bp = Blueprint("principal", __name__)
 def indice():
     carpeta_id = request.args.get("carpeta_id", type=int)
 
-    # Obtener carpeta actual y ruta de migas
     carpeta_actual = None
     ruta_migas = []
 
@@ -29,35 +28,26 @@ def indice():
         estadisticas_carpeta = obtener_estadisticas_carpeta(carpeta_id)
         carpeta_actual = Carpeta.query.get_or_404(carpeta_id)
 
-        # Verificar que la carpeta pertenece al usuario autenticado (si está autenticado)
         if current_user.is_authenticated and carpeta_actual.usuario_id and carpeta_actual.usuario_id != current_user.id:
-            abort(403)  # Forbidden
+            abort(403)
 
-        # Construir ruta de migas
         temporal = carpeta_actual
         while temporal:
             ruta_migas.insert(0, {"id": temporal.id, "nombre": temporal.nombre})
-            # Asume que el modelo Carpeta tiene una relación 'padre'
-            # o similar para el objeto padre
             temporal = temporal.padre if hasattr(temporal, "padre") else None
 
-        # Calcular el tamaño de la carpeta actual
         total_uso_bytes = obtener_tamano_carpeta(carpeta_id)
     else:
-        # Raíz: Calcular estadísticas globales
         if current_user.is_authenticated:
-            # Usuario autenticado: contar solo sus carpetas
             total_carpetas = Carpeta.query.filter_by(usuario_id=current_user.id).count()
             carpetas_raiz = Carpeta.query.filter_by(carpeta_padre_id=None, usuario_id=current_user.id).all()
         else:
-            # Usuario no autenticado: contar carpetas sin usuario asignado
             total_carpetas = 0
             carpetas_raiz = []
 
         for c in carpetas_raiz:
             total_uso_bytes += obtener_tamano_carpeta(c.id)
 
-        # Archivos raíz
         if current_user.is_authenticated:
             archivos_raiz = Archivo.query.filter_by(carpeta_id=None, usuario_id=current_user.id).all()
         else:
@@ -66,7 +56,6 @@ def indice():
         for a in archivos_raiz:
             total_uso_bytes += parsear_tamano(a.tamano)
 
-        # Tipo más común global
         if current_user.is_authenticated:
             todos_archivos = Archivo.query.filter_by(usuario_id=current_user.id).all()
         else:
@@ -94,15 +83,10 @@ def indice():
             "tipo_comun": tipo_mas_comun,
         }
 
-    # Obtener carpetas y archivos según contexto
     if carpeta_id:
-        # Dentro de una carpeta: mostrar subcarpetas y archivos de esa carpeta
-        # Revisar propietario de la carpeta padre.
-        # Subelementos son accesibles si el padre es accesible.
         carpetas_query = Carpeta.query.filter_by(carpeta_padre_id=carpeta_id).order_by(Carpeta.nombre).all()
         archivos = Archivo.query.filter_by(carpeta_id=carpeta_id).order_by(Archivo.nombre_original.asc()).all()
     else:
-        # Raíz: mostrar carpetas y archivos raíz del usuario
         if current_user.is_authenticated:
             carpetas_query = (
                 Carpeta.query.filter_by(carpeta_padre_id=None, usuario_id=current_user.id)
@@ -122,7 +106,6 @@ def indice():
                 Archivo.query.filter_by(carpeta_id=None, usuario_id=None).order_by(Archivo.nombre_original.asc()).all()
             )
 
-    # Procesar carpetas con tamaño
     carpetas = []
     for c in carpetas_query:
         tamano_bytes = obtener_tamano_carpeta(c.id)
@@ -136,24 +119,13 @@ def indice():
             }
         )
 
-    # Sumar el tamaño de las carpetas a la estadística de la carpeta actual
-    # if estadisticas_carpeta:
-    #     tamano_carpetas = sum([float(carpeta["tamano"][:-3]) for carpeta in carpetas])
-    #     try:
-    #         espacio_carpeta = float(estadisticas_carpeta["espacio_usado"].split(" ")[0])
-    #     except ValueError:
-    #         espacio_carpeta = 0.0
-
-    #     estadisticas_carpeta["espacio_usado"] = formatear_tamano(espacio_carpeta + tamano_carpetas)
-
-    # Formatear la respuesta para la plantilla
     lista_archivos = []
     for archivo in archivos:
         lista_archivos.append(
             {
                 "id": archivo.id,
                 "nombre": archivo.nombre_original,
-                "tipo": archivo.tipo,  # extension/mime simplificada
+                "tipo": archivo.tipo,
                 "tamano": archivo.tamano,
                 "fecha_subida": archivo.fecha_subida,
             }

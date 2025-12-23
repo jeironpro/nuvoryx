@@ -5,13 +5,14 @@
         </div>
         <div class="barra-busqueda">
             <span class="material-symbols-outlined">search</span>
-            <input type="text" id="entrada-busqueda" placeholder="Buscar" />
+            <input type="text" id="entrada-busqueda" placeholder="Buscar" aria-label="Buscar archivos" />
         </div>
-        <button class="btn-crea-carpeta btn-crea-carpeta-items" onclick="abrirModalEspecifico('modal-crear-carpeta')">
-            <span class="material-symbols-outlined icono-20px">create_new_folder</span>
+        <button class="btn-crea-carpeta btn-crea-carpeta-items" onclick="abrirModalEspecifico('modal-crear-carpeta')"
+            aria-label="Crear nueva carpeta">
+            <span class="material-symbols-outlined icono-20px" aria-hidden="true">create_new_folder</span>
             Nueva Carpeta
         </button>
-        <select id="filtro-tipo" class="anadir-filtro select-limpio">
+        <select id="filtro-tipo" class="anadir-filtro select-limpio" aria-label="Filtrar por tipo de archivo">
             <option value="todos">Todos los tipos</option>
             <option value="pdf">PDF</option>
             <option value="imagen">Imágenes</option>
@@ -24,12 +25,13 @@
             <option value="codigo">Código</option>
             <option value="otro">Otros</option>
         </select>
-        <select id="orden-fecha" class="anadir-filtro select-limpio">
+        <select id="orden-fecha" class="anadir-filtro select-limpio" aria-label="Ordenar archivos">
             <option value="desc">Más recientes</option>
             <option value="asc">Más antiguos</option>
         </select>
-        <button id="btn-cambiar-vista" class="btn-icono-tabla margen-izq-8" title="Cambiar vista">
-            <span class="material-symbols-outlined">grid_view</span>
+        <button id="btn-cambiar-vista" class="btn-icono-tabla margen-izq-8" aria-label="Cambiar vista"
+            title="Cambiar vista">
+            <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
         </button>
     </div>
 
@@ -52,7 +54,8 @@
             <tr class="fila-archivo fila-carpeta" data-tipo="carpeta" data-id="{{ carpeta.id }}">
                 <td><input type="checkbox" class="casilla-archivo casilla-carpeta" /></td>
                 <td>
-                    <a href="{{ url_for('principal.indice', carpeta_id=carpeta.id) }}" class="enlace-carpeta enlace-carpeta-bloque">
+                    <a href="{{ url_for('principal.indice', carpeta_id=carpeta.id) }}"
+                        class="enlace-carpeta enlace-carpeta-bloque">
                         <div class="info-archivo">
                             <div class="icono-archivo icon-folder">
                                 <span class="material-symbols-outlined">folder</span>
@@ -65,7 +68,8 @@
                     </a>
                 </td>
                 <td>{{ carpeta.fecha_creacion.strftime('%Y-%m-%d %H:%M') if carpeta.fecha_creacion else '-' }}</td>
-                <td>{{ carpeta.fecha_actualizacion.strftime('%Y-%m-%d %H:%M') if carpeta.fecha_actualizacion else '-' }}</td>
+                <td>{{ carpeta.fecha_actualizacion.strftime('%Y-%m-%d %H:%M') if carpeta.fecha_actualizacion else '-' }}
+                </td>
                 <td>
                     <div class="info-usuario">
                         <span class="material-symbols-outlined avatar-icon">account_circle</span>
@@ -81,8 +85,8 @@
                             title="Eliminar">
                             <span class="material-symbols-outlined">delete</span>
                         </button>
-                        <a href="{{ url_for('archivos.descargar_carpeta', carpeta_id=carpeta.id) }}" class="btn-icono-tabla"
-                            title="Descargar">
+                        <a href="{{ url_for('archivos.descargar_carpeta', carpeta_id=carpeta.id) }}"
+                            class="btn-icono-tabla" title="Descargar">
                             <span class="material-symbols-outlined">download</span>
                         </a>
                     </div>
@@ -159,8 +163,9 @@
                             title="Eliminar">
                             <span class="material-symbols-outlined">delete</span>
                         </button>
-                        <a href="{{ url_for('archivos.descargar_archivo', archivo_id=archivo.id) }}" class="btn-icono-tabla"
-                            title="Descargar" download><span class="material-symbols-outlined">download</span></a>
+                        <a href="{{ url_for('archivos.descargar_archivo', archivo_id=archivo.id) }}"
+                            class="btn-icono-tabla" title="Descargar" download><span
+                                class="material-symbols-outlined">download</span></a>
                     </div>
                 </td>
             </tr>
@@ -179,7 +184,6 @@
 </div>
 </main>
 
-<!-- Barra de Acciones Masivas -->
 <div id="barra-acciones-masivas" class="barra-flotante barra-flotante-oculta">
     <div class="contenido-barra-flotante">
         <span id="contador-seleccionados" class="texto-contador">0 archivos

@@ -1,4 +1,3 @@
-// Estado interno de notificaciones (se cargará de la DB)
 let listaNotificaciones = [];
 let indicadorActivo = false;
 
@@ -10,9 +9,7 @@ export function abrirModalEspecifico(idModal) {
     }
 }
 
-// Exponer globalmente para onclick HTML
 window.abrirModalEspecifico = abrirModalEspecifico;
-
 
 export function inicializarInterfaz() {
     cargarNotificaciones();
@@ -40,13 +37,13 @@ export function guardarNotificacion(msg, tipo = 'info') {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mensaje: msg, tipo: tipo })
     })
-    .then(resp => resp.json())
-    .then(datos => {
-        if (datos.success) {
-            cargarNotificaciones(); // Recargar para tener el estado fresco
-        }
-    })
-    .catch(err => console.error("Error guardando notificación:", err));
+        .then(resp => resp.json())
+        .then(datos => {
+            if (datos.success) {
+                cargarNotificaciones();
+            }
+        })
+        .catch(err => console.error("Error guardando notificación:", err));
 }
 
 function renderizarIndicador() {
@@ -71,7 +68,7 @@ function configurarPaneles() {
         btnAjustes.addEventListener('click', (e) => {
             e.stopPropagation();
             const visible = panelAjustes.style.display === 'block';
-            cerrarPaneles(); // cerrar otros
+            cerrarPaneles();
             panelAjustes.style.display = visible ? 'none' : 'block';
         });
     }
@@ -85,7 +82,6 @@ function configurarPaneles() {
         });
     }
 
-    // Cerrar al hacer click fuera
     window.addEventListener('click', (e) => {
         if (panelAjustes && panelAjustes.style.display === 'block') {
             if (!panelAjustes.contains(e.target) && e.target !== btnAjustes) {
@@ -101,14 +97,12 @@ function configurarPaneles() {
 }
 
 function configurarCierreModalesGlobal() {
-    // Cierra cualquier modal al hacer click en el overlay
     window.addEventListener('click', (e) => {
         if (e.target.classList.contains('modal-overlay')) {
             e.target.style.display = 'none';
         }
     });
 
-    // Delegación para botones cerrar dentro de modales
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('btn-cerrar-modal') || e.target.closest('.btn-cerrar-modal')) {
             e.preventDefault();
@@ -117,7 +111,6 @@ function configurarCierreModalesGlobal() {
         }
     });
 
-    // Backup especifico ids
     ['btn-cancelar-modal', 'btn-cerrar-notificaciones'].forEach(id => {
         const btn = document.getElementById(id);
         if (btn) {
@@ -125,6 +118,42 @@ function configurarCierreModalesGlobal() {
                 const modal = btn.closest('.modal-overlay');
                 if (modal) modal.style.display = 'none';
             });
+        }
+    });
+
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'style') {
+                const modal = mutation.target;
+                if (modal.classList.contains('modal-overlay') && modal.style.display !== 'none') {
+                    setTimeout(() => {
+                        const primerInput = modal.querySelector('input, textarea, select');
+                        if (primerInput) primerInput.focus();
+                    }, 50);
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        observer.observe(modal, { attributes: true });
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const activeElement = document.activeElement;
+            const modal = activeElement.closest('.modal-overlay');
+
+            if (modal && modal.style.display !== 'none') {
+                if (activeElement.tagName === 'TEXTAREA') return;
+
+                if (activeElement.tagName === 'BUTTON') return;
+                const btnPrimario = modal.querySelector('.btn-primario');
+                if (btnPrimario && !btnPrimario.disabled) {
+                    e.preventDefault();
+                    btnPrimario.click();
+                }
+            }
         }
     });
 }
@@ -138,7 +167,7 @@ function configurarInterfazNotificaciones() {
         btn.addEventListener('click', async () => {
             lista.innerHTML = '<div style="text-align:center;padding:10px;">Cargando...</div>';
 
-            await cargarNotificaciones(); // Asegurar datos frescos
+            await cargarNotificaciones();
 
             lista.innerHTML = '';
             if (listaNotificaciones.length === 0) {
@@ -155,7 +184,6 @@ function configurarInterfazNotificaciones() {
             }
             modal.style.display = 'flex';
 
-            // Marcar leídas
             if (indicadorActivo) {
                 fetch('/notificaciones/marcar-leidas', { method: 'POST' })
                     .then(() => {

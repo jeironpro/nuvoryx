@@ -41,9 +41,7 @@ class Carpeta(db.Model):
     fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Relación con subcarpetas
     subcarpetas = db.relationship("Carpeta", backref=db.backref("padre", remote_side=[id]), lazy=True)
-    # Relación con archivos
     archivos = db.relationship("Archivo", backref="carpeta", lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -58,7 +56,6 @@ class Archivo(db.Model):
     tamano = db.Column(db.String(50), nullable=False)
     fecha_subida = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Clave foranea de la carpeta y usuario
     carpeta_id = db.Column(db.Integer, db.ForeignKey("carpeta.id"), nullable=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey("usuario.id"), nullable=False)
 

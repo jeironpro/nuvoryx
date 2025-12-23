@@ -23,13 +23,11 @@ def crear_carpeta():
     if not nombre:
         return jsonify({"error": "Nombre requerido"}), 400
 
-    # Asignar usuario_id si está autenticado
     usuario_id = current_user.id if current_user.is_authenticated else None
 
     nueva_carpeta = Carpeta(nombre=nombre, carpeta_padre_id=carpeta_padre_id, usuario_id=usuario_id)
     db.session.add(nueva_carpeta)
 
-    # Actualizar fecha de la carpeta padre
     if carpeta_padre_id:
         padre = Carpeta.query.get(carpeta_padre_id)
         if padre:
@@ -55,16 +53,10 @@ def subir_archivo():
     archivos_guardados = []
 
     for archivo, ruta_relativa in zip(archivos, rutas_relativas):
-        # ---------------------------------------
-        # 1. Separar carpetas y nombre de archivo
-        # ---------------------------------------
         partes = ruta_relativa.split("/")
-        carpetas = partes[:-1]  # todas menos el archivo final
+        carpetas = partes[:-1]
         nombre_archivo = secure_filename(partes[-1])
 
-        # ---------------------------------------
-        # 2. Crear recursivamente estructura
-        # ---------------------------------------
         carpeta_actual_id = carpeta_raiz_id
 
         for c in carpetas:
@@ -79,15 +71,11 @@ def subir_archivo():
 
             carpeta_actual_id = carpeta_db.id
 
-        # ---------------------------------------
-        # 3. Guardar archivo en disco
-        # ---------------------------------------
         extension_archivo = os.path.splitext(nombre_archivo)[1].lower()
         nombre_hash = f"{uuid.uuid4().hex}{extension_archivo}"
         ruta_archivo = os.path.join(current_app.config["CARPETA_SUBIDAS"], nombre_hash)
         archivo.save(ruta_archivo)
 
-        # Tamaño
         tamano_bytes = os.path.getsize(ruta_archivo)
         if tamano_bytes < 1024:
             tamano_str = f"{tamano_bytes} B"
@@ -96,12 +84,8 @@ def subir_archivo():
         else:
             tamano_str = f"{tamano_bytes / (1024 * 1024):.1f} MB"
 
-        # Tipo
         tipo_simple = detectar_tipo_archivo(nombre_archivo)
 
-        # ---------------------------------------
-        # 4. Guardar en base de datos
-        # ---------------------------------------
         nuevo_archivo = Archivo(
             nombre_original=nombre_archivo,
             nombre_hash=nombre_hash,
@@ -112,7 +96,6 @@ def subir_archivo():
         )
         db.session.add(nuevo_archivo)
 
-        # Actualizar fecha de la carpeta contenedora
         if carpeta_actual_id:
             padre = Carpeta.query.get(carpeta_actual_id)
             if padre:
@@ -135,7 +118,6 @@ def subir_archivo():
 def eliminar_archivo(archivo_id):
     archivo = Archivo.query.get_or_404(archivo_id)
 
-    # Eliminar del disco
     ruta_archivo = os.path.join(current_app.config["CARPETA_SUBIDAS"], archivo.nombre_hash)
     try:
         if os.path.exists(ruta_archivo):
@@ -192,7 +174,6 @@ def eliminar_multiples():
         if archivo:
             if archivo.carpeta_id:
                 parents_to_update.add(archivo.carpeta_id)
-            # Eliminar del disco
             ruta_archivo = os.path.join(current_app.config["CARPETA_SUBIDAS"], archivo.nombre_hash)
             try:
                 if os.path.exists(ruta_archivo):
@@ -202,25 +183,20 @@ def eliminar_multiples():
                 errores += 1
                 continue
 
-            # Eliminar de BD
             db.session.delete(archivo)
             exitos += 1
-    # Eliminar Carpetas
+
     carpetas_ids = data.get("carpetas_ids", [])
     for carpeta_id in carpetas_ids:
         carpeta = Carpeta.query.get(carpeta_id)
         if carpeta:
             if carpeta.carpeta_padre_id:
                 parents_to_update.add(carpeta.carpeta_padre_id)
-            # Aquí idealmente deberíamos eliminar recursivamente
-            # los archivos físicos dentro. Por simplicidad delegamos
-            # en cascade delete de la BD para los registros.
 
             borrar_fisicos(carpeta)
             db.session.delete(carpeta)
             exitos += 1
 
-    # Actualizar fechas de las carpetas padres afectadas
     for p_id in parents_to_update:
         padre = Carpeta.query.get(p_id)
         if padre:
@@ -232,18 +208,15 @@ def eliminar_multiples():
 
 @archivos_bp.route("/descargar-zip", methods=["POST"])
 def descargar_zip():
-    # Obtener IDs del formulario (si se usa form submit) o JSON
     if request.is_json:
         datos = request.get_json()
         ids = datos.get("ids", [])
     else:
-        # Si viene de un formulario tradicional (hidden inputs)
         ids = request.form.getlist("ids[]")
 
     if not ids:
         return jsonify({"error": "No IDs provided"}), 400
 
-    # Crear buffer en memoria para el ZIP
     memoria_archivo = io.BytesIO()
 
     try:
@@ -255,9 +228,6 @@ def descargar_zip():
                     ruta_archivo = os.path.join(current_app.config["CARPETA_SUBIDAS"], archivo.nombre_hash)
 
                     if os.path.exists(ruta_archivo):
-                        # Añadir al zip con el nombre original
-                        # Manejo de duplicados de nombre en el zip podría requerir lógica extra,
-                        # pero por simplicidad usaremos nombre original
                         archivo_zip.write(ruta_archivo, arcname=archivo.nombre_original)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -276,7 +246,6 @@ def descargar_zip():
 def descargar_carpeta(carpeta_id):
     carpeta = Carpeta.query.get_or_404(carpeta_id)
 
-    # Crear buffer en memoria para el ZIP
     memoria_archivo = io.BytesIO()
 
     try:
@@ -287,7 +256,6 @@ def descargar_carpeta(carpeta_id):
 
     memoria_archivo.seek(0)
 
-    # Nombre del archivo ZIP
     zip_filename = f"{carpeta.nombre}.zip"
 
     return send_file(memoria_archivo, mimetype="application/zip", as_attachment=True, download_name=zip_filename)

@@ -1,5 +1,4 @@
 #!/bin/bash
-# Script para formatear código con black e isort
 
 echo "🎨 Formateando código con Black..."
 black .

@@ -23,7 +23,7 @@ body {
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
-    padding: 0 var(--space-unit, 1rem); /* Side padding for mobile */
+    padding: 0 var(--space-unit, 1rem);
 }
 
 @media (min-width: 640px) {

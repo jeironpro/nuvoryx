@@ -1,13 +1,10 @@
-/* Base */
 @import url('base/globales.css');
 @import url('base/variables.css');
 
-/* Layout */
 @import url('layout/area_subida.css');
 @import url('layout/contenedores.css');
 @import url('layout/estadisticas.css');
 
-/* Components */
 @import url('components/barra_flotante.css');
 @import url('components/barra_navegacion.css');
 @import url('components/botones.css');

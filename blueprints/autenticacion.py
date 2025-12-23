@@ -10,7 +10,6 @@ autenticacion_bp = Blueprint("autenticacion", __name__)
 
 
 def enviar_correo_confirmacion(correo, token):
-    """Envía un correo de confirmación"""
     enlace = f"http://localhost:5555/confirmar/{token}"
 
     mensaje = Message(
@@ -27,7 +26,6 @@ def enviar_correo_confirmacion(correo, token):
 
 
 def enviar_correo_restablecimiento(correo, token):
-    """Envía un correo para restablecer la contraseña"""
     enlace = f"http://localhost:5555/restablecer/{token}"
 
     mensaje = Message(
@@ -61,18 +59,15 @@ def registro():
     correo = datos.get("correo")
     contrasena = datos.get("contrasena")
 
-    # Validación
     if not nombre or not correo or not contrasena:
         return jsonify({"error": "Todos los campos son requeridos"}), 400
 
     if len(contrasena) < 6:
         return jsonify({"error": "La contraseña debe tener al menos 6 caracteres"}), 400
 
-    # Verificar si el correo ya existe
     if Usuario.query.filter_by(correo=correo).first():
         return jsonify({"error": "El email ya está registrado"}), 400
 
-    # Crear nuevo usuario
     nuevo_usuario = Usuario(nombre=nombre, correo=correo)
     nuevo_usuario.codificar_contrasena(contrasena)
 
@@ -110,7 +105,6 @@ def confirmar(token):
         usuario.activo = True
         db.session.commit()
 
-        # Auto-login después del registro
         login_user(usuario)
         return redirect(url_for("principal.indice"))
     else:
@@ -126,7 +120,6 @@ def inicio_sesion():
     if not correo or not contrasena:
         return jsonify({"error": "Email y contraseña son requeridos"}), 400
 
-    # Buscar usuario
     usuario = Usuario.query.filter_by(correo=correo).first()
 
     if not usuario or not usuario.verificar_contrasena(contrasena):
@@ -135,7 +128,6 @@ def inicio_sesion():
     if not usuario.activo:
         return jsonify({"error": "El usuario no esta activado"}), 401
 
-    # Login exitoso
     login_user(usuario)
     usuario.ultimo_acceso = db.func.now()
     db.session.commit()
@@ -166,7 +158,6 @@ def cambiar_correo():
     if not nuevo_correo:
         return jsonify({"error": "Correo requerido"}), 400
 
-    # Verificar si el correo ya existe
     if Usuario.query.filter_by(correo=nuevo_correo).first():
         return jsonify({"error": "El email ya está registrado"}), 400
 
@@ -205,7 +196,6 @@ def olvido_password():
         token = generar_token_confirmacion(correo)
         enviar_correo_restablecimiento(correo, token)
 
-    # Respondemos con éxito siempre por seguridad (no revelar si el correo existe)
     return (
         jsonify({"success": True, "mensaje": "Si el correo está registrado, recibirás un enlace de recuperación."}),
         200,
@@ -217,10 +207,8 @@ def restablecer_verificar(token):
     correo = verificar_token_confirmacion(token)
 
     if correo:
-        # Redirigir a la home con el token para que el JS abra el modal
         return redirect(url_for("principal.indice", reset_token=token))
     else:
-        # Token inválido o expirado
         return redirect(url_for("principal.indice", error="token_invalido"))
 
 
@@ -247,7 +235,7 @@ def restablecer_password():
         return jsonify({"error": "La contraseña debe tener al menos 6 caracteres"}), 400
 
     usuario.codificar_contrasena(contrasena)
-    # También activar al usuario si no lo estaba (opcional, pero común)
+
     if not usuario.activo:
         usuario.activo = True
 

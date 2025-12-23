@@ -1,5 +1,4 @@
 #!/bin/bash
-# Script para ejecutar tests con pytest
 
 echo "🧪 Ejecutando tests con pytest..."
 

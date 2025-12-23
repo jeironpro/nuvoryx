@@ -1,8 +1,8 @@
-<!-- Modal Inicio Sesión -->
 <div id="modal-inicio-sesion" class="modal-overlay" style="display: none">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal"
-            style="color: #6941c6; background-color: #f9f5ff; border-color: #f4ebff;">login</span>
+        <div class="contenedor-icono icono-modal-login">
+            <span class="material-symbols-outlined">login</span>
+        </div>
         <h3>Iniciar Sesión</h3>
         <p>Ingresa tus credenciales para acceder a tu cuenta.</p>
         <div style="text-align: left; margin-bottom: 24px">
@@ -10,23 +10,26 @@
             <input type="email" id="entrada-inicio-sesion-correo" class="input-modal" />
             <label class="label-input">Contraseña</label>
             <input type="password" id="entrada-inicio-sesion-contrasena" class="input-modal" />
-            <div style="text-align: right; margin-top: 8px;">
-                <a href="#" id="enlace-olvido-contrasena" style="font-size: 14px; color: #6941c6; text-decoration: none;">¿Has olvidado tu contraseña?</a>
+            <div style="text-align: right; margin-top: 8px">
+                <a href="#" id="enlace-olvido-contrasena"
+                    style="font-size: 14px; color: #6941c6; text-decoration: none">¿Has olvidado tu contraseña?</a>
             </div>
-            <p id="error-inicio-sesion" style="color: #d92d20; font-size: 14px; margin-top: 8px; display: none;"></p>
+            <p id="error-inicio-sesion" style="color: #d92d20; font-size: 14px; margin-top: 8px; display: none"></p>
         </div>
         <div class="acciones-modal">
             <button class="btn-secundario btn-cerrar-modal">Cancelar</button>
-            <button id="btn-confirmar-inicio-sesion" class="btn-primario">Iniciar Sesión</button>
+            <button id="btn-confirmar-inicio-sesion" class="btn-primario">
+                Iniciar Sesión
+            </button>
         </div>
     </div>
 </div>
 
-<!-- Modal Registro -->
 <div id="modal-registro" class="modal-overlay" style="display: none">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal"
-            style="color: #027a48; background-color: #ecfdf3; border-color: #d1fadf;">person_add</span>
+        <div class="contenedor-icono icono-modal-success">
+            <span class="material-symbols-outlined">person_add</span>
+        </div>
         <h3>Crear Cuenta</h3>
         <p>Regístrate para empezar a usar Nuvoryx.</p>
         <div style="text-align: left; margin-bottom: 24px">
@@ -36,52 +39,94 @@
             <input type="email" id="entrada-registro-correo" class="input-modal" />
             <label class="label-input">Contraseña</label>
             <input type="password" id="entrada-registro-contrasena" class="input-modal" />
-            <p id="error-registro" style="color: #d92d20; font-size: 14px; margin-top: 8px; display: none;"></p>
+            <div id="barra-fuerza-registro" style="
+          height: 4px;
+          background: #eee;
+          margin-top: 8px;
+          border-radius: 2px;
+          overflow: hidden;
+          display: none;
+        ">
+                <div id="indicador-fuerza-registro" style="
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+            background-color: #d92d20;
+          "></div>
+            </div>
+            <p id="reglas-pass-registro" style="font-size: 11px; color: #667085; margin-top: 5px; display: none">
+                Mínimo 8 caracteres, mayúscula, número y símbolo.
+            </p>
+            <p id="error-registro" style="color: #d92d20; font-size: 14px; margin-top: 8px; display: none"></p>
         </div>
         <div class="acciones-modal">
             <button class="btn-secundario btn-cerrar-modal">Cancelar</button>
-            <button id="btn-confirmar-registro" class="btn-primario">Crear Cuenta</button>
+            <button id="btn-confirmar-registro" class="btn-primario">
+                Crear Cuenta
+            </button>
         </div>
     </div>
 </div>
 
-<!-- Modal Olvido Contraseña (Solicitud) -->
 <div id="modal-olvido-contrasena" class="modal-overlay" style="display: none">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal"
-            style="color: #6941c6; background-color: #f9f5ff; border-color: #f4ebff;">lock_reset</span>
+        <div class="contenedor-icono icono-modal-login">
+            <span class="material-symbols-outlined">lock_reset</span>
+        </div>
         <h3>Recuperar Contraseña</h3>
         <p>Introduce tu email para recibir un enlace de recuperación.</p>
         <div style="text-align: left; margin-bottom: 24px">
             <label class="label-input">Correo</label>
             <input type="email" id="entrada-olvido-correo" class="input-modal" />
-            <p id="error-olvido" style="color: #d92d20; font-size: 14px; margin-top: 8px; display: none;"></p>
-            <p id="exito-olvido" style="color: #027a48; font-size: 14px; margin-top: 8px; display: none;"></p>
+            <p id="error-olvido" style="color: #d92d20; font-size: 14px; margin-top: 8px; display: none"></p>
+            <p id="exito-olvido" style="color: #027a48; font-size: 14px; margin-top: 8px; display: none"></p>
         </div>
         <div class="acciones-modal">
             <button class="btn-secundario btn-cerrar-modal">Cancelar</button>
-            <button id="btn-confirmar-olvido" class="btn-primario">Enviar Enlace</button>
+            <button id="btn-confirmar-olvido" class="btn-primario">
+                Enviar Enlace
+            </button>
         </div>
     </div>
 </div>
 
-<!-- Modal Restablecer Contraseña (Nueva Contraseña) -->
 <div id="modal-restablecer-contrasena" class="modal-overlay" style="display: none">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal"
-            style="color: #6941c6; background-color: #f9f5ff; border-color: #f4ebff;">lock_open</span>
+        <div class="contenedor-icono icono-modal-login">
+            <span class="material-symbols-outlined">lock_open</span>
+        </div>
         <h3>Restablecer Contraseña</h3>
         <p>Introduce tu nueva contraseña.</p>
         <div style="text-align: left; margin-bottom: 24px">
             <label class="label-input">Nueva Contraseña</label>
             <input type="password" id="entrada-restablecer-contrasena" class="input-modal" />
-            <label class="label-input">Confirmar Contraseña</label>
+            <div id="barra-fuerza-restablecer" style="
+          height: 4px;
+          background: #eee;
+          margin-top: 8px;
+          border-radius: 2px;
+          overflow: hidden;
+          display: none;
+        ">
+                <div id="indicador-fuerza-restablecer" style="
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+            background-color: #d92d20;
+          "></div>
+            </div>
+            <p id="reglas-pass-restablecer" style="font-size: 11px; color: #667085; margin-top: 5px; display: none">
+                Mínimo 8 caracteres, mayúscula, número y símbolo.
+            </p>
+            <label class="label-input" style="margin-top: 16px">Confirmar Contraseña</label>
             <input type="password" id="entrada-restablecer-confirmar" class="input-modal" />
-            <p id="error-restablecer" style="color: #d92d20; font-size: 14px; margin-top: 8px; display: none;"></p>
+            <p id="error-restablecer" style="color: #d92d20; font-size: 14px; margin-top: 8px; display: none"></p>
         </div>
         <div class="acciones-modal">
             <button class="btn-secundario btn-cerrar-modal">Cancelar</button>
-            <button id="btn-confirmar-restablecer" class="btn-primario">Actualizar Contraseña</button>
+            <button id="btn-confirmar-restablecer" class="btn-primario">
+                Actualizar Contraseña
+            </button>
         </div>
     </div>
 </div>

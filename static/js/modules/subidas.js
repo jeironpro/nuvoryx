@@ -9,17 +9,14 @@ export function inicializarSubidas() {
     const btnSubirTodo = document.getElementById('btn-subir-todo');
 
     if (zonaArrastre && entradaArchivo) {
-        // Click para abrir
         zonaArrastre.addEventListener('click', () => entradaArchivo.click());
         entradaArchivo.addEventListener('click', (e) => e.stopPropagation());
 
-        // Evento de cambio
         entradaArchivo.addEventListener('change', (e) => {
             manejarArchivos(e.target.files);
             entradaArchivo.value = '';
         });
 
-        // Eventos Drago and Drop
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(nombreEvento => {
             zonaArrastre.addEventListener(nombreEvento, (e) => {
                 e.preventDefault();
@@ -68,7 +65,6 @@ export function inicializarSubidas() {
 }
 
 function manejarArchivos(archivos) {
-    // Verificar si el usuario está autenticado
     const estaAutenticado = document.body.getAttribute('data-authenticated') === 'true';
 
     if (!estaAutenticado) {
@@ -97,17 +93,14 @@ function agregarACola(archivo) {
     const item = clon.querySelector('.item-progreso-subida');
     item.dataset.colaId = id;
 
-    // Contenido
     clon.querySelector('.nombre-archivo').textContent = archivo.name;
     clon.querySelector('.tamano-archivo').textContent = formatearTamano(archivo.size);
 
-    // Icono
     const contenedorIcono = clon.querySelector('.icono-progreso');
     const conf = obtenerConfiguracionIcono(archivo);
     contenedorIcono.innerHTML = conf.svg;
     contenedorIcono.className = `icono-progreso ${conf.clase}`;
 
-    // Botón eliminar
     item.querySelector('.btn-cerrar').addEventListener('click', () => {
         colaArchivos = colaArchivos.filter(f => f.id !== id);
         item.remove();

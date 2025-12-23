@@ -1,12 +1,7 @@
-"""
-Pruebas para modelos de base de datos
-"""
-
 from models import Archivo, Carpeta, Usuario, db
 
 
 def test_crear_usuario(app):
-    """Prueba crear usuario"""
     with app.app_context():
         usuario = Usuario(nombre="Juan Perez", correo="juan@example.com")
         usuario.codificar_contrasena("contrasena123")
@@ -20,7 +15,6 @@ def test_crear_usuario(app):
 
 
 def test_verificar_contrasena(app, usuario):
-    """Prueba verificación de contraseña"""
     with app.app_context():
         user = Usuario.query.get(usuario.id)
         assert user.verificar_contrasena("contrasenaprueba123") is True
@@ -28,7 +22,6 @@ def test_verificar_contrasena(app, usuario):
 
 
 def test_crear_carpeta(app, usuario):
-    """Prueba crear carpeta"""
     with app.app_context():
         carpeta_obj = Carpeta(nombre="Mi Carpeta", usuario_id=usuario.id)
         db.session.add(carpeta_obj)
@@ -40,7 +33,6 @@ def test_crear_carpeta(app, usuario):
 
 
 def test_crear_archivo(app, usuario):
-    """Prueba crear archivo"""
     with app.app_context():
         archivo_obj = Archivo(
             nombre_original="documento.pdf",
@@ -59,7 +51,6 @@ def test_crear_archivo(app, usuario):
 
 
 def test_relacion_usuario_carpetas(app, usuario, carpeta):
-    """Prueba relación usuario-carpetas"""
     with app.app_context():
         user = Usuario.query.get(usuario.id)
         assert len(user.carpetas) == 1
@@ -67,7 +58,6 @@ def test_relacion_usuario_carpetas(app, usuario, carpeta):
 
 
 def test_relacion_usuario_archivos(app, usuario, archivo):
-    """Prueba relación usuario-archivos"""
     with app.app_context():
         user = Usuario.query.get(usuario.id)
         assert len(user.archivos) == 1
@@ -75,7 +65,6 @@ def test_relacion_usuario_archivos(app, usuario, archivo):
 
 
 def test_carpeta_subcarpetas(app, usuario, carpeta):
-    """Prueba subcarpetas"""
     with app.app_context():
         padre = Carpeta.query.get(carpeta.id)
         subcarpeta = Carpeta(nombre="Subcarpeta", carpeta_padre_id=padre.id, usuario_id=usuario.id)

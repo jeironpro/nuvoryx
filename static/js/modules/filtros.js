@@ -28,7 +28,6 @@ function filtrarTabla(consultaBusqueda, tipoFiltro) {
     const entradaBusqueda = document.getElementById('entrada-busqueda');
     const selectorTipo = document.getElementById('filtro-tipo');
 
-    // Obtener valores actuales si no se pasaron
     const consulta = consultaBusqueda !== null ? consultaBusqueda : (entradaBusqueda ? entradaBusqueda.value.toLowerCase() : '');
     const tipo = tipoFiltro !== null ? tipoFiltro : (selectorTipo ? selectorTipo.value : 'todos');
 
@@ -37,13 +36,9 @@ function filtrarTabla(consultaBusqueda, tipoFiltro) {
         const nombre = elemNombre ? elemNombre.textContent.toLowerCase() : '';
         const tipoArchivo = filaEnc.dataset.tipo || 'carpeta';
 
-        // Filtro de búsqueda
         const coincideBusqueda = nombre.includes(consulta);
-
-        // Filtro de tipo
         const coincideTipo = tipo === 'todos' || tipoArchivo === tipo;
 
-        // Mostrar/ocultar fila
         if (coincideBusqueda && coincideTipo) {
             filaEnc.style.display = '';
         } else {

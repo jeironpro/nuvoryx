@@ -1,4 +1,5 @@
 import { guardarNotificacion } from './interfaz.js';
+import { validaciones } from './validaciones.js';
 
 export function inicializarAutenticacion() {
     configurarInicioSesion();
@@ -61,6 +62,28 @@ function configurarRegistro() {
     const btnRegistro = document.getElementById('btn-confirmar-registro');
     if (!btnRegistro) return;
 
+    const inputPass = document.getElementById('entrada-registro-contrasena');
+    const inputEmail = document.getElementById('entrada-registro-correo');
+    const errorRegistro = document.getElementById('error-registro');
+
+    inputPass.addEventListener('keyup', (e) => {
+        const contrasena = e.target.value;
+        const resultado = validaciones.validarContrasena(contrasena);
+        actualizarBarraFuerza('barra-fuerza-registro', 'indicador-fuerza-registro', 'reglas-pass-registro', resultado, contrasena);
+    });
+
+    inputEmail.addEventListener('blur', (e) => {
+        if (e.target.value && !validaciones.validarEmail(e.target.value)) {
+            errorRegistro.textContent = "Formato de correo inválido";
+            errorRegistro.style.display = 'block';
+            errorRegistro.style.color = '#d92d20';
+        } else {
+            if (errorRegistro.textContent === "Formato de correo inválido") {
+                errorRegistro.style.display = 'none';
+            }
+        }
+    });
+
     btnRegistro.addEventListener('click', async () => {
         const nombre = document.getElementById('entrada-registro-nombre').value.trim();
         const correo = document.getElementById('entrada-registro-correo').value.trim();
@@ -75,6 +98,13 @@ function configurarRegistro() {
 
         if (contrasena.length < 6) {
             elError.textContent = 'La contraseña debe tener al menos 6 caracteres';
+            elError.style.display = 'block';
+            return;
+        }
+
+        const validacionPass = validaciones.validarContrasena(contrasena);
+        if (!validacionPass.valido) {
+            elError.textContent = 'La contraseña no es segura: ' + validacionPass.mensajes.join(', ');
             elError.style.display = 'block';
             return;
         }
@@ -179,6 +209,8 @@ function configurarCambioCorreo() {
 function configurarCambioContrasena() {
     const modal = document.getElementById('modal-cambiar-contrasena');
     if (!modal) return;
+
+    const inputPass = modal.querySelector('input[type="password"]');
 
     const btnConfirmar = modal.querySelector('.btn-primario');
     const entradas = modal.querySelectorAll('input');
@@ -302,7 +334,7 @@ function configurarRestablecerContrasena() {
             const datos = await resp.json();
             if (datos.success) {
                 guardarNotificacion(datos.mensaje);
-                window.location.href = '/'; // Limpiar params y cerrar modal
+                window.location.href = '/';
             } else {
                 elError.textContent = datos.error;
                 elError.style.display = 'block';
@@ -321,5 +353,52 @@ function verificarTokenRestablecimiento() {
     if (parametrosUrl.has('reset_token')) {
         const modal = document.getElementById('modal-restablecer-contrasena');
         if (modal) modal.style.display = 'flex';
+
+        const inputPass = document.getElementById('entrada-restablecer-contrasena');
+        const errorRestablecer = document.getElementById('error-restablecer');
+        if (inputPass) {
+            inputPass.addEventListener('keyup', (e) => {
+                const contrasena = e.target.value;
+                const resultado = validaciones.validarContrasena(contrasena);
+                actualizarBarraFuerza('barra-fuerza-restablecer', 'indicador-fuerza-restablecer', 'reglas-pass-restablecer', resultado, contrasena);
+            });
+        }
+    }
+}
+
+function actualizarBarraFuerza(barraId, indicadorId, reglasId, validacion, texto) {
+    const barra = document.getElementById(barraId);
+    const indicador = document.getElementById(indicadorId);
+    const reglas = document.getElementById(reglasId);
+
+    if (!barra || !indicador) return;
+
+    if (texto.length === 0) {
+        barra.style.display = 'none';
+        if (reglas) reglas.style.display = 'none';
+        return;
+    }
+
+    barra.style.display = 'block';
+    if (reglas) reglas.style.display = 'block';
+
+    indicador.style.width = `${validacion.fuerza}%`;
+
+    if (validacion.fuerza < 40) {
+        indicador.style.backgroundColor = '#d92d20';
+    } else if (validacion.fuerza < 80) {
+        indicador.style.backgroundColor = '#f59e0b';
+    } else {
+        indicador.style.backgroundColor = '#027a48';
+    }
+
+    if (reglas) {
+        if (validacion.valido) {
+            reglas.textContent = "Contraseña fuerte";
+            reglas.style.color = '#027a48';
+        } else {
+            reglas.textContent = "Faltan requisitos: " + validacion.mensajes.join(", ");
+            reglas.style.color = '#667085';
+        }
     }
 }

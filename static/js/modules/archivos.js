@@ -13,18 +13,14 @@ export function inicializarArchivos() {
 }
 
 function configurarVistaPrevia() {
-    // Delegación para clicks en filas o nombres
     document.addEventListener('click', (e) => {
-        // Ignorar si clic en checkbox o botones
         if (e.target.closest('.casilla-archivo') || e.target.closest('.acciones-tabla')) return;
 
         const tr = e.target.closest('tr.fila-archivo');
         if (!tr || tr.classList.contains('fila-carpeta')) return;
 
-        // Si es archivo
         e.preventDefault();
 
-        // Obtener datos
         const id = tr.getAttribute('data-id') || tr.querySelector('.btn-eliminar-disparador').dataset.id;
         const nombre = tr.querySelector('.nombre').textContent.trim();
         const tipoFila = tr.getAttribute('data-tipo');
@@ -44,21 +40,19 @@ function abrirPrevisualizacion(id, nombre, tipo) {
     titulo.textContent = nombre;
     contenido.innerHTML = '<div class="preview-loading"><span class="material-symbols-outlined spin">sync</span> Cargando vista previa...</div>';
 
-    // Generar URL completa para visores externos si es necesario
     const urlActual = window.location.origin;
     const urlArchivo = `${urlActual}/descargar/${id}?inline=true`;
 
     btnDescargar.href = `/descargar/${id}`;
     modal.style.display = 'flex';
 
-    // Lógica de visualización mejorada
     const extension = nombre.split('.').pop().toLowerCase();
 
     if (tipo === 'imagen') {
         const img = document.createElement('img');
         img.src = urlArchivo;
         img.className = 'preview-img';
-        img.onerror = () => mostrarRespaldo(contenido, tipo);
+        img.onerror = () => mostrarRespaldo(contenido, tipo, nombre);
         contenido.innerHTML = '';
         contenido.appendChild(img);
     }
@@ -66,10 +60,10 @@ function abrirPrevisualizacion(id, nombre, tipo) {
         contenido.innerHTML = `<iframe src="${urlArchivo}" class="preview-iframe"></iframe>`;
     }
     else if (tipo === 'video') {
-         contenido.innerHTML = `<video src="${urlArchivo}" controls class="preview-video"></video>`;
+        contenido.innerHTML = `<video src="${urlArchivo}" controls class="preview-video"></video>`;
     }
     else if (tipo === 'audio') {
-         contenido.innerHTML = `<div class="preview-audio-container">
+        contenido.innerHTML = `<div class="preview-audio-container">
             <span class="material-symbols-outlined audio-icon">audiotrack</span>
             <audio src="${urlArchivo}" controls></audio>
          </div>`;
@@ -80,7 +74,7 @@ function abrirPrevisualizacion(id, nombre, tipo) {
             .then(texto => {
                 contenido.innerHTML = `<div class="preview-markdown markdown-body">${marked.parse(texto)}</div>`;
             })
-            .catch(() => mostrarRespaldo(contenido, tipo));
+            .catch(() => mostrarRespaldo(contenido, tipo, nombre));
     }
     else if (tipo === 'csv') {
         fetch(urlArchivo)
@@ -102,7 +96,7 @@ function abrirPrevisualizacion(id, nombre, tipo) {
                     contenido.innerHTML = '<p>Archivo CSV vacío</p>';
                 }
             })
-            .catch(() => mostrarRespaldo(contenido, tipo));
+            .catch(() => mostrarRespaldo(contenido, tipo, nombre));
     }
     else if (tipo === 'json') {
         fetch(urlArchivo)
@@ -112,10 +106,9 @@ function abrirPrevisualizacion(id, nombre, tipo) {
                 contenido.innerHTML = `<pre class="preview-code"><code class="language-json">${escaparHtml(formateado)}</code></pre>`;
                 hljs.highlightElement(contenido.querySelector('code'));
             })
-            .catch(() => mostrarRespaldo(contenido, tipo));
+            .catch(() => mostrarRespaldo(contenido, tipo, nombre));
     }
     else if (tipo === 'word' && extension === 'docx') {
-        // Previsualización local para .docx usando mammoth
         fetch(urlArchivo)
             .then(r => r.arrayBuffer())
             .then(arrayBuffer => {
@@ -123,73 +116,134 @@ function abrirPrevisualizacion(id, nombre, tipo) {
                     .then(result => {
                         contenido.innerHTML = `<div class="preview-docx-container">${result.value}</div>`;
                     })
-                    .catch(() => mostrarRespaldo(contenido, tipo));
+                    .catch(() => mostrarRespaldo(contenido, tipo, nombre));
             })
-            .catch(() => mostrarRespaldo(contenido, tipo));
+            .catch(() => mostrarRespaldo(contenido, tipo, nombre));
     }
     else if (tipo === 'word' || tipo === 'excel' || tipo === 'powerpoint') {
-        // Usar visor de Google para documentos de Office (solo funciona si es público)
-        const urlCodificada = encodeURIComponent(urlArchivo);
-        const urlVisorGoogle = `https://docs.google.com/viewer?url=${urlCodificada}&embedded=true`;
-
-        contenido.innerHTML = `
-            <div class="preview-office-container">
-                <iframe src="${urlVisorGoogle}" class="preview-iframe"></iframe>
-                <div class="office-fallback-msg">
-                    <small>Este visor requiere que el archivo sea accesible por internet. Si no carga, descárgalo para verlo.</small>
-                </div>
-            </div>`;
+        mostrarRespaldo(contenido, tipo, nombre);
     }
     else if (tipo === 'codigo' || tipo === 'texto') {
         fetch(urlArchivo)
             .then(r => r.text())
             .then(texto => {
-                const claseLang = tipo === 'codigo' ? '' : 'language-plaintext';
-                contenido.innerHTML = `<pre class="preview-code"><code class="${claseLang}">${escaparHtml(texto)}</code></pre>`;
-                if (tipo === 'codigo') {
+                const lenguaje = extension || 'plaintext';
+                contenido.innerHTML = `<pre class="pre-code-block"><code class="language-${lenguaje}">${escaparHtml(texto)}</code></pre>`;
+                if (window.hljs) {
                     hljs.highlightElement(contenido.querySelector('code'));
                 }
             })
-            .catch(() => mostrarRespaldo(contenido, tipo));
+            .catch(() => mostrarRespaldo(contenido, tipo, nombre));
     }
     else {
-        mostrarRespaldo(contenido, tipo);
+        mostrarRespaldo(contenido, tipo, nombre);
     }
 }
 
-function mostrarRespaldo(contenedor, tipo) {
+
+function mostrarRespaldo(contenedor, tipo, nombre = '', tamaño = '') {
     let nombreIcono = 'draft';
     let color = '#64748b';
+    let titulo = 'Vista previa no disponible';
+    let descripcion = 'Descarga el archivo para verlo';
 
     const mapeo = {
-        'word': { icon: 'description', color: '#2b579a' },
-        'excel': { icon: 'table_chart', color: '#217346' },
-        'powerpoint': { icon: 'slideshow', color: '#c43e1c' },
-        'archivo': { icon: 'folder_zip', color: '#fbbc04' },
-        'pdf': { icon: 'picture_as_pdf', color: '#f04438' },
-        'imagen': { icon: 'image', color: '#9e77ed' },
-        'video': { icon: 'movie', color: '#12b76a' },
-        'audio': { icon: 'audiotrack', color: '#d93025' },
-        'codigo': { icon: 'code', color: '#5f6368' },
-        'texto': { icon: 'article', color: '#667085' },
-        'fig': { icon: 'token', color: '#ff7262' }
+        'word': {
+            icon: 'description',
+            color: '#2b579a',
+            titulo: 'Documento Word',
+            descripcion: 'Formatos: .doc, .docx'
+        },
+        'excel': {
+            icon: 'table_chart',
+            color: '#217346',
+            titulo: 'Hoja de Cálculo Excel',
+            descripcion: 'Formatos: .xls, .xlsx'
+        },
+        'powerpoint': {
+            icon: 'slideshow',
+            color: '#c43e1c',
+            titulo: 'Presentación PowerPoint',
+            descripcion: 'Formatos: .ppt, .pptx'
+        },
+        'archivo': {
+            icon: 'folder_zip',
+            color: '#fbbc04',
+            titulo: 'Archivo Comprimido',
+            descripcion: 'Formatos: .zip, .rar, .7z, .tar, .gz'
+        },
+        'pdf': {
+            icon: 'picture_as_pdf',
+            color: '#f04438',
+            titulo: 'Documento PDF',
+            descripcion: 'Portable Document Format'
+        },
+        'imagen': {
+            icon: 'image',
+            color: '#9e77ed',
+            titulo: 'Imagen',
+            descripcion: 'Formatos: jpg, png, gif, svg, webp'
+        },
+        'video': {
+            icon: 'movie',
+            color: '#12b76a',
+            titulo: 'Video',
+            descripcion: 'Formatos: mp4, webm, ogg, avi'
+        },
+        'audio': {
+            icon: 'audiotrack',
+            color: '#d93025',
+            titulo: 'Audio',
+            descripcion: 'Formatos: mp3, wav, ogg, m4a'
+        },
+        'codigo': {
+            icon: 'code',
+            color: '#5f6368',
+            titulo: 'Código Fuente',
+            descripcion: 'Archivos de programación'
+        },
+        'texto': {
+            icon: 'article',
+            color: '#667085',
+            titulo: 'Archivo de Texto',
+            descripcion: 'Texto plano'
+        },
+        'fig': {
+            icon: 'token',
+            color: '#ff7262',
+            titulo: 'Archivo Figma',
+            descripcion: 'Diseño de interfaz'
+        }
     };
 
     if (mapeo[tipo]) {
         nombreIcono = mapeo[tipo].icon;
         color = mapeo[tipo].color;
+        titulo = mapeo[tipo].titulo;
+        descripcion = mapeo[tipo].descripcion;
     }
 
-    contenedor.innerHTML = `<div class="fallback-container">
-        <span class="material-symbols-outlined fallback-icon" style="color: ${color};">${nombreIcono}</span>
-        <p class="fallback-title">Vista previa no disponible para este formato.</p>
-        <p class="fallback-subtitle">Por favor descarga el archivo para verlo.</p>
-    </div>`;
+    let extension = '';
+    if (nombre) {
+        extension = nombre.split('.').pop().toUpperCase();
+    }
+
+    contenedor.innerHTML = `
+        <div class="fallback-container">
+            <span class="material-symbols-outlined fallback-icon" style="color: ${color};">${nombreIcono}</span>
+            <p class="fallback-title">${titulo}</p>
+            <p class="fallback-subtitle">${descripcion}</p>
+            ${extension ? `<div class="fallback-metadata">
+                <span class="metadata-badge">${extension}</span>
+                ${tamaño ? `<span class="metadata-size">${tamaño}</span>` : ''}
+            </div>` : ''}
+            <p class="fallback-action">👇 Usa el botón de descarga para ver el archivo</p>
+        </div>`;
 }
 
 function escaparHtml(texto) {
     const mapa = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-    return texto.replace(/[&<>"']/g, function(m) { return mapa[m]; });
+    return texto.replace(/[&<>"']/g, function (m) { return mapa[m]; });
 }
 
 function configurarCambioVista() {
@@ -199,17 +253,16 @@ function configurarCambioVista() {
 
     if (!btnVista || !contenedorTabla) return;
 
-    // Cargar preferencia guardada
     const vistaGuardada = localStorage.getItem('modoVista');
     if (vistaGuardada === 'cuadricula') {
         contenedorTabla.classList.add('vista-cuadricula');
-        if(icono) icono.textContent = 'list';
+        if (icono) icono.textContent = 'list';
     }
 
     btnVista.addEventListener('click', () => {
         const esCuadricula = contenedorTabla.classList.toggle('vista-cuadricula');
         localStorage.setItem('modoVista', esCuadricula ? 'cuadricula' : 'lista');
-        if(icono) icono.textContent = esCuadricula ? 'list' : 'grid_view';
+        if (icono) icono.textContent = esCuadricula ? 'list' : 'grid_view';
     });
 }
 
@@ -217,7 +270,6 @@ function configurarCrearCarpeta() {
     const btnConfirmar = document.getElementById('btn-confirmar-crear-carpeta');
     if (!btnConfirmar) return;
 
-    // Clonamos para asegurar pureza
     const nuevoBtn = btnConfirmar.cloneNode(true);
     btnConfirmar.parentNode.replaceChild(nuevoBtn, btnConfirmar);
 
@@ -256,7 +308,6 @@ function configurarCrearCarpeta() {
 }
 
 function configurarAccionesEliminar() {
-    // Delegación
     document.addEventListener('click', (e) => {
         const btnCarpeta = e.target.closest('.btn-eliminar-carpeta');
         if (btnCarpeta) {
@@ -290,7 +341,6 @@ function confirmarEliminacion(id, esCarpeta) {
 
     const btnConfirmar = document.getElementById('btn-confirmar-modal');
     if (btnConfirmar) {
-        // Reemplazar listener
         const nuevoBtn = btnConfirmar.cloneNode(true);
         btnConfirmar.parentNode.replaceChild(nuevoBtn, btnConfirmar);
 
@@ -334,7 +384,6 @@ function configurarAccionesMasivas() {
         });
     }
 
-    // Delegacion cambio checkboxes
     document.addEventListener('change', (e) => {
         if (e.target.classList.contains('casilla-archivo')) {
             actualizarBarraAcciones();
@@ -356,7 +405,6 @@ function configurarAccionesMasivas() {
             const marcados = document.querySelectorAll('.casilla-archivo:checked');
             if (marcados.length === 0) return;
 
-            // Preparar modal para eliminación masiva
             const modal = document.getElementById('modal-eliminar');
             if (!modal) return;
 
@@ -445,7 +493,6 @@ function configurarOrdenamiento() {
         ordenarTabla(selectorOrden.value);
     });
 
-    // Aplicar orden por defecto (descendente)
     ordenarTabla('desc');
 }
 
@@ -453,44 +500,34 @@ function ordenarTabla(orden) {
     const cuerpoTabla = document.getElementById('cuerpo-tabla');
     if (!cuerpoTabla) return;
 
-    // Obtener todas las filas (carpetas y archivos)
     const filas = Array.from(cuerpoTabla.querySelectorAll('tr:not(#fila-sin-archivos)'));
-
-    // Separar carpetas y archivos
     const carpetas = filas.filter(f => f.classList.contains('fila-carpeta'));
     const archivos = filas.filter(f => !f.classList.contains('fila-carpeta'));
 
-    // Función para extraer fecha de una fila
     const obtenerFecha = (fila) => {
-        const celdaFecha = fila.querySelector('td:nth-child(3)'); // Columna de fecha
+        const celdaFecha = fila.querySelector('td:nth-child(3)');
         if (!celdaFecha) return new Date(0);
         const textoFecha = celdaFecha.textContent.trim();
         if (textoFecha === '-') return new Date(0);
         return new Date(textoFecha);
     };
 
-    // Ordenar carpetas
     carpetas.sort((a, b) => {
         const fechaA = obtenerFecha(a);
         const fechaB = obtenerFecha(b);
         return orden === 'asc' ? fechaA - fechaB : fechaB - fechaA;
     });
 
-    // Ordenar archivos
     archivos.sort((a, b) => {
         const fechaA = obtenerFecha(a);
         const fechaB = obtenerFecha(b);
         return orden === 'asc' ? fechaA - fechaB : fechaB - fechaA;
     });
 
-    // Limpiar cuerpoTabla
     cuerpoTabla.innerHTML = '';
-
-    // Insertar carpetas primero, luego archivos
     carpetas.forEach(f => cuerpoTabla.appendChild(f));
     archivos.forEach(f => cuerpoTabla.appendChild(f));
 
-    // Si no hay elementos, mostrar mensaje
     if (filas.length === 0) {
         const filaVacia = document.createElement('tr');
         filaVacia.id = 'fila-sin-archivos';

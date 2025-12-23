@@ -72,7 +72,7 @@
 
 @media (max-width: 480px) {
     .nombre-marca {
-        display: none; /* Hide text on very small screens to save space */
+        display: none;
     }
 }
 
@@ -84,7 +84,7 @@
 
 .enlaces-nav {
     list-style: none;
-    display: none; /* Hidden on mobile by default */
+    display: none;
     gap: 20px;
 }
 
@@ -131,7 +131,7 @@
 }
 
 .btn-mejorar {
-    display: none; /* Hidden on mobile */
+    display: none;
     align-items: center;
     gap: 8px;
     padding: 8px 14px;
@@ -207,7 +207,7 @@
 }
 
 .detalles-usuario {
-    display: none; /* Hidden on small screens */
+    display: none;
     flex-direction: column;
     justify-content: center;
 }

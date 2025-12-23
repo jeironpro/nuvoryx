@@ -1,5 +1,4 @@
 #!/bin/bash
-# Script para ejecutar linters
 
 echo "🔍 Ejecutando linters..."
 

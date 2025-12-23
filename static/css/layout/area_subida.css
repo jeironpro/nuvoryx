@@ -140,7 +140,7 @@
 
 .detalles-progreso {
     flex: 1;
-    min-width: 0; /* Allow text truncate */
+    min-width: 0;
 }
 
 .info-progreso {

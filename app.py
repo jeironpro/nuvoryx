@@ -9,7 +9,6 @@ def crear_app(clase_config=Configuracion):
     app = Flask(__name__)
     app.config.from_object(clase_config)
 
-    # Mapear claves en español a las claves estándar de Flask y extensiones
     app.config["SECRET_KEY"] = app.config.get("CLAVE_SECRETA")
     app.config["SQLALCHEMY_DATABASE_URI"] = app.config.get("URI_BASE_DATOS_SQLALCHEMY")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = app.config.get("SEGUIMIENTO_MODIFICACIONES_SQLALCHEMY")
@@ -22,7 +21,6 @@ def crear_app(clase_config=Configuracion):
     app.config["MAIL_DEFAULT_SENDER"] = app.config.get("REMITENTE_POR_DEFECTO_CORREO")
     app.config["WTF_CSRF_ENABLED"] = app.config.get("HABILITAR_CSRF_WTF", True)
 
-    # Inicializar extensiones
     db.init_app(app)
     mail.init_app(app)
     gestor_login.init_app(app)
@@ -36,7 +34,6 @@ def crear_app(clase_config=Configuracion):
     def cargar_usuario(usuario_id):
         return Usuario.query.get(int(usuario_id))
 
-    # Blueprints
     from blueprints.archivos import archivos_bp
     from blueprints.autenticacion import autenticacion_bp
     from blueprints.notificaciones import notificaciones_bp
@@ -47,7 +44,6 @@ def crear_app(clase_config=Configuracion):
     app.register_blueprint(archivos_bp)
     app.register_blueprint(notificaciones_bp)
 
-    # Manejadores de errores
     @app.errorhandler(404)
     def pagina_no_encontrada(e):
         return render_template("404.html"), 404

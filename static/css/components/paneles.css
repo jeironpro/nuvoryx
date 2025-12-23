@@ -18,25 +18,59 @@
 
 .encabezado-seccion {
     display: flex;
-    flex-direction: column;
-    padding: 20px;
+    flex-wrap: wrap;
+    padding: 16px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-    gap: 20px;
+    gap: 12px;
     background: rgba(255, 255, 255, 0.3);
+    align-items: center;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
     .encabezado-seccion {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
+        padding: 20px;
+        gap: 16px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .encabezado-seccion {
+        flex-wrap: nowrap;
         padding: 24px 32px;
     }
 }
 
 .titulo-seccion {
     flex: 1;
+    min-width: 150px;
 }
+
+.barra-busqueda {
+    order: 2;
+}
+
+.btn-crea-carpeta-items {
+    order: 3;
+}
+
+#filtro-tipo {
+    order: 4;
+}
+
+#orden-fecha {
+    order: 5;
+}
+
+.btn-cambiar-vista {
+    order: 6;
+}
+
+@media (max-width: 639px) {
+    .titulo-seccion {
+        flex-basis: 100%;
+    }
+}
+
 
 .titulo-seccion h3 {
     font-size: 16px;
@@ -68,12 +102,20 @@
     padding: 8px 16px;
     background-color: #ffffff;
     width: 100%;
+    min-width: 200px;
     gap: 8px;
     color: var(--text-secondary);
     transition: all 0.2s;
 }
 
 @media (min-width: 640px) {
+    .barra-busqueda {
+        width: auto;
+        min-width: 280px;
+    }
+}
+
+@media (min-width: 768px) {
     .barra-busqueda {
         width: 320px;
     }
@@ -102,18 +144,27 @@
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    padding: 6px 10px;
+    padding: 8px 12px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     gap: 6px;
     transition: all 0.2s;
+    width: 100%;
+}
+
+@media (min-width: 480px) {
+    .anadir-filtro {
+        width: auto;
+        min-width: 140px;
+    }
 }
 
 @media (min-width: 640px) {
     .anadir-filtro {
         font-size: 14px;
-        padding: 8px 12px;
+        padding: 8px 14px;
+        min-width: 160px;
     }
 }
 
@@ -127,8 +178,8 @@
     border: 1px solid rgba(234, 236, 240, 0.8);
     border-radius: 12px;
     box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
     padding: 6px;
     z-index: 1000;
     animation: slideDownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -149,6 +200,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -160,6 +212,7 @@
         opacity: 0;
         transform: translateY(-8px) scale(0.96);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -171,6 +224,7 @@
         opacity: 0;
         transform: scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: scale(1);

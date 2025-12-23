@@ -1,9 +1,9 @@
 <nav class="barra-navegacion">
     <div class="nav-izquierda">
-        <div class="logo">
+        <a href="/" class="logo" style="text-decoration: none;">
             <img src="{{ url_for('static', filename='icon/nuvoryx.png') }}" alt="Logo" />
             <span class="nombre-marca">Nuvoryx</span>
-        </div>
+        </a>
         <ul class="enlaces-nav">
             <li><a href="/">Inicio</a></li>
         </ul>
@@ -14,7 +14,6 @@
             <button class="btn-icono" id="btn-ajustes">
                 <span class="material-symbols-outlined">settings</span>
             </button>
-            <!-- Panel Ajustes -->
             <div id="panel-ajustes" class="panel-desplegable" style="display: none">
                 <button class="opcion-panel" onclick="abrirModalEspecifico('modal-cambiar-correo')">
                     <span class="material-symbols-outlined">mail</span> Cambiar Correo
@@ -40,10 +39,8 @@
             <div id="btn-usuario" style="cursor: pointer">
                 <span class="material-symbols-outlined avatar-icon">account_circle</span>
             </div>
-            <!-- Panel Usuario -->
             <div id="panel-usuario" class="panel-desplegable" style="display: none">
                 {% if current_user.is_authenticated %}
-                <!-- Usuario autenticado -->
                 <div class="info-panel-usuario">
                     <span class="material-symbols-outlined"
                         style="font-size: 48px; color: var(--primary-color)">account_circle</span>
@@ -57,7 +54,6 @@
                     <span class="material-symbols-outlined">logout</span> Cerrar Sesión
                 </button>
                 {% else %}
-                <!-- Usuario NO autenticado -->
                 <button class="opcion-panel" onclick="abrirModalEspecifico('modal-inicio-sesion')">
                     <span class="material-symbols-outlined">login</span> Iniciar Sesión
                 </button>

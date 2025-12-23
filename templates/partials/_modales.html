@@ -1,7 +1,8 @@
-<!-- Modal de Confirmación Eliminación -->
 <div id="modal-eliminar" class="modal-overlay modal-oculto">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal">warning</span>
+        <div class="contenedor-icono">
+            <span class="material-symbols-outlined icono-modal">warning</span>
+        </div>
         <h3>¿Eliminar archivo?</h3>
         <p>
             Esta acción no se puede deshacer. ¿Estás seguro de que quieres
@@ -18,10 +19,11 @@
     </div>
 </div>
 
-<!-- Modal de Notificaciones -->
 <div id="modal-notificaciones" class="modal-overlay modal-oculto">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal icono-modal-notificaciones">notifications</span>
+        <div class="contenedor-icono">
+            <span class="material-symbols-outlined icono-modal icono-modal-notificaciones">notifications</span>
+        </div>
         <h3>Notificaciones</h3>
         <div id="lista-notificaciones" class="lista-notificaciones-container">
             <p class="texto-sin-notificaciones">
@@ -39,10 +41,11 @@
     </div>
 </div>
 
-<!-- Modal Cambiar Correo -->
 <div id="modal-cambiar-correo" class="modal-overlay modal-oculto">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal icono-modal-correo">mail</span>
+        <div class="contenedor-icono">
+            <span class="material-symbols-outlined icono-modal icono-modal-correo">mail</span>
+        </div>
         <h3>Cambiar Correo</h3>
         <p>Introduce tu nueva dirección de correo electrónico.</p>
         <div class="contenedor-inputs-modal">
@@ -58,10 +61,11 @@
     </div>
 </div>
 
-<!-- Modal Cambiar Contraseña -->
 <div id="modal-cambiar-contrasena" class="modal-overlay modal-oculto">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal icono-modal-pass">lock</span>
+        <div class="contenedor-icono">
+            <span class="material-symbols-outlined icono-modal icono-modal-pass">lock</span>
+        </div>
         <h3>Cambiar Contraseña</h3>
         <p>Asegúrate de usar una contraseña segura.</p>
         <div class="contenedor-inputs-modal">
@@ -77,10 +81,11 @@
     </div>
 </div>
 
-<!-- Modal Eliminar Cuenta -->
 <div id="modal-eliminar-cuenta" class="modal-overlay modal-oculto">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal">warning</span>
+        <div class="contenedor-icono">
+            <span class="material-symbols-outlined icono-modal">warning</span>
+        </div>
         <h3>¿Eliminar cuenta?</h3>
         <p>
             Esta acción es irreversible. Se perderán todos tus archivos y datos de
@@ -93,15 +98,16 @@
     </div>
 </div>
 
-<!-- Modal Crear Carpeta -->
 <div id="modal-crear-carpeta" class="modal-overlay modal-oculto">
     <div class="modal-contenido">
-        <span class="material-symbols-outlined icono-modal icono-modal-carpeta">create_new_folder</span>
+        <div class="contenedor-icono">
+            <span class="material-symbols-outlined icono-modal icono-modal-carpeta">create_new_folder</span>
+        </div>
         <h3>Nueva Carpeta</h3>
         <p>Introduce el nombre de la nueva carpeta.</p>
         <div class="contenedor-inputs-modal">
             <label class="label-input">Nombre</label>
-            <input type="text" id="input-nombre-carpeta" class="input-modal" placeholder="Ej. Documentos" />
+            <input type="text" id="entrada-nombre-carpeta" class="input-modal" placeholder="Ej. Documentos" />
         </div>
         <div class="acciones-modal">
             <button class="btn-secundario btn-cerrar-modal">Cancelar</button>
@@ -111,7 +117,6 @@
 </div>
 </div>
 
-<!-- Modal Previsualización -->
 <div id="modal-previsualizacion" class="modal-overlay modal-oculto">
     <div class="modal-contenido modal-contenido-fullscreen">
         <div class="header-preview">
@@ -121,7 +126,6 @@
             </button>
         </div>
         <div id="contenido-previsualizacion" class="contenido-preview-body">
-            <!-- Contenido dinámico -->
         </div>
         <div class="acciones-modal footer-preview">
             <a id="btn-descargar-prev" href="#" class="btn-primario">
