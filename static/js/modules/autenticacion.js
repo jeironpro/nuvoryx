@@ -166,18 +166,51 @@ function configurarCambioCorreo() {
     if (!modal) return;
 
     const btnConfirmar = modal.querySelector('.btn-primario');
-    const entradas = modal.querySelectorAll('input');
-    const entradaNuevoCorreo = entradas[0];
-    const entradaConfirmarCorreo = entradas[1];
+    const entradaNuevoCorreo = document.getElementById('entrada-cambiar-correo-nuevo');
+    const entradaConfirmarCorreo = document.getElementById('entrada-cambiar-correo-confirmar');
+    const elError = document.getElementById('error-cambiar-correo');
+
+    if (entradaNuevoCorreo && entradaConfirmarCorreo) {
+        const verificarCoincidenciaCorreo = () => {
+            const correo1 = entradaNuevoCorreo.value.trim();
+            const correo2 = entradaConfirmarCorreo.value.trim();
+
+            if (correo2.length > 0 && correo1 !== correo2) {
+                elError.textContent = "Los correos no coinciden";
+                elError.style.display = 'block';
+                if (btnConfirmar) btnConfirmar.disabled = true;
+            } else {
+                elError.style.display = 'none';
+                if (btnConfirmar) btnConfirmar.disabled = false;
+            }
+        };
+
+        entradaNuevoCorreo.addEventListener('input', verificarCoincidenciaCorreo);
+        entradaConfirmarCorreo.addEventListener('input', verificarCoincidenciaCorreo);
+    }
 
     if (btnConfirmar) {
         btnConfirmar.addEventListener('click', async () => {
             const nuevoCorreo = entradaNuevoCorreo.value.trim();
             const confirmarCorreo = entradaConfirmarCorreo.value.trim();
 
-            if (!nuevoCorreo || !confirmarCorreo) return alert("Completa todos los campos");
-            if (nuevoCorreo !== confirmarCorreo) return alert("Los correos no coinciden");
+            if (!nuevoCorreo || !confirmarCorreo) {
+                elError.textContent = "Completa todos los campos";
+                elError.style.display = 'block';
+                return;
+            }
+            if (nuevoCorreo !== confirmarCorreo) {
+                elError.textContent = "Los correos no coinciden";
+                elError.style.display = 'block';
+                return;
+            }
+            if (!validaciones.validarEmail(nuevoCorreo)) {
+                elError.textContent = "Formato de correo inválido";
+                elError.style.display = 'block';
+                return;
+            }
 
+            elError.style.display = 'none';
             btnConfirmar.textContent = "Guardando...";
             btnConfirmar.disabled = true;
 
@@ -193,12 +226,14 @@ function configurarCambioCorreo() {
                     guardarNotificacion("Correo actualizado correctamente");
                     window.location.reload();
                 } else {
-                    alert(datos.error || "Error al actualizar");
+                    elError.textContent = datos.error || "Error al actualizar";
+                    elError.style.display = 'block';
                     btnConfirmar.textContent = "Guardar cambios";
                     btnConfirmar.disabled = false;
                 }
             } catch (err) {
-                alert("Error de red");
+                elError.textContent = "Error de red";
+                elError.style.display = 'block';
                 btnConfirmar.textContent = "Guardar cambios";
                 btnConfirmar.disabled = false;
             }
@@ -213,19 +248,65 @@ function configurarCambioContrasena() {
     const inputPass = modal.querySelector('input[type="password"]');
 
     const btnConfirmar = modal.querySelector('.btn-primario');
-    const entradas = modal.querySelectorAll('input');
-    const entradaNuevaContrasena = entradas[0];
-    const entradaConfirmarContrasena = entradas[1];
+    const entradaNuevaContrasena = document.getElementById('entrada-cambiar-contrasena-nueva');
+    const entradaConfirmarContrasena = document.getElementById('entrada-cambiar-contrasena-confirmar');
+    const elError = document.getElementById('error-cambiar-contrasena');
+
+    if (entradaNuevaContrasena) {
+        entradaNuevaContrasena.addEventListener('keyup', (e) => {
+            const contrasena = e.target.value;
+            const resultado = validaciones.validarContrasena(contrasena);
+            actualizarBarraFuerza('barra-fuerza-cambio', 'indicador-fuerza-cambio', 'reglas-pass-cambio', resultado, contrasena);
+            verificarCoincidencia();
+        });
+    }
+
+    if (entradaConfirmarContrasena) {
+        entradaConfirmarContrasena.addEventListener('input', () => {
+            verificarCoincidencia();
+        });
+    }
+
+    function verificarCoincidencia() {
+        const pass1 = entradaNuevaContrasena.value;
+        const pass2 = entradaConfirmarContrasena.value;
+        const errorMatch = document.getElementById('error-password-match');
+
+        if (pass2.length > 0 && pass1 !== pass2) {
+            if (errorMatch) errorMatch.style.display = 'block';
+            btnConfirmar.disabled = true;
+        } else {
+            if (errorMatch) errorMatch.style.display = 'none';
+            // Solo habilitar si pass1 es válido y pass2 coincide (o está vacío si es que el botón debe estar deshabilitado por pass1 inválido)
+            const result = validaciones.validarContrasena(pass1);
+            btnConfirmar.disabled = !result.valido || (pass1 !== pass2);
+        }
+    }
 
     if (btnConfirmar) {
         btnConfirmar.addEventListener('click', async () => {
             const nuevaContrasena = entradaNuevaContrasena.value;
             const confirmarContrasena = entradaConfirmarContrasena.value;
 
-            if (!nuevaContrasena || !confirmarContrasena) return alert("Completa todos los campos");
-            if (nuevaContrasena !== confirmarContrasena) return alert("Las contraseñas no coinciden");
-            if (nuevaContrasena.length < 6) return alert("La contraseña debe tener al menos 6 caracteres");
+            if (!nuevaContrasena || !confirmarContrasena) {
+                elError.textContent = "Completa todos los campos";
+                elError.style.display = 'block';
+                return;
+            }
+            if (nuevaContrasena !== confirmarContrasena) {
+                elError.textContent = "Las contraseñas no coinciden";
+                elError.style.display = 'block';
+                return;
+            }
 
+            const validacionPass = validaciones.validarContrasena(nuevaContrasena);
+            if (!validacionPass.valido) {
+                elError.textContent = "La contraseña no es segura: " + validacionPass.mensajes.join(", ");
+                elError.style.display = 'block';
+                return;
+            }
+
+            elError.style.display = 'none';
             btnConfirmar.textContent = "Actualizando...";
             btnConfirmar.disabled = true;
 
@@ -241,12 +322,14 @@ function configurarCambioContrasena() {
                     guardarNotificacion("Contraseña actualizada");
                     window.location.reload();
                 } else {
-                    alert(datos.error || "Error al actualizar");
+                    elError.textContent = datos.error || "Error al actualizar";
+                    elError.style.display = 'block';
                     btnConfirmar.textContent = "Actualizar";
                     btnConfirmar.disabled = false;
                 }
             } catch (err) {
-                alert("Error de red");
+                elError.textContent = "Error de red";
+                elError.style.display = 'block';
                 btnConfirmar.textContent = "Actualizar";
                 btnConfirmar.disabled = false;
             }

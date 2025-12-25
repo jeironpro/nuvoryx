@@ -50,9 +50,11 @@
         <p>Introduce tu nueva dirección de correo electrónico.</p>
         <div class="contenedor-inputs-modal">
             <label class="label-input">Nuevo Correo</label>
-            <input type="email" class="input-modal" />
+            <input type="email" id="entrada-cambiar-correo-nuevo" class="input-modal" placeholder="nuevo@ejemplo.com" />
             <label class="label-input">Confirmar Correo</label>
-            <input type="email" class="input-modal" />
+            <input type="email" id="entrada-cambiar-correo-confirmar" class="input-modal"
+                placeholder="nuevo@ejemplo.com" />
+            <p id="error-cambiar-correo" style="color: #d92d20; font-size: 14px; margin-top: 8px; display: none"></p>
         </div>
         <div class="acciones-modal">
             <button class="btn-secundario btn-cerrar-modal">Cancelar</button>
@@ -70,9 +72,22 @@
         <p>Asegúrate de usar una contraseña segura.</p>
         <div class="contenedor-inputs-modal">
             <label class="label-input">Nueva Contraseña</label>
-            <input type="password" class="input-modal" />
-            <label class="label-input">Confirmar Contraseña</label>
-            <input type="password" class="input-modal" />
+            <input type="password" id="entrada-cambiar-contrasena-nueva" class="input-modal" />
+            <div id="barra-fuerza-cambio"
+                style="height: 4px; background: #eee; margin-top: 8px; border-radius: 2px; overflow: hidden; display: none;">
+                <div id="indicador-fuerza-cambio"
+                    style="height: 100%; width: 0%; transition: width 0.3s, background-color 0.3s; background-color: #d92d20;">
+                </div>
+            </div>
+            <p id="reglas-pass-cambio" style="font-size: 11px; color: #667085; margin-top: 5px; display: none">
+                Mínimo 8 caracteres, mayúscula, número y símbolo.
+            </p>
+            <label class="label-input" style="margin-top: 16px">Confirmar Contraseña</label>
+            <input type="password" id="entrada-cambiar-contrasena-confirmar" class="input-modal" />
+            <p id="error-password-match" style="color: #d92d20; font-size: 12px; margin-top: 4px; display: none">Las
+                contraseñas no coinciden</p>
+            <p id="error-cambiar-contrasena" style="color: #d92d20; font-size: 14px; margin-top: 8px; display: none">
+            </p>
         </div>
         <div class="acciones-modal">
             <button class="btn-secundario btn-cerrar-modal">Cancelar</button>

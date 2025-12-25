@@ -36,9 +36,9 @@
         </button>
         {% endif %}
         <div style="position: relative">
-            <div id="btn-usuario" style="cursor: pointer">
+            <button class="btn-icono" id="btn-usuario">
                 <span class="material-symbols-outlined avatar-icon">account_circle</span>
-            </div>
+            </button>
             <div id="panel-usuario" class="panel-desplegable" style="display: none">
                 {% if current_user.is_authenticated %}
                 <div class="info-panel-usuario">

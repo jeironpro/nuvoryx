@@ -7,6 +7,11 @@ from extensiones import db
 
 
 class Usuario(UserMixin, db.Model):
+    """
+    Representa a un usuario en el sistema.
+    Maneja la autenticación, el perfil básico y las relaciones con sus archivos y carpetas.
+    """
+
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     correo = db.Column(db.String(255), unique=True, nullable=False)
@@ -16,17 +21,17 @@ class Usuario(UserMixin, db.Model):
     ultimo_acceso = db.Column(db.DateTime, default=datetime.utcnow)
     activo = db.Column(db.Boolean, default=False)
 
-    # Relaciones
+    # Relaciones: Un usuario tiene muchos archivos, carpetas y notificaciones
     archivos = db.relationship("Archivo", backref="propietario", lazy=True, foreign_keys="Archivo.usuario_id")
     carpetas = db.relationship("Carpeta", backref="propietario", lazy=True, foreign_keys="Carpeta.usuario_id")
     notificaciones = db.relationship("Notificacion", backref="usuario", lazy=True, cascade="all, delete-orphan")
 
     def codificar_contrasena(self, contrasena):
-        """Codifica la contraseña usando bcrypt"""
+        """Genera un hash seguro para la contraseña usando bcrypt."""
         self.contrasena_hash = bcrypt.hashpw(contrasena.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
     def verificar_contrasena(self, contrasena):
-        """Verifica la contraseña con el hash"""
+        """Compara una contraseña en texto plano con el hash almacenado."""
         return bcrypt.checkpw(contrasena.encode("utf-8"), self.contrasena_hash.encode("utf-8"))
 
     def __repr__(self):
@@ -34,6 +39,11 @@ class Usuario(UserMixin, db.Model):
 
 
 class Carpeta(db.Model):
+    """
+    Representa un contenedor lógico (carpeta) para organizar archivos.
+    Soporta una estructura jerárquica mediante carpeta_padre_id.
+    """
+
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(255), nullable=False)
     carpeta_padre_id = db.Column(db.Integer, db.ForeignKey("carpeta.id"), nullable=True)
@@ -41,7 +51,11 @@ class Carpeta(db.Model):
     fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow)
 
-    subcarpetas = db.relationship("Carpeta", backref=db.backref("padre", remote_side=[id]), lazy=True)
+    # Relación jerárquica: Una carpeta puede tener muchas subcarpetas (con borrado en cascada)
+    subcarpetas = db.relationship(
+        "Carpeta", backref=db.backref("padre", remote_side=[id]), lazy=True, cascade="all, delete-orphan"
+    )
+    # Una carpeta contiene muchos archivos
     archivos = db.relationship("Archivo", backref="carpeta", lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -49,6 +63,11 @@ class Carpeta(db.Model):
 
 
 class Archivo(db.Model):
+    """
+    Representa un archivo físico subido por el usuario.
+    Almacena metadatos y la referencia al nombre del archivo en el servidor (hash).
+    """
+
     id = db.Column(db.Integer, primary_key=True)
     nombre_original = db.Column(db.String(255), nullable=False)
     nombre_hash = db.Column(db.String(255), nullable=False, unique=True)
@@ -64,6 +83,10 @@ class Archivo(db.Model):
 
 
 class Notificacion(db.Model):
+    """
+    Sistema de avisos y notificaciones internas para el usuario.
+    """
+
     id = db.Column(db.Integer, primary_key=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey("usuario.id"), nullable=False)
     mensaje = db.Column(db.String(255), nullable=False)

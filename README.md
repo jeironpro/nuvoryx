@@ -24,15 +24,19 @@ Me enfoque en pedir muchas de las cosas que estoy aprendiendo en la empresa que 
 
 ---
 
-## ✨ Características
-
 ### 📁 Gestión Completa de Archivos
 
-- **Subida de archivos** con drag & drop
-- **Organización en carpetas** jerárquica
-- **Búsqueda y filtrado** inteligente
-- **Acciones masivas** (eliminar, descargar múltiples)
-- **Dos vistas**: Lista y Cuadrícula
+- **Subida de carpetas recursiva**: Arrastra directorios completos manteniendo su estructura.
+- **Organización jerárquica**: Carpetas infinitas y archivos vinculados.
+- **Búsqueda y filtrado**: Localización inmediata de elementos.
+- **Acciones masivas**: Descarga masiva en ZIP y eliminación conjunta.
+- **Diseño Premium**: Interfaz basada en tarjetas con glassmorphism.
+
+---
+
+## 📖 Documentación
+
+Para una comprensión más profunda del sistema, consulta nuestro [Manual Técnico](docs/MANUAL_TECNICO.md) (también disponible en la carpeta de documentos del proyecto).
 
 ### 👁️ Visualización Universal
 
@@ -309,7 +313,7 @@ Las contribuciones son bienvenidas! Por favor:
 
 ## 📝 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
 
 ---
 

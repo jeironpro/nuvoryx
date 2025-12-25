@@ -1,3 +1,5 @@
+import json
+
 from models import Usuario, db
 
 
@@ -36,5 +38,7 @@ def test_login_solo_si_activo(cliente, app):
     respuesta = cliente.post(
         "/inicio_sesion", json={"correo": "test_inactivo@example.com", "contrasena": "contrasena123"}
     )
+    datos = json.loads(respuesta.data)
+
+    assert datos["error"] == "El usuario no está activado"
     assert respuesta.status_code == 401
-    assert b"El usuario no esta activado" in respuesta.data

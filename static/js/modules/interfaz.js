@@ -1,6 +1,14 @@
+/**
+ * Módulo de Gestión de Interfaz y Notificaciones.
+ * Controla la apertura de modales, paneles desplegables y el sistema de avisos al usuario.
+ */
 let listaNotificaciones = [];
 let indicadorActivo = false;
 
+/**
+ * Abre un modal específico por su ID.
+ * @param {string} idModal - ID del elemento HTML del modal.
+ */
 export function abrirModalEspecifico(idModal) {
     const m = document.getElementById(idModal);
     if (m) {
@@ -9,8 +17,12 @@ export function abrirModalEspecifico(idModal) {
     }
 }
 
+// Exponer globalmente para integraciones rápidas en HTML
 window.abrirModalEspecifico = abrirModalEspecifico;
 
+/**
+ * Registra todos los escuchadores de eventos para la UI global.
+ */
 export function inicializarInterfaz() {
     cargarNotificaciones();
     configurarCierreModalesGlobal();
@@ -18,6 +30,9 @@ export function inicializarInterfaz() {
     configurarInterfazNotificaciones();
 }
 
+/**
+ * Recupera las notificaciones del servidor y actualiza el indicador visual.
+ */
 async function cargarNotificaciones() {
     try {
         const resp = await fetch('/notificaciones');
@@ -31,6 +46,11 @@ async function cargarNotificaciones() {
     }
 }
 
+/**
+ * Envía una nueva notificación al servidor.
+ * @param {string} msg - Texto de la notificación.
+ * @param {string} tipo - Categoría (info, success, error).
+ */
 export function guardarNotificacion(msg, tipo = 'info') {
     fetch('/notificaciones', {
         method: 'POST',
@@ -46,11 +66,17 @@ export function guardarNotificacion(msg, tipo = 'info') {
         .catch(err => console.error("Error guardando notificación:", err));
 }
 
+/**
+ * Muestra o esconde el punto rojo de notificaciones pendientes.
+ */
 function renderizarIndicador() {
     const indicador = document.getElementById('indicador-notificaciones');
     if (indicador) indicador.style.display = indicadorActivo ? 'block' : 'none';
 }
 
+/**
+ * Cierra los paneles de ajustes y usuario.
+ */
 function cerrarPaneles() {
     const p1 = document.getElementById('panel-ajustes');
     if (p1) p1.style.display = 'none';
@@ -58,6 +84,9 @@ function cerrarPaneles() {
     if (p2) p2.style.display = 'none';
 }
 
+/**
+ * Configura los disparadores de los paneles superiores (Ajustes, Perfil).
+ */
 function configurarPaneles() {
     const btnAjustes = document.getElementById('btn-ajustes');
     const panelAjustes = document.getElementById('panel-ajustes');
@@ -82,6 +111,7 @@ function configurarPaneles() {
         });
     }
 
+    // Cerrar al hacer clic fuera del panel
     window.addEventListener('click', (e) => {
         if (panelAjustes && panelAjustes.style.display === 'block') {
             if (!panelAjustes.contains(e.target) && e.target !== btnAjustes) {
@@ -96,13 +126,18 @@ function configurarPaneles() {
     });
 }
 
+/**
+ * Gestión global de modales: cierre por overlay, escape y accesibilidad de foco.
+ */
 function configurarCierreModalesGlobal() {
+    // Cerrar al hacer clic en el fondo oscuro
     window.addEventListener('click', (e) => {
         if (e.target.classList.contains('modal-overlay')) {
             e.target.style.display = 'none';
         }
     });
 
+    // Delegación de eventos para botones de cierre
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('btn-cerrar-modal') || e.target.closest('.btn-cerrar-modal')) {
             e.preventDefault();
@@ -121,6 +156,7 @@ function configurarCierreModalesGlobal() {
         }
     });
 
+    // Foco automático al abrir modales
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.attributeName === 'style') {
@@ -139,6 +175,7 @@ function configurarCierreModalesGlobal() {
         observer.observe(modal, { attributes: true });
     });
 
+    // Accesibilidad: Confirmar con tecla Enter en modales
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             const activeElement = document.activeElement;
@@ -146,8 +183,8 @@ function configurarCierreModalesGlobal() {
 
             if (modal && modal.style.display !== 'none') {
                 if (activeElement.tagName === 'TEXTAREA') return;
-
                 if (activeElement.tagName === 'BUTTON') return;
+
                 const btnPrimario = modal.querySelector('.btn-primario');
                 if (btnPrimario && !btnPrimario.disabled) {
                     e.preventDefault();
@@ -158,6 +195,9 @@ function configurarCierreModalesGlobal() {
     });
 }
 
+/**
+ * Renderiza la lista de notificaciones en el modal desplegable.
+ */
 function configurarInterfazNotificaciones() {
     const btn = document.getElementById('btn-notificaciones');
     const modal = document.getElementById('modal-notificaciones');
@@ -165,20 +205,18 @@ function configurarInterfazNotificaciones() {
 
     if (btn && modal) {
         btn.addEventListener('click', async () => {
-            lista.innerHTML = '<div style="text-align:center;padding:10px;">Cargando...</div>';
-
+            lista.innerHTML = '';
             await cargarNotificaciones();
 
-            lista.innerHTML = '';
             if (listaNotificaciones.length === 0) {
                 lista.innerHTML = '<p style="padding:10px;text-align:center;color:#888">Sin notificaciones</p>';
             } else {
                 listaNotificaciones.forEach(n => {
                     const div = document.createElement('div');
-                    div.innerHTML = `<strong>${n.mensaje}</strong><br><small>${n.fecha}</small>`;
                     div.style.borderBottom = '1px solid #eee';
                     div.style.padding = '8px 0';
                     div.style.opacity = n.leida ? '0.6' : '1';
+                    div.innerHTML = `<strong>${n.mensaje}</strong><br><small>${n.fecha}</small>`;
                     lista.appendChild(div);
                 });
             }
@@ -194,6 +232,7 @@ function configurarInterfazNotificaciones() {
         });
     }
 
+    // Lógica para vaciar el historial de notificaciones
     const btnLimpiar = document.getElementById('btn-limpiar-notificaciones');
     if (btnLimpiar) {
         btnLimpiar.addEventListener('click', () => {
@@ -202,7 +241,15 @@ function configurarInterfazNotificaciones() {
                 .then(datos => {
                     if (datos.success) {
                         listaNotificaciones = [];
-                        if (lista) lista.innerHTML = '<p style="padding:10px;text-align:center;color:#888">Sin notificaciones</p>';
+                        if (lista) {
+                            lista.innerHTML = '';
+                            const p = document.createElement('p');
+                            p.style.padding = '10px';
+                            p.style.textAlign = 'center';
+                            p.style.color = '#888';
+                            p.textContent = 'Sin notificaciones';
+                            lista.appendChild(p);
+                        }
                         indicadorActivo = false;
                         renderizarIndicador();
                     }

@@ -1,170 +1,202 @@
-import { formatearTamano, obtenerConfiguracionIcono } from './utilidades.js';
+/**
+ * Módulo de Subida de Archivos y Carpetas.
+ * Implementa soporte avanzado para subida recursiva vía Drag & Drop y selector tradicional.
+ * Sincronizado con el sistema de rutas relativas del backend para recrear estructuras de directorios.
+ */
+import { formatearTamano } from './utilidades.js';
 import { guardarNotificacion } from './interfaz.js';
 
 let colaArchivos = [];
+let subiendo = false;
 
+/**
+ * Inicializa todos los disparadores y oyentes de eventos para la carga de archivos.
+ */
 export function inicializarSubidas() {
-    const zonaArrastre = document.getElementById('zona-arrastre');
+    const zona = document.getElementById('zona-arrastre');
     const entradaArchivo = document.getElementById('entrada-archivo');
-    const btnSubirTodo = document.getElementById('btn-subir-todo');
+    const entradaCarpeta = document.getElementById('entrada-carpeta');
+    const disparadorArchivo = document.getElementById('disparador-archivo');
+    const disparadorCarpeta = document.getElementById('disparador-carpeta');
 
-    if (zonaArrastre && entradaArchivo) {
-        zonaArrastre.addEventListener('click', () => entradaArchivo.click());
-        entradaArchivo.addEventListener('click', (e) => e.stopPropagation());
+    if (!zona) return;
 
-        entradaArchivo.addEventListener('change', (e) => {
-            manejarArchivos(e.target.files);
-            entradaArchivo.value = '';
-        });
+    // Vinculación de enlaces visuales con inputs ocultos
+    disparadorArchivo?.addEventListener('click', () => entradaArchivo.click());
+    disparadorCarpeta?.addEventListener('click', () => entradaCarpeta.click());
 
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(nombreEvento => {
-            zonaArrastre.addEventListener(nombreEvento, (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            }, false);
-        });
-
-        ['dragenter', 'dragover'].forEach(nombreEvento => {
-            zonaArrastre.addEventListener(nombreEvento, () => {
-                zonaArrastre.classList.add('resaltado');
-                zonaArrastre.style.borderColor = 'var(--primary-color)';
-                zonaArrastre.style.backgroundColor = '#F9F5FF';
-            }, false);
-        });
-
-        ['dragleave', 'drop'].forEach(nombreEvento => {
-            zonaArrastre.addEventListener(nombreEvento, () => {
-                zonaArrastre.classList.remove('resaltado');
-                zonaArrastre.style.borderColor = 'var(--border-color)';
-                zonaArrastre.style.backgroundColor = '#FFFFFF';
-            }, false);
-        });
-
-        zonaArrastre.addEventListener('drop', (e) => {
-            const dt = e.dataTransfer;
-            manejarArchivos(dt.files);
-        });
-    }
-
-    if (btnSubirTodo) {
-        btnSubirTodo.addEventListener('click', async () => {
-            btnSubirTodo.disabled = true;
-            btnSubirTodo.textContent = 'Subiendo...';
-
-            const copia = [...colaArchivos];
-            for (const item of copia) {
-                await subirArchivoAlServidor(item);
-            }
-
-            colaArchivos = [];
-            actualizarVisibilidad();
-            btnSubirTodo.textContent = 'Completado';
-            setTimeout(() => window.location.reload(), 1000);
-        });
-    }
-}
-
-function manejarArchivos(archivos) {
-    const estaAutenticado = document.body.getAttribute('data-authenticated') === 'true';
-
-    if (!estaAutenticado) {
-        guardarNotificacion('Debes iniciar sesión para subir archivos.', 'error');
-        return;
-    }
-
-    ([...archivos]).forEach(archivo => agregarACola(archivo));
-    actualizarVisibilidad();
-}
-
-function agregarACola(archivo) {
-    const contenedorProgreso = document.getElementById('contenedor-progreso');
-    const plantilla = document.getElementById('plantilla-progreso');
-    if (!contenedorProgreso || !plantilla) return;
-
-    const id = Math.random().toString(36).substr(2, 9);
-    colaArchivos.push({
-        id,
-        archivo,
-        rutaRelativa: (archivo.webkitRelativePath && archivo.webkitRelativePath.length > 0) ? archivo.webkitRelativePath : archivo.name
+    // Manejo de selección por explorador de archivos nativo
+    entradaArchivo?.addEventListener('change', (e) => {
+        manejarArchivos(e.target.files);
+        entradaArchivo.value = '';
     });
 
+    entradaCarpeta?.addEventListener('change', (e) => {
+        manejarArchivos(e.target.files);
+        entradaCarpeta.value = '';
+    });
+
+    // Soporte para Arrastrar y Soltar (Drag & Drop) con estados visuales
+    zona.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        zona.classList.add('drag-active');
+    });
+
+    zona.addEventListener('dragleave', () => zona.classList.remove('drag-active'));
+
+    zona.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        zona.classList.remove('drag-active');
+
+        const items = e.dataTransfer.items;
+        if (items) {
+            // Recorrer elementos arrastrados (pueden ser archivos o carpetas)
+            for (let i = 0; i < items.length; i++) {
+                const entry = items[i].webkitGetAsEntry();
+                if (entry) {
+                    await procesarEntrada(entry);
+                }
+            }
+        } else {
+            // Respaldo para navegadores antiguos sin webkitGetAsEntry
+            manejarArchivos(e.dataTransfer.files);
+        }
+    });
+
+    // Inicio de subida masiva
+    document.getElementById('btn-subir-todo')?.addEventListener('click', procesarCola);
+}
+
+/**
+ * Escanea recursivamente una entrada del sistema de archivos.
+ * Si es carpeta, profundiza en ella; si es archivo, lo añade a la cola.
+ * @param {FileSystemEntry} entry - Elemento detectado.
+ * @param {string} path - Ruta acumulada para mantener jerarquía.
+ */
+async function procesarEntrada(entry, path = "") {
+    if (entry.isFile) {
+        const file = await new Promise((resolve) => entry.file(resolve));
+        agregarACola(file, path + file.name);
+    } else if (entry.isDirectory) {
+        const reader = entry.createReader();
+        const entries = await new Promise((resolve) => reader.readEntries(resolve));
+        for (const child of entries) {
+            await procesarEntrada(child, path + entry.name + "/");
+        }
+    }
+}
+
+/**
+ * Procesa una lista de archivos y los incorpora a la cola de subida.
+ */
+function manejarArchivos(archivos) {
+    ([...archivos]).forEach(archivo => agregarACola(archivo));
+}
+
+/**
+ * Añade un archivo a la cola interna y crea su representación visual en la UI.
+ * @param {File} archivo - Objeto File nativo.
+ * @param {string} rutaPersonalizada - Ruta relativa forzada (para carpetas D&D).
+ */
+function agregarACola(archivo, rutaPersonalizada = null) {
+    const id = Math.random().toString(36).substr(2, 9);
+    const rutaRelativa = rutaPersonalizada || (archivo.webkitRelativePath && archivo.webkitRelativePath.length > 0 ? archivo.webkitRelativePath : archivo.name);
+
+    colaArchivos.push({ id, archivo, rutaRelativa });
+
+    const contenedor = document.querySelector('.cola-archivos');
+    const plantilla = document.getElementById('plantilla-progreso');
+    if (!contenedor || !plantilla) return;
 
     const clon = plantilla.content.cloneNode(true);
-    const item = clon.querySelector('.item-progreso-subida');
-    item.dataset.colaId = id;
-
-    clon.querySelector('.nombre-archivo').textContent = archivo.name;
+    const itemElem = clon.querySelector('.item-progreso-subida');
+    itemElem.id = `subida-${id}`;
+    clon.querySelector('.nombre-archivo').textContent = rutaRelativa;
     clon.querySelector('.tamano-archivo').textContent = formatearTamano(archivo.size);
 
-    const contenedorIcono = clon.querySelector('.icono-progreso');
-    const conf = obtenerConfiguracionIcono(archivo);
-    contenedorIcono.innerHTML = conf.svg;
-    contenedorIcono.className = `icono-progreso ${conf.clase}`;
+    // Botón para eliminar un archivo de la cola antes de subir
+    clon.querySelector('.btn-cerrar').onclick = () => {
+        colaArchivos = colaArchivos.filter(item => item.id !== id);
+        itemElem.remove();
+        actualizarVisibilidadBotones();
+    };
 
-    item.querySelector('.btn-cerrar').addEventListener('click', () => {
-        colaArchivos = colaArchivos.filter(f => f.id !== id);
-        item.remove();
-        actualizarVisibilidad();
-    });
-
-    contenedorProgreso.appendChild(item);
+    contenedor.appendChild(clon);
+    actualizarVisibilidadBotones();
 }
 
-function actualizarVisibilidad() {
-    const acciones = document.getElementById('acciones-cola');
-    if (acciones) {
-        acciones.style.display = colaArchivos.length > 0 ? 'block' : 'none';
+/**
+ * Muestra u oculta los controles de subida según el estado de la cola.
+ */
+function actualizarVisibilidadBotones() {
+    const btnEnviar = document.getElementById('acciones-cola');
+    if (btnEnviar) {
+        btnEnviar.style.display = colaArchivos.length > 0 ? 'block' : 'none';
     }
 }
 
+/**
+ * Inicia la subida secuencial de la cola de archivos al servidor.
+ */
+async function procesarCola() {
+    if (subiendo || colaArchivos.length === 0) return;
+    subiendo = true;
+
+    const btn = document.getElementById('btn-subir-todo');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Subiendo...";
+    }
+
+    // Subida secuencial para evitar saturar el ancho de banda y el servidor
+    while (colaArchivos.length > 0) {
+        const item = colaArchivos.shift();
+        await subirArchivoAlServidor(item);
+    }
+
+    guardarNotificacion("Subida finalizada con éxito.");
+    window.location.reload();
+}
+
+/**
+ * Realiza la petición AJAX para subir un archivo individual.
+ * Gestiona la barra de progreso en tiempo real.
+ */
 function subirArchivoAlServidor(itemCola) {
     return new Promise((resolve) => {
-        const elementoItem = document.querySelector(`.item-progreso-subida[data-cola-id="${itemCola.id}"]`);
-        if (!elementoItem) { resolve(); return; }
-
-        const barra = elementoItem.querySelector('.barra-progreso');
-        const estado = elementoItem.querySelector('.estado-progreso');
-        const btnCerrar = elementoItem.querySelector('.btn-cerrar');
-        if (btnCerrar) btnCerrar.style.display = 'none';
-
-        estado.textContent = 'Subiendo...';
-
-        const datosFormulario = new FormData();
-        datosFormulario.append('archivos', itemCola.archivo);
-        datosFormulario.append('rutas_relativas', itemCola.rutaRelativa);
-
         const zona = document.getElementById('zona-arrastre');
-        const cid = zona ? zona.getAttribute('data-carpeta-actual') : null;
-        if (cid) datosFormulario.append('carpeta_id', cid);
+        const cid = zona ? zona.getAttribute('data-carpeta-actual') : "";
+
+        const form = new FormData();
+        form.append('archivos', itemCola.archivo);
+        form.append('rutas_relativas', itemCola.rutaRelativa);
+        if (cid) form.append('carpeta_id', cid);
 
         const xhr = new XMLHttpRequest();
         xhr.open('POST', '/subir', true);
 
+        const elementoUI = document.getElementById(`subida-${itemCola.id}`);
+        const barra = elementoUI?.querySelector('.barra-progreso');
+        const textoPorcentaje = elementoUI?.querySelector('.estado-progreso');
+
         xhr.upload.onprogress = (e) => {
             if (e.lengthComputable) {
-                const porcentaje = (e.loaded / e.total) * 100;
-                barra.style.width = porcentaje + '%';
-                estado.textContent = Math.round(porcentaje) + '%';
+                const pct = Math.round((e.loaded / e.total) * 100);
+                if (barra) barra.style.width = pct + '%';
+                if (textoPorcentaje) textoPorcentaje.textContent = pct + '%';
             }
         };
 
         xhr.onload = () => {
-            if (xhr.status === 200) {
-                barra.style.width = '100%';
-                estado.textContent = 'Completado';
-                guardarNotificacion(`Archivo "${itemCola.archivo.name}" subido.`);
-            } else {
-                estado.textContent = 'Error';
-                elementoItem.style.backgroundColor = '#FEF3F2';
-            }
-            resolve();
-        };
-        xhr.onerror = () => {
-            estado.textContent = 'Error red';
-            elementoItem.style.backgroundColor = '#FEF3F2';
+            elementoUI?.remove();
             resolve();
         };
 
-        xhr.send(datosFormulario);
+        xhr.onerror = () => {
+            console.error("Fallo en la subida:", itemCola.rutaRelativa);
+            resolve();
+        };
+
+        xhr.send(form);
     });
 }

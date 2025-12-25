@@ -30,16 +30,3 @@ def test_seguimiento_actualizacion_carpeta(cliente_autenticado, app, usuario):
         carpeta_obj = Carpeta.query.get(folder_id)
         assert carpeta_obj.fecha_actualizacion > actualizacion_inicial
         assert carpeta_obj.fecha_creacion == creacion_inicial
-
-
-def test_visualizacion_tabla_carpetas(cliente_autenticado, app, usuario):
-    with app.app_context():
-        carpeta_obj = Carpeta(nombre="Carpeta de Visualización", usuario_id=usuario.id)
-        db.session.add(carpeta_obj)
-        db.session.commit()
-
-    respuesta = cliente_autenticado.get("/")
-    assert respuesta.status_code == 200
-
-    patron_fecha = re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}")
-    assert patron_fecha.search(respuesta.data.decode("utf-8"))

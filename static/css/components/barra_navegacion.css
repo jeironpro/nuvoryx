@@ -190,20 +190,7 @@
 }
 
 .avatar-icon {
-    font-size: 32px !important;
     color: #667085;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-
-@media (min-width: 640px) {
-    .avatar-icon {
-        font-size: 40px !important;
-    }
-}
-
-.avatar-icon:hover {
-    opacity: 0.8;
 }
 
 .detalles-usuario {

@@ -28,7 +28,7 @@
     font-size: 13px;
     font-weight: 500;
     margin: 12px 0 16px 0;
-    overflow-x: scroll;
+    overflow-x: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
 }
@@ -55,6 +55,9 @@
 }
 
 .migas-pan a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     color: var(--text-secondary, #6b7280);
     text-decoration: none;
     transition: color 0.15s ease;
@@ -65,4 +68,18 @@
 .migas-pan a:hover {
     color: var(--primary-color, #6941c6);
     background-color: rgba(105, 65, 198, 0.05);
+}
+
+.migas-pan .icono-miga {
+    font-size: 18px;
+}
+
+.migas-pan .separador-miga {
+    font-size: 16px;
+    color: #98a2b3;
+}
+
+.migas-pan .miga-actual {
+    font-weight: 600;
+    color: #344054;
 }

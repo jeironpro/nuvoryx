@@ -1,193 +1,181 @@
 <div class="seccion-contenido">
-    <div class="encabezado-seccion">
-        <div class="titulo-seccion">
-            <h3>Archivos adjuntos</h3>
+    <div class="n-encabezado-explorador">
+        <div class="n-encabezado-superior">
+            <div class="n-encabezado-info">
+                <h3 class="n-encabezado-titulo">Explorador de Archivos</h3>
+                <p class="n-encabezado-subtitulo">Gestiona y organiza tus documentos con seguridad</p>
+            </div>
+            <div class="n-encabezado-acciones-principales">
+                <div class="n-buscador-envoltorio">
+                    <span class="material-symbols-outlined">search</span>
+                    <input type="text" id="entrada-busqueda" placeholder="Buscar archivos..."
+                        aria-label="Buscar archivos" />
+                </div>
+            </div>
         </div>
-        <div class="barra-busqueda">
-            <span class="material-symbols-outlined">search</span>
-            <input type="text" id="entrada-busqueda" placeholder="Buscar" aria-label="Buscar archivos" />
+
+        <div class="n-encabezado-inferior">
+            <div class="n-grupo-filtros">
+                <div class="n-item-filtro">
+                    <span class="n-etiqueta-filtro">Mostrar:</span>
+                    <select id="filtro-tipo" class="n-selector-premium">
+                        <option value="todos">Todos los archivos</option>
+                        <option value="pdf">PDF</option>
+                        <option value="imagen">Imágenes</option>
+                        <option value="video">Videos</option>
+                        <option value="documento">Documentos</option>
+                        <option value="hoja_calculo">Hojas de cálculo</option>
+                        <option value="audio">Audio</option>
+                    </select>
+                </div>
+                <div class="n-item-filtro">
+                    <span class="n-etiqueta-filtro">Ordenar:</span>
+                    <select id="orden-fecha" class="n-selector-premium">
+                        <option value="asc">Más antiguos</option>
+                        <option value="desc">Más recientes</option>
+                    </select>
+                </div>
+                {% if current_user.is_authenticated %}
+                <div class="n-item-filtro n-filtro-accion">
+                    <button class="n-btn-nueva-carpeta" onclick="abrirModalEspecifico('modal-crear-carpeta')"
+                        aria-label="Crear nueva carpeta">
+                        <span class="material-symbols-outlined">create_new_folder</span>
+                        <span>Nueva Carpeta</span>
+                    </button>
+                </div>
+                {% endif %}
+            </div>
         </div>
-        <button class="btn-crea-carpeta btn-crea-carpeta-items" onclick="abrirModalEspecifico('modal-crear-carpeta')"
-            aria-label="Crear nueva carpeta">
-            <span class="material-symbols-outlined icono-20px" aria-hidden="true">create_new_folder</span>
-            Nueva Carpeta
-        </button>
-        <select id="filtro-tipo" class="anadir-filtro select-limpio" aria-label="Filtrar por tipo de archivo">
-            <option value="todos">Todos los tipos</option>
-            <option value="pdf">PDF</option>
-            <option value="imagen">Imágenes</option>
-            <option value="video">Videos</option>
-            <option value="documento">Documentos</option>
-            <option value="hoja_calculo">Hojas de cálculo</option>
-            <option value="presentacion">Presentaciones</option>
-            <option value="audio">Audio</option>
-            <option value="archivo">Comprimidos</option>
-            <option value="codigo">Código</option>
-            <option value="otro">Otros</option>
-        </select>
-        <select id="orden-fecha" class="anadir-filtro select-limpio" aria-label="Ordenar archivos">
-            <option value="desc">Más recientes</option>
-            <option value="asc">Más antiguos</option>
-        </select>
-        <button id="btn-cambiar-vista" class="btn-icono-tabla margen-izq-8" aria-label="Cambiar vista"
-            title="Cambiar vista">
-            <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
+    </div>
+
+    <div class="n-control-seleccion-global">
+        <button id="btn-seleccionar-todo" class="n-btn-seleccionar-todo" title="Seleccionar todo">
+            <span class="material-symbols-outlined">checklist</span>
+            <span class="n-btn-texto-responsive">Seleccionar todo</span>
         </button>
     </div>
 
-    <table class="tabla-archivos">
-        <thead>
-            <tr>
-                <th class="col-casilla">
-                    <input type="checkbox" id="casilla-seleccionar-todo" />
-                </th>
-                <th class="col-nombre">Nombre del archivo</th>
-                <th class="col-fecha">Fecha de subida</th>
-                <th class="col-actualizado">Última actualización</th>
-                <th class="col-subido-por">Subido por</th>
-                <th class="col-acciones"></th>
-            </tr>
-        </thead>
-        <tbody id="cuerpo-tabla">
+    <div class="n-cuadricula-explorador">
+        <div id="cuerpo-tabla" class="n-cuadricula-contenedor">
             <!-- Carpetas -->
             {% for carpeta in carpetas %}
-            <tr class="fila-archivo fila-carpeta" data-tipo="carpeta" data-id="{{ carpeta.id }}">
-                <td><input type="checkbox" class="casilla-archivo casilla-carpeta" /></td>
-                <td>
-                    <a href="{{ url_for('principal.indice', carpeta_id=carpeta.id) }}"
-                        class="enlace-carpeta enlace-carpeta-bloque">
-                        <div class="info-archivo">
-                            <div class="icono-archivo icon-folder">
-                                <span class="material-symbols-outlined">folder</span>
-                            </div>
-                            <div class="texto-archivo">
-                                <span class="nombre">{{ carpeta.nombre }}</span>
-                                <span class="tamano">{{ carpeta.tamano }}</span>
-                            </div>
-                        </div>
-                    </a>
-                </td>
-                <td>{{ carpeta.fecha_creacion.strftime('%Y-%m-%d %H:%M') if carpeta.fecha_creacion else '-' }}</td>
-                <td>{{ carpeta.fecha_actualizacion.strftime('%Y-%m-%d %H:%M') if carpeta.fecha_actualizacion else '-' }}
-                </td>
-                <td>
-                    <div class="info-usuario">
-                        <span class="material-symbols-outlined avatar-icon">account_circle</span>
-                        <div class="detalles-usuario">
-                            <span class="nombre-usuario">{{ current_user.nombre }}</span>
-                            <span class="email-usuario">{{ current_user.correo }}</span>
+            <div class="n-tarjeta fila-archivo fila-carpeta" data-tipo="carpeta" data-id="{{ carpeta.id }}"
+                data-fecha="{{ carpeta.fecha_actualizacion.timestamp() }}">
+                <div class="n-tarjeta-seleccion">
+                    <input type="checkbox" class="casilla-archivo casilla-carpeta n-tarjeta-casilla" />
+                </div>
+
+                <a href="{{ url_for('principal.indice', carpeta_id=carpeta.id) }}" class="n-tarjeta-enlace"
+                    style="text-decoration: none !important;">
+                    <div class="n-tarjeta-area-icono">
+                        <div class="n-carpeta-icono-pila">
+                            <span class="material-symbols-outlined">folder</span>
                         </div>
                     </div>
-                </td>
-                <td>
-                    <div class="acciones-tabla">
-                        <button class="btn-icono-tabla btn-eliminar-carpeta" data-id="{{ carpeta.id }}"
-                            title="Eliminar">
-                            <span class="material-symbols-outlined">delete</span>
+                    <div class="n-tarjeta-info">
+                        <span class="nombre" title="{{ carpeta.nombre }}">{{ carpeta.nombre }}</span>
+                        <span class="n-tarjeta-meta">Carpeta</span>
+                        <span class="n-tarjeta-fecha">Creado: {{ carpeta.fecha_creacion.strftime('%d/%m/%Y %H:%M')
+                            }}</span>
+                        <span class="n-tarjeta-fecha">Act.: {{ carpeta.fecha_actualizacion.strftime('%d/%m/%Y %H:%M')
+                            }}</span>
+                    </div>
+                </a>
+
+                <div class="n-tarjeta-disparador-acciones" tabindex="0">
+                    <button class="n-btn-puntos"><span class="material-symbols-outlined">more_vert</span></button>
+                    <div class="n-tarjeta-menu">
+                        <button class="n-menu-item btn-eliminar-carpeta" data-id="{{ carpeta.id }}">
+                            <span class="material-symbols-outlined">delete</span> Eliminar
                         </button>
                         <a href="{{ url_for('archivos.descargar_carpeta', carpeta_id=carpeta.id) }}"
-                            class="btn-icono-tabla" title="Descargar">
-                            <span class="material-symbols-outlined">download</span>
+                            class="n-menu-item">
+                            <span class="material-symbols-outlined">download</span> Descargar
                         </a>
                     </div>
-                </td>
-            </tr>
+                </div>
+            </div>
             {% endfor %}
 
+            <!-- Archivos -->
             {% for archivo in archivos %}
-            <tr class="fila-archivo" data-tipo="{{ archivo.tipo }}">
-                <td><input type="checkbox" class="casilla-archivo" /></td>
-                <td>
-                    <div class="info-archivo">
-                        {% if archivo.tipo == 'pdf' %}
-                        <div class="icono-archivo icon-pdf">
-                            <span class="material-symbols-outlined">picture_as_pdf</span>
-                        </div>
-                        {% elif archivo.tipo == 'imagen' %}
-                        <div class="icono-archivo icon-img">
-                            <span class="material-symbols-outlined">image</span>
-                        </div>
-                        {% elif archivo.tipo == 'video' %}
-                        <div class="icono-archivo icon-video">
-                            <span class="material-symbols-outlined">movie</span>
-                        </div>
-                        {% elif archivo.tipo == 'documento' or archivo.tipo == 'word' %}
-                        <div class="icono-archivo icon-doc">
-                            <span class="material-symbols-outlined">description</span>
-                        </div>
-                        {% elif archivo.tipo == 'hoja_calculo' or archivo.tipo == 'excel' %}
-                        <div class="icono-archivo icon-sheet">
-                            <span class="material-symbols-outlined">table_chart</span>
-                        </div>
-                        {% elif archivo.tipo == 'presentacion' or archivo.tipo == 'powerpoint' %}
-                        <div class="icono-archivo icon-ppt">
-                            <span class="material-symbols-outlined">slideshow</span>
-                        </div>
-                        {% elif archivo.tipo == 'audio' %}
-                        <div class="icono-archivo icon-audio">
-                            <span class="material-symbols-outlined">audio_file</span>
-                        </div>
-                        {% elif archivo.tipo == 'archivo' %}
-                        <div class="icono-archivo icon-zip">
-                            <span class="material-symbols-outlined">folder_zip</span>
-                        </div>
-                        {% elif archivo.tipo == 'codigo' %}
-                        <div class="icono-archivo icon-code">
-                            <span class="material-symbols-outlined">code</span>
-                        </div>
-                        {% else %}
-                        <div class="icono-archivo icon-fig">
-                            <span class="material-symbols-outlined">draft</span>
-                        </div>
-                        {% endif %}
-                        <div class="texto-archivo">
-                            <span class="nombre">{{ archivo.nombre }}</span>
-                            <span class="tamano">{{ archivo.tamano }}</span>
-                        </div>
-                    </div>
-                </td>
-                <td>{{ archivo.fecha_subida.strftime('%Y-%m-%d %H:%M') if archivo.fecha_subida else '-' }}</td>
-                <td>-</td>
-                <td>
-                    <div class="info-usuario">
-                        <span class="material-symbols-outlined avatar-icon">account_circle</span>
-                        <div class="detalles-usuario">
-                            <span class="nombre-usuario">{{ current_user.nombre }}</span>
-                            <span class="email-usuario">{{ current_user.correo }}</span>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <div class="acciones-tabla">
-                        <button class="btn-icono-tabla btn-eliminar-disparador" data-id="{{ archivo.id }}"
-                            title="Eliminar">
-                            <span class="material-symbols-outlined">delete</span>
-                        </button>
-                        <a href="{{ url_for('archivos.descargar_archivo', archivo_id=archivo.id) }}"
-                            class="btn-icono-tabla" title="Descargar" download><span
-                                class="material-symbols-outlined">download</span></a>
-                    </div>
-                </td>
-            </tr>
-            {% else %}
-            {% if not carpetas %}
-            <tr id="fila-sin-archivos">
-                <td colspan="6" class="celda-sin-archivos">
-                    No hay archivos subidos.
-                </td>
-            </tr>
-            {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
-    </table>
-</div>
-</main>
+            <div class="n-tarjeta fila-archivo" data-tipo="{{ archivo.tipo }}" data-id="{{ archivo.id }}"
+                data-fecha="{{ archivo.fecha_subida.timestamp() }}">
+                <div class="n-tarjeta-seleccion">
+                    <input type="checkbox" class="casilla-archivo n-tarjeta-casilla" />
+                </div>
 
-<div id="barra-acciones-masivas" class="barra-flotante barra-flotante-oculta">
-    <div class="contenido-barra-flotante">
-        <span id="contador-seleccionados" class="texto-contador">0 archivos
-            seleccionados</span>
-        <div class="acciones-flotantes">
-            <button id="btn-descargar-multiples" class="btn-secundario btn-sm">
-                <span class="material-symbols-outlined icono-18px">folder_zip</span>
+                <div class="n-tarjeta-area-previsualizacion">
+                    <div class="n-archivo-icono-grande icon-{{ archivo.tipo }}">
+                        <span class="material-symbols-outlined">
+                            {% if archivo.tipo == 'pdf' %}picture_as_pdf
+                            {% elif archivo.tipo == 'imagen' %}image
+                            {% elif archivo.tipo == 'video' %}movie
+                            {% elif archivo.tipo in ['documento', 'word'] %}description
+                            {% elif archivo.tipo in ['hoja_calculo', 'excel'] %}table_chart
+                            {% elif archivo.tipo in ['presentacion', 'powerpoint'] %}slideshow
+                            {% elif archivo.tipo == 'audio' %}audio_file
+                            {% elif archivo.tipo == 'archivo' %}folder_zip
+                            {% elif archivo.tipo == 'codigo' %}code
+                            {% else %}draft{% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="n-tarjeta-info">
+                    <span class="nombre" title="{{ archivo.nombre }}">{{ archivo.nombre }}</span>
+                    <span class="n-tarjeta-meta">{{ archivo.tamano }}</span>
+                    <span class="n-tarjeta-fecha">Subido: {{ archivo.fecha_subida.strftime('%d/%m/%Y %H:%M') }}</span>
+                </div>
+
+                <div class="n-tarjeta-disparador-acciones" tabindex="0">
+                    <button class="n-btn-puntos"><span class="material-symbols-outlined">more_vert</span></button>
+                    <div class="n-tarjeta-menu">
+                        <button class="n-menu-item btn-eliminar-disparador" data-id="{{ archivo.id }}">
+                            <span class="material-symbols-outlined">delete</span> Eliminar
+                        </button>
+                        <a href="{{ url_for('archivos.descargar_archivo', archivo_id=archivo.id) }}" class="n-menu-item"
+                            download>
+                            <span class="material-symbols-outlined">download</span> Descargar
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% if not carpetas and not archivos %}
+            <div id="fila-sin-archivos" class="n-cuadricula-vacia">
+                <div class="n-caja-vacia">
+                    <span class="material-symbols-outlined">cloud_off</span>
+                    <h3>Sin archivos todavía</h3>
+                    <p>Suéltalos aquí para empezar a organizar tu espacio</p>
+                </div>
+            </div>
+            {% endif %}
+        </div> <!-- cuerpo-tabla -->
+    </div> <!-- n-cuadricula-explorador -->
+
+</div> <!-- fin seccion-contenido -->
+
+<!-- Barra de Acciones Masivas -->
+<div id="barra-acciones-masivas" class="n-barra-flotante-premium" style="display: none;">
+    <div class="n-contenido-flotante">
+        <div class="n-contador-seleccion">
+            <span class="material-symbols-outlined">check_circle</span>
+            <span id="contador-seleccionados" class="n-contador-texto">0 seleccionados</span>
+        </div>
+        <div class="n-acciones-flotantes">
+            <button id="btn-descargar-multiples" class="n-btn-masivo n-btn-masivo-descargar">
+                <span class="material-symbols-outlined">download_for_offline</span>
+                <span>Descargar ZIP</span>
+            </button>
+            <button id="btn-eliminar-multiples" class="n-btn-masivo n-btn-masivo-eliminar">
+                <span class="material-symbols-outlined">delete_forever</span>
+                <span>Eliminar Selección</span>
+            </button>
+            <div class="n-divisor-masivo"></div>
+            <button id="btn-cerrar-barra" class="n-btn-masivo-cerrar" title="Cancelar selección">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+    </div>
+</div>

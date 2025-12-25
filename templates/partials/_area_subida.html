@@ -1,22 +1,23 @@
 <section class="area-subida" id="zona-arrastre" data-carpeta-actual="{{ carpeta_actual.id if carpeta_actual else '' }}">
-    <input type="file" id="entrada-archivo" multiple webkitdirectory directory hidden />
+    <input type="file" id="entrada-archivo" multiple hidden />
+    <input type="file" id="entrada-carpeta" webkitdirectory directory hidden />
     <div class="contenido-subida">
         <div class="icono-subida">
             <span class="material-symbols-outlined">cloud_upload</span>
         </div>
         <p>
-            <span class="texto-enlace">Haga clic para subir</span> o arrastre y
-            suelte
+            <span class="texto-enlace" id="disparador-archivo">Haga clic para subir archivos</span>,
+            <span class="texto-enlace" id="disparador-carpeta">subir carpeta</span> o arrastre y suelte
         </p>
         <p class="sub-texto">Tamaño máximo de archivo 500 MB.</p>
     </div>
 
-    <div class="cola-archivos"></div>
-    <div id="acciones-cola" style="display: none; margin-top: 16px; text-align: right">
+    <div id="acciones-cola" style="display: none; margin: 32px 0; text-align: right">
         <button class="btn-primario" id="btn-subir-todo" style="background-color: #7f56d9">
             Iniciar subida
         </button>
     </div>
+    <div class="cola-archivos"></div>
 </section>
 
 <div id="contenedor-progreso"></div>

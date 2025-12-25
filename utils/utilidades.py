@@ -197,7 +197,7 @@ def borrar_fisicos(carpeta_obj):
         borrar_fisicos(subcarpeta)
 
     for archivo in carpeta_obj.archivos:
-        ruta_archivo = os.path.join(app.config["UPLOAD_FOLDER"], archivo.nombre_hash)
+        ruta_archivo = os.path.join(app.config["CARPETA_SUBIDAS"], archivo.nombre_hash)
 
         if os.path.exists(ruta_archivo):
             try:
@@ -209,8 +209,11 @@ def borrar_fisicos(carpeta_obj):
 def agregar_carpeta_a_zip(archivo_zip, carpeta_obj, ruta_base=""):
     ruta_carpeta = os.path.join(ruta_base, carpeta_obj.nombre) if ruta_base else carpeta_obj.nombre
 
+    # Asegurar que la carpeta aparezca en el ZIP aunque esté vacía
+    archivo_zip.writestr(ruta_carpeta + "/", "")
+
     for archivo in carpeta_obj.archivos:
-        ruta_archivo = os.path.join(app.config["UPLOAD_FOLDER"], archivo.nombre_hash)
+        ruta_archivo = os.path.join(app.config["CARPETA_SUBIDAS"], archivo.nombre_hash)
 
         if os.path.exists(ruta_archivo):
             nombre_archivo = os.path.join(ruta_carpeta, archivo.nombre_original)
