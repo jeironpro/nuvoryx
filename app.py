@@ -73,4 +73,4 @@ def crear_app(clase_config=Configuracion):
 if __name__ == "__main__":
     # Inicio del servidor en modo desarrollo
     app = crear_app()
-    app.run(debug=True, port=5555)
+    app.run(debug=True, port=5000)

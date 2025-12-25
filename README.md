@@ -10,9 +10,9 @@
 
 **Sistema moderno de gestión de archivos en la nube**
 
-Este proyecto se creo utilizando los modelos de Antigravity. Yo solo fui quien pedia funcionalidades de manera tecnica y el modelo las agregaba, luego yo verificaba y probaba que todo funcionaba correctamente.
+Este proyecto se creo utilizando los modelos de Antigravity. Yo solo fui quien pedia funcionalidades de manera técnica y el modelo las agregaba, luego yo verificaba y probaba que todo funcionaba correctamente.
 
-Me enfoque en pedir muchas de las cosas que estoy aprendiendo en la empresa que hago las practicas de desarrollo de aplicaciones web.
+Me enfoque en pedir muchas de las cosas que estoy aprendiendo en la empresa que hago las prácticas de desarrollo de aplicaciones web.
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-3.0+-green.svg)](https://flask.palletsprojects.com)
@@ -160,9 +160,15 @@ pip install -r requirements.txt
 
 ```env
 SECRET_KEY=tu-clave-secreta-muy-segura
+DATABASE_URL="motor_de_base_de_datos+libreria_de_conexion://usuario:contraseña@direccion_de_la_base_de_datos/nombre_de_la_base_de_datos"
+TRACK_MODIFICATIONS=False
+UPLOAD_FOLDER="uploads"
+SECURITY_PASSWORD_SALT="tu-clave-secreta-muy-segura"
+MAX_CONTENT_LENGTH=524288000
 MAIL_SERVER=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USE_TLS=True
+MAIL_USE_SSL=False
 MAIL_USERNAME=tu-email@gmail.com
 MAIL_PASSWORD=tu-contraseña-de-aplicación
 ```
