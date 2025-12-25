@@ -1,5 +1,4 @@
 import io
-import re
 import time
 
 from models import Carpeta, db
