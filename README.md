@@ -153,6 +153,8 @@ source venv/bin/activate  # En Windows: venv\\Scripts\\activate
 
 ```bash
 pip install -r requirements.txt
+y/o
+pip install -r test-requirements.txt
 ```
 
 4. **Configurar variables de entorno**

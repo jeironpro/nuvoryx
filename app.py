@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template
 
 from configuracion import Configuracion
@@ -73,4 +74,8 @@ def crear_app(clase_config=Configuracion):
 if __name__ == "__main__":
     # Inicio del servidor en modo desarrollo
     app = crear_app()
+    
+    if not os.path.exists(app.config["CARPETA_SUBIDAS"]):
+        os.mkdir(app.config["CARPETA_SUBIDAS"])
+    
     app.run(debug=True, port=5000)

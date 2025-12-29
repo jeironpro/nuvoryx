@@ -11,7 +11,7 @@ autenticacion_bp = Blueprint("autenticacion", __name__)
 
 def enviar_correo_confirmacion(correo, token):
     """Envía un enlace de activación de cuenta al correo electrónico del nuevo usuario."""
-    enlace = f"http://localhost:5555/confirmar/{token}"
+    enlace = f"http://localhost:5000/confirmar/{token}"
     mensaje = Message(
         "Confirma tu cuenta", sender=current_app.config["REMITENTE_POR_DEFECTO_CORREO"], recipients=[correo]
     )
@@ -21,7 +21,7 @@ def enviar_correo_confirmacion(correo, token):
 
 def enviar_correo_restablecimiento(correo, token):
     """Envía un enlace para cambiar la contraseña en caso de olvido."""
-    enlace = f"http://localhost:5555/restablecer/{token}"
+    enlace = f"http://localhost:5000/restablecer/{token}"
     mensaje = Message(
         "Restablecer tu contraseña",
         sender=current_app.config["REMITENTE_POR_DEFECTO_CORREO"],

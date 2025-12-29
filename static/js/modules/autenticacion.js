@@ -10,6 +10,7 @@ export function inicializarAutenticacion() {
     configurarOlvidoContrasena();
     configurarRestablecerContrasena();
     verificarTokenRestablecimiento();
+    configurarTogglesVisibilidadContrasena();
 }
 
 function configurarInicioSesion() {
@@ -485,3 +486,27 @@ function actualizarBarraFuerza(barraId, indicadorId, reglasId, validacion, texto
         }
     }
 }
+
+function configurarTogglesVisibilidadContrasena() {
+    // Seleccionar todos los iconos de toggle de contraseña
+    const iconosToggle = document.querySelectorAll('.toggle-password-icon');
+    
+    iconosToggle.forEach(icono => {
+        icono.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const inputContrasena = document.getElementById(targetId);
+            
+            if (!inputContrasena) return;
+            
+            // Alternar entre tipo password y text
+            if (inputContrasena.type === 'password') {
+                inputContrasena.type = 'text';
+                this.textContent = 'visibility_off';
+            } else {
+                inputContrasena.type = 'password';
+                this.textContent = 'visibility';
+            }
+        });
+    });
+}
+

@@ -72,7 +72,10 @@
         <p>Asegúrate de usar una contraseña segura.</p>
         <div class="contenedor-inputs-modal">
             <label class="label-input">Nueva Contraseña</label>
-            <input type="password" id="entrada-cambiar-contrasena-nueva" class="input-modal" />
+            <div class="input-password-wrapper">
+                <input type="password" id="entrada-cambiar-contrasena-nueva" class="input-modal" />
+                <span class="toggle-password-icon material-symbols-outlined" data-target="entrada-cambiar-contrasena-nueva">visibility</span>
+            </div>
             <div id="barra-fuerza-cambio"
                 style="height: 4px; background: #eee; margin-top: 8px; border-radius: 2px; overflow: hidden; display: none;">
                 <div id="indicador-fuerza-cambio"
@@ -83,7 +86,10 @@
                 Mínimo 8 caracteres, mayúscula, número y símbolo.
             </p>
             <label class="label-input" style="margin-top: 16px">Confirmar Contraseña</label>
-            <input type="password" id="entrada-cambiar-contrasena-confirmar" class="input-modal" />
+            <div class="input-password-wrapper">
+                <input type="password" id="entrada-cambiar-contrasena-confirmar" class="input-modal" />
+                <span class="toggle-password-icon material-symbols-outlined" data-target="entrada-cambiar-contrasena-confirmar">visibility</span>
+            </div>
             <p id="error-password-match" style="color: #d92d20; font-size: 12px; margin-top: 4px; display: none">Las
                 contraseñas no coinciden</p>
             <p id="error-cambiar-contrasena" style="color: #d92d20; font-size: 14px; margin-top: 8px; display: none">
